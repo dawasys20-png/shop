@@ -122,7 +122,7 @@ function RouteChrome({ children }: { children: ReactNode }) {
     !pathname.startsWith("/admin") && !pathname.startsWith("/delivery");
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, left: 0 });
   }, [pathname]);
 
   if (!showStoreChrome) return children;

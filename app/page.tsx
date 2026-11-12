@@ -1,10 +1,14 @@
 import { Suspense } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { CatalogLoading } from "./components/catalog-loading";
+import { HeroCarousel } from "./components/hero-carousel";
 import { HomeMerchandising } from "./components/home-merchandising";
 import { ProductGrid } from "./components/product-grid";
-import { getCategories, getCategorySlug } from "./lib/products";
+import {
+  getCategories,
+  getCategorySlug,
+  getPrimaryProductImage,
+} from "./lib/products";
 import type { Product } from "./lib/products";
 import { getServerProducts } from "./lib/server-products";
 
@@ -140,44 +144,11 @@ async function HomeContent() {
     <main>
       {/* Hero */}
       <div className={`${pageWidth} pt-6 max-[600px]:pt-4`}>
-        <section className="relative flex min-h-[460px] items-center overflow-hidden rounded-3xl bg-[#233b30] px-8 text-white max-[600px]:min-h-[420px] max-[600px]:px-6 lg:px-16">
-          <div className="absolute inset-0" aria-hidden="true">
-            <Image
-              src="/hero.png"
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-center"
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,40,32,0.84),rgba(24,40,32,0.5),rgba(24,40,32,0.1))]" />
-            <div className="absolute inset-0 bg-[#182820]/35 sm:hidden" />
-          </div>
-
-          <div className="relative z-10 max-w-[620px] py-14 text-left">
-            <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-[13px] text-white backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#b9d1bd]" />
-              Wellness, without the noise
-            </p>
-            <h1 className="mb-5 mt-0 text-[clamp(44px,7vw,76px)] font-medium leading-[1.04] tracking-[-0.03em] text-white">
-              Feel good.
-              <br />
-              Live well.
-            </h1>
-            <p className="mb-8 mt-0 max-w-[420px] text-base leading-7 text-[#e3eae4]">
-              Thoughtfully chosen supplements for your everyday routine. Quality
-              ingredients, purposeful choices, and wellness that works with your
-              lifestyle.
-            </p>
-            <Link
-              className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-white px-7 text-sm font-semibold text-[#233b30] transition-colors hover:bg-[#edf1eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              href="/shop"
-            >
-              Explore the collection <ArrowIcon />
-            </Link>
-          </div>
-        </section>
+        <HeroCarousel
+          images={featuredProducts
+            .slice(0, 3)
+            .map(getPrimaryProductImage)}
+        />
       </div>
 
       {/* Backend catalog */}

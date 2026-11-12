@@ -8,9 +8,9 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
 export const metadata: Metadata = {
   metadataBase: siteUrl ? new URL(siteUrl) : undefined,
-  title: "Vita Hub Ug — Live healthier. Feel Stronger.",
+  title: "VitaHub UG | Shop Vitamins, Supplements & Wellness Products in Uganda",
   description:
-    "Thoughtful supplements for the everyday you. Clean ingredients, clear purpose, and nothing you don't need.",
+    "Discover vitamins, nutritional supplements, minerals, protein and wellness products at VitaHub UG. Shop online in Uganda and support your everyday wellness journey.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

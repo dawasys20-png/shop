@@ -113,16 +113,22 @@ export function StoreNavigation() {
   return (
     <>
       {/* Announcement bar */}
-      <div className="flex min-h-[34px] items-center justify-center gap-3 bg-[#edf1eb] px-4 py-2 text-[10px] tracking-[0.08em] text-[#355342] max-[600px]:gap-2 max-[600px]:text-[9px]">
-        <span className="font-semibold uppercase">
-          Good things, grown slowly.
-        </span>
-
-        <span className="h-3 w-px bg-[#b9c6b8]" />
-
-        <span className="font-normal tracking-normal text-[#68776a]">
-          Free shipping on orders UGX 150000+
-        </span>
+      <div className="overflow-hidden bg-[#edf1eb]">
+        <div className="announcement-marquee flex min-h-[34px] items-center whitespace-nowrap px-4 py-2 text-[10px] tracking-[0.08em] text-[#355342] max-[600px]:text-[9px]">
+          <div className="announcement-track flex w-max items-center gap-3 max-[600px]:gap-2">
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#b9c6b8]" />
+            <span className="font-normal tracking-normal text-[#68776a]">
+              Free shipping on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#b9c6b8]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#b9c6b8]" aria-hidden="true" />
+            <span className="font-normal tracking-normal text-[#68776a]" aria-hidden="true">
+              Free shipping on orders UGX 150000+
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Main header */}
