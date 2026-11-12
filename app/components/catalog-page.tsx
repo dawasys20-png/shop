@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
-  categories,
+  getCategories,
+  getCategory,
+  getProductsInCategory,
   getProductVariants,
   type Product,
 } from "../lib/products";
@@ -30,20 +32,25 @@ export function CatalogPage({
   initialQuery?: string;
 }) {
   const router = useRouter();
-  const { products: catalogProducts, ready: catalogReady } = useCatalog();
+  const {
+    products: catalogProducts,
+    ready: catalogReady,
+    loadError,
+  } = useCatalog();
   const [query, setQuery] = useState(initialQuery);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  const currentProducts =
+    catalogReady && !loadError ? catalogProducts : products;
   const categoryProducts = useMemo(
-    () =>
-      initialCategory === "all"
-        ? catalogReady ? catalogProducts : products
-        : (catalogReady ? catalogProducts : products).filter(
-            (product) => product.category.toLowerCase() === initialCategory,
-          ),
-    [products, catalogProducts, catalogReady, initialCategory],
+    () => getProductsInCategory(initialCategory, currentProducts),
+    [currentProducts, initialCategory],
+  );
+  const categories = useMemo(
+    () => getCategories(currentProducts),
+    [currentProducts],
   );
   const brands = useMemo(
     () => [...new Set(categoryProducts.map((product) => product.brand))].sort(),
@@ -109,9 +116,7 @@ export function CatalogPage({
     });
   }, [categoryProducts, query, selectedTypes, selectedBrands, activeMaxPrice]);
 
-  const currentCategory = categories.find(
-    (category) => category.slug === initialCategory,
-  );
+  const currentCategory = getCategory(initialCategory, currentProducts);
   const heading =
     initialCategory !== "all" && currentCategory
       ? `${currentCategory.name} supplements`
@@ -203,6 +208,12 @@ export function CatalogPage({
           {visibleProducts.length === 1 ? "product" : "products"}
         </p>
       </header>
+
+      {loadError && (
+        <p className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
+          {loadError} Showing the last catalog snapshot loaded from the backend.
+        </p>
+      )}
 
       {/* Catalog layout */}
       <div className="grid grid-cols-[250px_minmax(0,1fr)] items-start gap-14 max-[1100px]:gap-10 max-[900px]:grid-cols-[210px_minmax(0,1fr)] max-[900px]:gap-7 max-[600px]:grid-cols-1 max-[600px]:gap-5">

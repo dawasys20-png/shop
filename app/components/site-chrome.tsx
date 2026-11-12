@@ -51,16 +51,7 @@ function StoreFooter() {
             href="/"
             aria-label="Form and Function home"
           >
-            <span className="grid size-10 place-items-center rounded-full bg-white font-serif text-[23px] italic leading-none text-[#233b30]">
-              f.
-            </span>
-            <span>
-              form
-              <span className="px-[2px] font-serif font-normal italic text-[#9db8a3]">
-                &amp;
-              </span>
-              function
-            </span>
+            <span>Vitahub Ug</span>
           </Link>
 
           <p className="mb-0 mt-6 max-w-xs text-[15px] leading-7 text-[#b9c8bc]">
@@ -127,7 +118,8 @@ function StoreFooter() {
 
 function RouteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const showStoreChrome = !pathname.startsWith("/admin");
+  const showStoreChrome =
+    !pathname.startsWith("/admin") && !pathname.startsWith("/delivery");
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });

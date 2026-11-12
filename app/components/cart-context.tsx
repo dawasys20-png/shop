@@ -17,6 +17,7 @@ import {
 import {
   type CheckoutContact,
   type Order,
+  type OrderStatus,
 } from "../lib/orders";
 import { apiRequest } from "../lib/api";
 import { useCatalog } from "./catalog-context";
@@ -43,6 +44,7 @@ type CartContextValue = {
   changeQuantity: (lineKey: string, change: number) => void;
   placeOrder: (contact: CheckoutContact) => Promise<Order>;
   saveOrder: (order: Order) => Promise<void>;
+  updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   refreshOrders: () => Promise<void>;
 };
@@ -430,6 +432,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [storedOrders.orders, storedOrders.ready],
   );
 
+  const updateOrderStatus = useCallback(
+    async (orderId: string, status: OrderStatus) => {
+      if (!storedOrders.ready) throw new Error("Saved orders are still loading.");
+      const { order: updatedOrder } = await apiRequest<{ order: Order }>(
+        `/admin/orders/${encodeURIComponent(orderId)}/status`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        },
+      );
+      ordersSnapshot = {
+        ...ordersSnapshot,
+        orders: ordersSnapshot.orders.map((order) =>
+          order.id === updatedOrder.id ? updatedOrder : order,
+        ),
+      };
+      notify(ordersListeners);
+    },
+    [storedOrders.ready],
+  );
+
   const reloadOrders = useCallback(async () => {
     try {
       await refreshOrders();
@@ -462,6 +485,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       changeQuantity,
       placeOrder,
       saveOrder,
+      updateOrderStatus,
       deleteOrder,
       refreshOrders: reloadOrders,
     }),
@@ -479,6 +503,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       changeQuantity,
       placeOrder,
       saveOrder,
+      updateOrderStatus,
       deleteOrder,
       reloadOrders,
     ],

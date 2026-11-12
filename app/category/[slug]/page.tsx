@@ -1,7 +1,9 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { CatalogLoading } from "../../components/catalog-loading";
 import { CatalogPage } from "../../components/catalog-page";
-import { getCategory, products } from "../../lib/products";
+import { getCategory } from "../../lib/products";
+import { getServerProducts } from "../../lib/server-products";
 
 export default function CategoryPage({
   params,
@@ -9,11 +11,7 @@ export default function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense
-      fallback={
-        <CatalogPage title="All supplements" products={products} initialCategory="all" />
-      }
-    >
+    <Suspense fallback={<CatalogLoading />}>
       <CategoryResults params={params} />
     </Suspense>
   );
@@ -25,7 +23,8 @@ async function CategoryResults({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const category = getCategory(slug);
+  const products = await getServerProducts();
+  const category = getCategory(slug, products);
   if (!category || category.slug === "all") notFound();
 
   return (

@@ -18,9 +18,11 @@ function getSessionExpiredSnapshot() {
 export function AccountForm({
   mode,
   adminOnly = false,
+  deliveryOnly = false,
 }: {
   mode: "login" | "signup";
   adminOnly?: boolean;
+  deliveryOnly?: boolean;
 }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +33,7 @@ export function AccountForm({
   );
   const router = useRouter();
   const { refreshOrders } = useCart();
-  const isSignup = !adminOnly && mode === "signup";
+  const isSignup = !adminOnly && !deliveryOnly && mode === "signup";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,7 +47,7 @@ export function AccountForm({
     };
     try {
       const { user } = await apiRequest<{
-        user: { role: "admin" | "customer" };
+        user: { role: "admin" | "customer" | "delivery" };
       }>(isSignup ? "/auth/signup" : adminOnly ? "/auth/admin/login" : "/auth/login", {
         method: "POST",
         body: JSON.stringify(body),
@@ -54,6 +56,11 @@ export function AccountForm({
         await apiRequest<void>("/auth/logout", { method: "POST" });
         throw new Error("Administrator access is required.");
       }
+      if (deliveryOnly && user.role !== "delivery") {
+        await apiRequest<void>("/auth/logout", { method: "POST" });
+        throw new Error("Delivery team access is required.");
+      }
+      window.dispatchEvent(new Event("auth-state-changed"));
       if (!adminOnly) {
         try {
           await refreshOrders();
@@ -70,9 +77,13 @@ export function AccountForm({
         ? safeReturnPath?.startsWith("/admin")
           ? safeReturnPath
           : "/admin"
-        : user.role === "admin"
-          ? "/admin"
-          : safeReturnPath || "/orders";
+        : deliveryOnly
+          ? "/delivery"
+          : user.role === "admin"
+            ? "/admin"
+            : user.role === "delivery"
+              ? "/delivery"
+              : safeReturnPath || "/orders";
       router.replace(destination);
       router.refresh();
     } catch (error) {
@@ -88,10 +99,12 @@ export function AccountForm({
     <main className={`account-page grid min-h-[70vh] place-items-center bg-[#e8eee9] p-[54px_20px]`}>
       <section className={`account-card w-[min(100%,_480px)] border border-[#d1ddd2] bg-[#fafaf8] p-[clamp(26px,_6vw,_52px)] shadow-sm [&_h1]:m-[14px_0_10px] [&_h1]:font-serif [&_h1]:text-[clamp(38px,_6vw,_54px)] [&_h1]:font-normal [&_h1]:tracking-[-2px] [&_h1]:leading-none [&_h1]:text-[#233b30]`}>
         <p className={`eyebrow m-0 text-[#52715d] text-[11px] font-bold tracking-[1.5px]`}>FORM & FUNCTION</p>
-        <h1>{adminOnly ? "Administrator sign in." : isSignup ? "Create your account." : "Welcome back."}</h1>
+        <h1>{adminOnly ? "Administrator sign in." : deliveryOnly ? "Delivery team sign in." : isSignup ? "Create your account." : "Welcome back."}</h1>
         <p className={`account-intro mb-[27px] text-[15px] leading-[1.6] text-[#536157]`}>
           {adminOnly
             ? "Sign in with your administrator account to continue."
+            : deliveryOnly
+            ? "Sign in to view orders and update their delivery status."
             : isSignup
             ? "Save your favorites and make your routine yours."
             : "Log in to revisit your everyday essentials."}
@@ -133,7 +146,7 @@ export function AccountForm({
           </p>
         )}
         <p className={`account-switch m-[22px_0_0] text-center text-[15px] leading-[1.6] text-[#536157] [&_a]:font-bold [&_a]:text-[#355342] [&_a]:underline [&_a]:underline-offset-3`}>
-          {adminOnly ? (
+          {adminOnly || deliveryOnly ? (
             <Link href="/login">Customer sign in</Link>
           ) : (
             <>
@@ -145,6 +158,8 @@ export function AccountForm({
                 <>
                   {" · "}
                   <Link href="/admin/login">Administrator sign in</Link>
+                  {" · "}
+                  <Link href="/delivery/login">Delivery team sign in</Link>
                 </>
               )}
             </>

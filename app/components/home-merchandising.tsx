@@ -3,23 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
+  getCategories,
+  getCategorySlug,
   getPrimaryProductImage,
-  products as defaultProducts,
+  type Product,
 } from "../lib/products";
 import { useCatalog } from "./catalog-context";
-
-const routineCategories = [
-  { name: "Vitamins", slug: "vitamins", productId: "omega-3" },
-  { name: "Greens", slug: "greens", productId: "daily-greens" },
-  { name: "Protein", slug: "protein", productId: "daily-protein" },
-  { name: "Sleep", slug: "sleep", productId: "magnesium" },
-];
-
-const dailyMoments = [
-  { productId: "daily-greens", moment: "Start bright" },
-  { productId: "daily-protein", moment: "Keep moving" },
-  { productId: "magnesium", moment: "Slow it down" },
-];
 
 function ArrowIcon() {
   return (
@@ -39,20 +28,30 @@ function ArrowIcon() {
   );
 }
 
-export function HomeMerchandising() {
-  const { products, ready } = useCatalog();
-  const currentProducts = ready ? products : defaultProducts;
-  const routines = routineCategories.flatMap((category) => {
-    const product = currentProducts.find(({ id }) => id === category.productId);
-    return product ? [{ ...category, product }] : [];
-  });
-  const moments = dailyMoments.flatMap((item) => {
-    const product = currentProducts.find(({ id }) => id === item.productId);
-    return product ? [{ ...item, product }] : [];
-  });
+export function HomeMerchandising({
+  initialProducts,
+}: {
+  initialProducts: Product[];
+}) {
+  const { products, ready, loadError } = useCatalog();
+  const currentProducts = ready && !loadError ? products : initialProducts;
+  const routines = getCategories(currentProducts)
+    .filter((category) => category.slug !== "all")
+    .flatMap((category) => {
+      const product = currentProducts.find(
+        ({ category: name }) => getCategorySlug(name) === category.slug,
+      );
+      return product ? [{ ...category, product }] : [];
+    })
+    .slice(0, 4);
 
   return (
     <>
+      {loadError && (
+        <p className="mx-auto my-6 w-[min(100%_-_32px,_1440px)] rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
+          {loadError} Showing the last catalog snapshot loaded from the backend.
+        </p>
+      )}
       {routines.length > 0 && (
         <section className="bg-[#eef2ec] px-4 py-16 sm:px-7 lg:px-14">
           <div className="mb-7 flex items-end justify-between gap-4">

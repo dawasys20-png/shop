@@ -9,7 +9,6 @@ import {
 } from "react";
 import {
   getProductVariants,
-  products as defaultProducts,
   type Product,
   type ProductVariant,
 } from "../lib/products";
@@ -32,7 +31,7 @@ type CatalogSnapshot = {
 };
 
 const serverSnapshot: CatalogSnapshot = {
-  products: defaultProducts,
+  products: [],
   ready: false,
   loadError: null,
 };
@@ -87,6 +86,21 @@ function isProduct(value: unknown): value is Product {
       (option.benefits === undefined ||
         (Array.isArray(option.benefits) &&
           option.benefits.every((benefit) => typeof benefit === "string"))) &&
+      (option.specifications === undefined ||
+        (Array.isArray(option.specifications) &&
+          option.specifications.length <= 30 &&
+          option.specifications.every(
+            (specification) =>
+              typeof specification === "object" &&
+              specification !== null &&
+              "key" in specification &&
+              typeof specification.key === "string" &&
+              specification.key.length > 0 &&
+              specification.key.length <= 100 &&
+              "value" in specification &&
+              typeof specification.value === "string" &&
+              specification.value.length <= 1000,
+          ))) &&
       Array.isArray(option.images) &&
       option.images.length > 0 &&
       option.images.length <= 12 &&
@@ -147,12 +161,12 @@ function initializeCatalog() {
     .catch((error: unknown) => {
       console.error("Could not load the store catalog.", error);
       catalogSnapshot = {
-        products: defaultProducts,
+        products: [],
         ready: true,
         loadError:
           error instanceof Error
-            ? `${error.message} The original catalog is shown until it is available.`
-            : "The product catalog could not be loaded. The original catalog is shown.",
+            ? `The backend catalog could not be loaded: ${error.message}`
+            : "The backend catalog could not be loaded.",
       };
     })
     .finally(notifyListeners);

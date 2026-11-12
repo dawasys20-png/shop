@@ -37,14 +37,17 @@ function redirectToLogin() {
   if (
     window.location.pathname === "/login" ||
     window.location.pathname === "/signup" ||
-    window.location.pathname === "/admin/login"
+    window.location.pathname === "/admin/login" ||
+    window.location.pathname === "/delivery/login"
   ) {
     return;
   }
 
   const loginPath = window.location.pathname.startsWith("/admin")
     ? "/admin/login"
-    : "/login";
+    : window.location.pathname.startsWith("/delivery")
+      ? "/delivery/login"
+      : "/login";
   const params = new URLSearchParams({ session: "expired", returnTo: currentPath });
   window.location.replace(`${loginPath}?${params.toString()}`);
 }

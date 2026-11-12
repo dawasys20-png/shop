@@ -1,9 +1,12 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CatalogLoading } from "./components/catalog-loading";
 import { HomeMerchandising } from "./components/home-merchandising";
 import { ProductGrid } from "./components/product-grid";
-import { categories, products } from "./lib/products";
+import { getCategories, getCategorySlug } from "./lib/products";
 import type { Product } from "./lib/products";
+import { getServerProducts } from "./lib/server-products";
 
 /* ------------------------------------------------------------------ */
 /* Edit the banner copy and links here                                 */
@@ -18,9 +21,9 @@ const promoBanner = {
 
 const featureBanners = [
   {
-    title: "New arrivals",
-    text: "See what has just joined the shop.",
-    cta: "Shop new arrivals",
+    title: "Explore the shop",
+    text: "Browse the full product catalog.",
+    cta: "Shop all products",
     href: "/shop",
     tone: "bg-[#e8ece7]",
   },
@@ -33,7 +36,6 @@ const featureBanners = [
   },
 ];
 
-// How many category sections to show on the homepage
 const CATEGORY_SECTION_LIMIT = 3;
 
 /* ------------------------------------------------------------------ */
@@ -112,16 +114,23 @@ function ProductSection({
 }
 
 export default function Home() {
-  const bestsellers = products.slice(0, 4);
-  // Assumes newer products are added to the end of the catalog
-  const newArrivals = [...products].slice(-4).reverse();
-  const categorySections = categories
+  return (
+    <Suspense fallback={<CatalogLoading />}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+async function HomeContent() {
+  const products = await getServerProducts();
+  const featuredProducts = products.slice(0, 4);
+  const categorySections = getCategories(products)
     .filter((category) => category.slug !== "all")
     .map((category) => ({
       slug: category.slug,
       name: category.name,
       items: products
-        .filter((product) => product.category.toLowerCase() === category.slug)
+        .filter((product) => getCategorySlug(product.category) === category.slug)
         .slice(0, 4),
     }))
     .filter((section) => section.items.length > 0)
@@ -171,16 +180,16 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Bestsellers */}
+      {/* Backend catalog */}
       <ProductSection
-        id="bestsellers"
-        title="Shop bestsellers"
-        description="The everyday favorites our customers come back for."
+        id="products"
+        title="Shop supplements"
+        description="Explore the products in our catalog."
         href="/shop"
-        items={bestsellers}
+        items={featuredProducts}
       />
 
-      <HomeMerchandising />
+      <HomeMerchandising initialProducts={products} />
 
       {/* Promo banner */}
       <section className={`${pageWidth} py-6`} aria-label={promoBanner.title}>
@@ -201,15 +210,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
-      {/* New arrivals */}
-      <ProductSection
-        id="new-arrivals"
-        title="New arrivals"
-        description="Fresh additions to the shop."
-        href="/shop"
-        items={newArrivals}
-      />
 
       {/* Category sections, with the two-up banners after the first one */}
       {categorySections.map((section, index) => (

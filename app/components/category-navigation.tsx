@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { categories } from "../lib/products";
+import { getCategories } from "../lib/products";
+import { useCatalog } from "./catalog-context";
 
 export function CategoryNavigation() {
   const pathname = usePathname();
   const listRef = useRef<HTMLDivElement>(null);
+  const { products } = useCatalog();
+  const categories = getCategories(products);
 
   // Keep the active category visible when the row scrolls on small screens
   useEffect(() => {

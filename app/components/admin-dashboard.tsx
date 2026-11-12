@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { apiRequest } from "../lib/api";
 import { formatPrice } from "../lib/currency";
@@ -13,7 +13,6 @@ import {
   type OrderStatus,
 } from "../lib/orders";
 import {
-  categories,
   getProductVariants,
   getVariantImages,
   getStartingPrice,
@@ -224,12 +223,14 @@ function ProductEditor({
           id: "",
           name: "",
           brand: "Form & Function",
-          category: categories.find(({ slug }) => slug !== "all")?.name ?? "",
+          category: "",
           variants: [{
             id: "option-1",
             form: "",
             potency: "Not specified",
             packageQuantity: "",
+            portionSize: "",
+            totalServings: "",
             price: 0,
             detail: "",
             rating: null,
@@ -244,6 +245,7 @@ function ProductEditor({
             warnings: "",
             supplementInformation: "",
             tone: "",
+            specifications: [],
           }],
         },
   );
@@ -266,6 +268,39 @@ function ProductEditor({
           ? { ...variant, [field]: value }
           : variant,
       ),
+    }));
+  }
+
+  function addVariant(form = "") {
+    setDraft((current) => ({
+      ...current,
+      variants: [
+        ...(current.variants ?? []),
+        {
+          id: `option-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          form,
+          potency: "Not specified",
+          packageQuantity: "",
+          portionSize: "",
+          totalServings: "",
+          bestBefore: "",
+          price: 0,
+          detail: "",
+          rating: null,
+          tag: "",
+          type: "",
+          images: [],
+          alt: "",
+          description: "",
+          benefits: [],
+          ingredients: "",
+          howToUse: "",
+          warnings: "",
+          supplementInformation: "",
+          tone: "",
+          specifications: [],
+        },
+      ],
     }));
   }
 
@@ -343,6 +378,8 @@ function ProductEditor({
       form: variant.form.trim(),
       potency: variant.potency.trim(),
       packageQuantity: variant.packageQuantity.trim(),
+      portionSize: variant.portionSize?.trim() || undefined,
+      totalServings: variant.totalServings?.trim() || undefined,
       bestBefore: variant.bestBefore?.trim() || undefined,
       detail: variant.detail?.trim() || undefined,
       tag: variant.tag?.trim() || undefined,
@@ -355,6 +392,9 @@ function ProductEditor({
       warnings: variant.warnings?.trim() || undefined,
       supplementInformation: variant.supplementInformation?.trim() || undefined,
       tone: variant.tone?.trim() || undefined,
+      specifications: (variant.specifications ?? [])
+        .map(({ key, value }) => ({ key: key.trim(), value: value.trim() }))
+        .filter(({ key, value }) => key || value),
     }));
     if (
       variants.length === 0 ||
@@ -378,6 +418,26 @@ function ProductEditor({
       setError("Upload at least one image for every purchase option.");
       return;
     }
+    if (
+      variants.some(({ specifications }) =>
+        (specifications ?? []).some(({ key, value }) => !key || !value),
+      )
+    ) {
+      setError("Complete both the name and value for each specification.");
+      return;
+    }
+    if (
+      variants.some(
+        ({ specifications }) =>
+          (specifications?.length ?? 0) > 30 ||
+          new Set(
+            (specifications ?? []).map(({ key }) => key.toLowerCase()),
+          ).size !== (specifications?.length ?? 0),
+      )
+    ) {
+      setError("Each option can have up to 30 specifications with unique names.");
+      return;
+    }
 
     try {
       await onSave({
@@ -397,6 +457,19 @@ function ProductEditor({
   }
 
   const variantList = draft.variants ?? [];
+  const variantGroups = variantList.reduce<
+    { key: string; form: string; options: { variant: ProductVariant; index: number }[] }[]
+  >((groups, variant, index) => {
+    const form = variant.form.trim();
+    const key = form ? `form:${form.toLowerCase()}` : `unassigned:${variant.id}`;
+    let group = groups.find((candidate) => candidate.key === key);
+    if (!group) {
+      group = { key, form: variant.form, options: [] };
+      groups.push(group);
+    }
+    group.options.push({ variant, index });
+    return groups;
+  }, []);
 
   return (
     <form className={editorCard} onSubmit={submit}>
@@ -415,18 +488,14 @@ function ProductEditor({
           />
         </Field>
         <Field label="Category">
-          <select
+          <input
             className={inputClass}
             value={draft.category}
             onChange={(event) => update("category", event.target.value)}
             required
-          >
-            {categories
-              .filter(({ slug }) => slug !== "all")
-              .map((category) => (
-                <option key={category.slug} value={category.name}>{category.name}</option>
-              ))}
-          </select>
+            maxLength={100}
+            placeholder="Enter a category"
+          />
         </Field>
         <Field label="Brand">
           <input
@@ -442,67 +511,66 @@ function ProductEditor({
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="m-0 text-lg font-medium text-[#233b30]">
-              Purchase options and prices
+              Product forms and combinations
             </h3>
             <p className="mb-0 mt-1 text-[13px] text-[#6f7a70]">
-              Each option is selectable on the product page and keeps its own price.
+              Group combinations by product form. Each potency and package combination keeps its own price and details.
             </p>
           </div>
           <button
             className={secondaryButton}
             type="button"
-            onClick={() =>
-              setDraft((current) => ({
-                ...current,
-                variants: [
-                  ...(current.variants ?? []),
-                  {
-                    id: `option-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                    form: "",
-                    potency: "Not specified",
-                    packageQuantity: "",
-                    bestBefore: "",
-                    price: 0,
-                    detail: "",
-                    rating: null,
-                    tag: "",
-                    type: "",
-                    images: [],
-                    alt: "",
-                    description: "",
-                    benefits: [],
-                    ingredients: "",
-                    howToUse: "",
-                    warnings: "",
-                    supplementInformation: "",
-                    tone: "",
-                  },
-                ],
-              }))
-            }
+            onClick={() => addVariant()}
           >
-            Add option
+            Add product form
           </button>
         </div>
 
         <div className="grid gap-4">
-          {variantList.map((variant, index) => (
+          {variantGroups.map((group) => (
+            <section
+              className="grid gap-4 rounded-2xl border border-[#d6dfd3] bg-[#f7f8f4] p-4"
+              key={group.key}
+            >
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <Field label="Product form">
+                  <input
+                    className={inputClass}
+                    required
+                    value={group.form}
+                    onChange={(event) => {
+                      const optionIds = new Set(
+                        group.options.map(({ variant }) => variant.id),
+                      );
+                      setDraft((current) => ({
+                        ...current,
+                        variants: (current.variants ?? []).map((variant) =>
+                          optionIds.has(variant.id)
+                            ? { ...variant, form: event.target.value }
+                            : variant,
+                        ),
+                      }));
+                    }}
+                    placeholder="e.g. Capsules"
+                  />
+                </Field>
+                <button
+                  className={secondaryButton}
+                  type="button"
+                  onClick={() => addVariant(group.form)}
+                >
+                  Add potency / package combination
+                </button>
+              </div>
+              <div className="grid gap-4">
+          {group.options.map(({ variant, index }, combinationIndex) => (
             <fieldset
               className="m-0 grid grid-cols-4 gap-4 rounded-2xl border border-[#e3e7dd] bg-white p-5 max-[900px]:grid-cols-2 max-[480px]:grid-cols-1"
               key={variant.id}
             >
               <legend className="px-2 text-[13px] font-semibold text-[#355342]">
-                Option {index + 1}
+                Combination {combinationIndex + 1}
               </legend>
-              <Field label="Product form">
-                <input
-                  className={inputClass}
-                  required
-                  value={variant.form}
-                  onChange={(event) => updateVariant(index, "form", event.target.value)}
-                  placeholder="e.g. Capsules"
-                />
-              </Field>
               <Field label="Potency">
                 <input
                   className={inputClass}
@@ -521,6 +589,28 @@ function ProductEditor({
                     updateVariant(index, "packageQuantity", event.target.value)
                   }
                   placeholder="e.g. 60 capsules"
+                />
+              </Field>
+              <Field label="Portion size">
+                <input
+                  className={inputClass}
+                  maxLength={100}
+                  value={variant.portionSize ?? ""}
+                  onChange={(event) =>
+                    updateVariant(index, "portionSize", event.target.value)
+                  }
+                  placeholder="e.g. 2 capsules"
+                />
+              </Field>
+              <Field label="Total servings">
+                <input
+                  className={inputClass}
+                  maxLength={100}
+                  value={variant.totalServings ?? ""}
+                  onChange={(event) =>
+                    updateVariant(index, "totalServings", event.target.value)
+                  }
+                  placeholder="e.g. 30 servings"
                 />
               </Field>
               <Field label="Best before / expiry date">
@@ -665,6 +755,85 @@ function ProductEditor({
                   onChange={(event) => updateVariant(index, "alt", event.target.value)}
                 />
               </Field>
+              <div className="col-span-full grid gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h4 className="m-0 text-sm font-semibold text-[#233b30]">
+                      Specifications for this option
+                    </h4>
+                    <p className="mb-0 mt-1 text-xs font-normal text-[#858b81]">
+                      Add custom name/value facts shown on this variant only.
+                    </p>
+                  </div>
+                  <button
+                    className={secondaryButton}
+                    type="button"
+                    disabled={(variant.specifications?.length ?? 0) >= 30}
+                    onClick={() =>
+                      updateVariant(index, "specifications", [
+                        ...(variant.specifications ?? []),
+                        { key: "", value: "" },
+                      ])
+                    }
+                  >
+                    Add specification
+                  </button>
+                </div>
+                {(variant.specifications ?? []).map((specification, specificationIndex) => (
+                  <div
+                    className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_auto] items-end gap-3 max-[600px]:grid-cols-1"
+                    key={`${variant.id}-spec-${specificationIndex}`}
+                  >
+                    <Field label="Name">
+                      <input
+                        className={inputClass}
+                        maxLength={100}
+                        value={specification.key}
+                        onChange={(event) =>
+                          updateVariant(index, "specifications", (variant.specifications ?? []).map(
+                            (item, itemIndex) =>
+                              itemIndex === specificationIndex
+                                ? { ...item, key: event.target.value }
+                                : item,
+                          ))
+                        }
+                        placeholder="e.g. Serving size"
+                      />
+                    </Field>
+                    <Field label="Value">
+                      <input
+                        className={inputClass}
+                        maxLength={1000}
+                        value={specification.value}
+                        onChange={(event) =>
+                          updateVariant(index, "specifications", (variant.specifications ?? []).map(
+                            (item, itemIndex) =>
+                              itemIndex === specificationIndex
+                                ? { ...item, value: event.target.value }
+                                : item,
+                          ))
+                        }
+                        placeholder="e.g. 2 capsules"
+                      />
+                    </Field>
+                    <button
+                      className={dangerButton}
+                      type="button"
+                      onClick={() =>
+                        updateVariant(
+                          index,
+                          "specifications",
+                          (variant.specifications ?? []).filter(
+                            (_, itemIndex) => itemIndex !== specificationIndex,
+                          ),
+                        )
+                      }
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                    </div>
               <div className={`${fieldLabel} col-span-full`}>
                 <span>Images for this option (up to 12)</span>
                 <input
@@ -741,8 +910,10 @@ function ProductEditor({
               </div>
             </fieldset>
           ))}
+              </div>
+            </section>
+          ))}
         </div>
-
       </section>
 
       {error && <Notice tone="error" role="alert">{error}</Notice>}
@@ -1055,7 +1226,7 @@ function OrderEditor({
           <strong className="text-base text-[#233b30]">{formatPrice(subtotal)}</strong>
         </p>
         <p className="mb-0 mt-2 text-xs leading-5 text-[#858b81]">
-          Line item details use the current catalog price. Shipping is recalculated when saved.
+          Line item details use the current catalog price. Delivery is recalculated when saved.
         </p>
       </section>
 
@@ -1228,6 +1399,7 @@ export function AdminDashboard() {
     orders,
     ordersReady,
     saveOrder,
+    updateOrderStatus,
     deleteOrder,
     refreshOrders,
   } = useCart();
@@ -1240,6 +1412,8 @@ export function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [orderForm, setOrderForm] = useState(false);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -1303,6 +1477,22 @@ export function AdminDashboard() {
     setEditingOrder(null);
     setActionError(null);
     setNotice(`Order ${order.id} saved.`);
+  }
+
+  async function changeOrderStatus(order: Order, status: OrderStatus) {
+    setUpdatingOrderId(order.id);
+    setNotice(null);
+    setActionError(null);
+    try {
+      await updateOrderStatus(order.id, status);
+      setNotice(`Order ${order.id} updated to ${orderStatusLabels[status]}.`);
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "The order status could not be updated.",
+      );
+    } finally {
+      setUpdatingOrderId(null);
+    }
   }
 
   async function removeOrder(order: Order) {
@@ -1601,52 +1791,150 @@ export function AdminDashboard() {
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr className="transition-colors hover:bg-[#fafaf8]" key={order.id}>
-                    <td className={td}>
-                      <strong className="block text-sm font-semibold text-[#233b30]">
-                        {order.id}
-                      </strong>
-                      <small className="mt-1 block text-xs text-[#858b81]">
-                        {formatOrderDate(order.createdAt)}
-                      </small>
-                    </td>
-                    <td className={td}>
-                      <strong className="block text-sm font-semibold text-[#233b30]">
-                        {order.contact.name}
-                      </strong>
-                      <small className="mt-1 block text-xs text-[#858b81]">
-                        {order.contact.email}
-                      </small>
-                    </td>
-                    <td className={td}>
-                      <StatusPill status={order.status} />
-                    </td>
-                    <td className={`${td} font-semibold text-[#233b30]`}>
-                      {formatPrice(order.total)}
-                    </td>
-                    <td className={td}>
-                      <div className="flex items-center justify-end gap-2 whitespace-nowrap">
-                        <button
-                          className={secondaryButton}
-                          type="button"
-                          onClick={() => {
-                            setEditingOrder(order);
-                            setOrderForm(false);
-                            setNotice(null);
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className={dangerButton}
-                          type="button"
-                          onClick={() => removeOrder(order)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <Fragment key={order.id}>
+                    <tr className="transition-colors hover:bg-[#fafaf8]">
+                      <td className={td}>
+                        <strong className="block text-sm font-semibold text-[#233b30]">
+                          {order.id}
+                        </strong>
+                        <small className="mt-1 block text-xs text-[#858b81]">
+                          {formatOrderDate(order.createdAt)}
+                        </small>
+                      </td>
+                      <td className={td}>
+                        <strong className="block text-sm font-semibold text-[#233b30]">
+                          {order.contact.name}
+                        </strong>
+                        <small className="mt-1 block text-xs text-[#858b81]">
+                          {order.contact.email}
+                        </small>
+                      </td>
+                      <td className={td}>
+                        <div className="grid justify-items-start gap-2">
+                          <StatusPill status={order.status} />
+                          <label className="sr-only" htmlFor={`order-status-${order.id}`}>
+                            Update status for order {order.id}
+                          </label>
+                          <select
+                            id={`order-status-${order.id}`}
+                            className="min-h-10 rounded-xl border border-[#dfe4d8] bg-white px-3 text-xs text-[#355342] outline-none focus:border-[#64806a] focus:ring-2 focus:ring-[#64806a]/20"
+                            value={order.status ?? "received"}
+                            disabled={updatingOrderId !== null}
+                            onChange={(event) => {
+                              const status = orderStatuses.find(
+                                (candidate) => candidate === event.currentTarget.value,
+                              );
+                              if (status) void changeOrderStatus(order, status);
+                            }}
+                          >
+                            {orderStatuses.map((status) => (
+                              <option key={status} value={status}>
+                                {orderStatusLabels[status]}
+                              </option>
+                            ))}
+                          </select>
+                          {updatingOrderId === order.id && (
+                            <span className="text-xs text-[#6f7a70]" role="status">
+                              Saving status…
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className={`${td} font-semibold text-[#233b30]`}>
+                        {formatPrice(order.total)}
+                      </td>
+                      <td className={td}>
+                        <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                          <button
+                            className={secondaryButton}
+                            type="button"
+                            aria-expanded={expandedOrderId === order.id}
+                            onClick={() =>
+                              setExpandedOrderId((current) =>
+                                current === order.id ? null : order.id,
+                              )
+                            }
+                          >
+                            {expandedOrderId === order.id ? "Hide details" : "View details"}
+                          </button>
+                          <button
+                            className={secondaryButton}
+                            type="button"
+                            onClick={() => {
+                              setEditingOrder(order);
+                              setOrderForm(false);
+                              setNotice(null);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={dangerButton}
+                            type="button"
+                            onClick={() => removeOrder(order)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {expandedOrderId === order.id && (
+                      <tr>
+                        <td className={`${td} bg-[#fafaf8]`} colSpan={5}>
+                          <div className="grid gap-6 md:grid-cols-2">
+                            <section>
+                              <h3 className="mb-2 mt-0 text-sm font-semibold text-[#233b30]">
+                                Customer and delivery
+                              </h3>
+                              <address className="grid gap-1 text-[13px] not-italic leading-5 text-[#536157]">
+                                <span>{order.contact.name}</span>
+                                <span>{order.contact.email}</span>
+                                <span>{order.contact.phone}</span>
+                                <span>{order.contact.address}</span>
+                                <span>{order.contact.city}</span>
+                              </address>
+                            </section>
+                            <section>
+                              <h3 className="mb-2 mt-0 text-sm font-semibold text-[#233b30]">
+                                Items
+                              </h3>
+                              <ul className="m-0 grid list-none gap-2 p-0 text-[13px] text-[#536157]">
+                                {order.items.map((item, index) => (
+                                  <li
+                                    className="flex flex-wrap justify-between gap-x-4 gap-y-1"
+                                    key={`${item.id}-${item.variantId ?? ""}-${index}`}
+                                  >
+                                    <span>
+                                      {item.name}
+                                      {item.variantForm
+                                        ? ` · ${item.variantForm} · ${item.variantPotency ?? ""} · ${item.variantPackageQuantity ?? ""}`
+                                        : ""}
+                                      {" · "}Qty {item.quantity}
+                                    </span>
+                                    <strong>{formatPrice(item.price * item.quantity)}</strong>
+                                  </li>
+                                ))}
+                              </ul>
+                              <div className="mt-3 grid gap-1 border-t border-[#e3e7dd] pt-3 text-[13px] text-[#536157]">
+                                <p className="m-0 flex justify-between gap-4">
+                                  <span>Subtotal</span>
+                                  <strong>{formatPrice(order.subtotal)}</strong>
+                                </p>
+                                <p className="m-0 flex justify-between gap-4">
+                                  <span>Delivery</span>
+                                  <strong>{order.shipping === 0 ? "Free" : formatPrice(order.shipping)}</strong>
+                                </p>
+                                <p className="m-0 flex justify-between gap-4 font-semibold text-[#233b30]">
+                                  <span>Total</span>
+                                  <strong>{formatPrice(order.total)}</strong>
+                                </p>
+                              </div>
+                            </section>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 ))}
               </tbody>
             </table>

@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { formatPrice } from "../lib/currency";
+import { apiRequest } from "../lib/api";
 import type { CheckoutContact } from "../lib/orders";
 import { getVariantImages } from "../lib/products";
 import { useCart } from "./cart-context";
@@ -15,6 +16,35 @@ export function CheckoutPage() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sessionChecked, setSessionChecked] = useState(false);
+
+  useEffect(() => {
+    if (!cartReady || cart.length === 0) return;
+
+    let active = true;
+    apiRequest<{ user: object | null }>("/auth/me")
+      .then(({ user }) => {
+        if (!active) return;
+        if (!user) {
+          const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+          router.replace(`/login?${new URLSearchParams({ returnTo }).toString()}`);
+          return;
+        }
+        setSessionChecked(true);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        console.error("Could not verify sign-in before checkout.", error);
+        setErrorMessage(
+          error instanceof Error ? error.message : "Could not verify your sign-in.",
+        );
+        setSessionChecked(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [cart.length, cartReady, router]);
 
   async function submitOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,6 +71,13 @@ export function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
+      const { user } = await apiRequest<{ user: object | null }>("/auth/me");
+      if (!user) {
+        const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        router.push(`/login?${new URLSearchParams({ returnTo }).toString()}`);
+        return;
+      }
+
       const order = await placeOrder(contact);
       router.push(`/orders/${encodeURIComponent(order.id)}`);
     } catch (error) {
@@ -71,7 +108,7 @@ export function CheckoutPage() {
         <p>Enter your contact and delivery details to place your order.</p>
       </div>
 
-      {!cartReady || !ordersReady ? (
+      {!cartReady || !ordersReady || (cart.length > 0 && !sessionChecked) ? (
         <p className={`cart-page-loading p-[48px_0] text-gray-500 text-[15px]`} role="status">Preparing your checkout…</p>
       ) : cart.length === 0 ? (
         <section className={`checkout-empty grid [justify-items:start] gap-3 p-9 border border-[#dce4dc] bg-[#f3f6f2] [&_h2]:m-0 [&_h2]:font-serif [&_h2]:text-3xl [&_h2]:font-normal [&_h2]:text-[#233b30] [&_p]:m-[0_0_8px] [&_p]:text-[#68756b]`}>
@@ -143,7 +180,7 @@ export function CheckoutPage() {
             </div>
             <div className={`checkout-summary-totals grid gap-3.5 pt-[19px] [&_>div]:flex [&_>div]:justify-between [&_>div]:gap-3.5 [&_>div]:text-[#536157] [&_>div]:text-[13px] [&_strong]:text-[#233b30] [&_strong]:font-semibold [&_.checkout-summary-total]:mt-1 [&_.checkout-summary-total]:pt-[17px] [&_.checkout-summary-total]:border-t [&_.checkout-summary-total]:border-[#cbd6cc] [&_.checkout-summary-total]:text-[#233b30] [&_.checkout-summary-total]:text-base [&_.checkout-summary-total_strong]:text-[17px]`}>
               <div><span>{itemCount} {itemCount === 1 ? "item" : "items"} · Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
-              <div><span>Shipping</span><strong>{shipping === 0 ? "Free" : formatPrice(shipping)}</strong></div>
+              <div><span>Delivery</span><strong>{shipping === 0 ? "Free" : formatPrice(shipping)}</strong></div>
               <div className="checkout-summary-total"><span>Total</span><strong>{formatPrice(subtotal + shipping)}</strong></div>
             </div>
             <p className={`checkout-assurance m-[11px_0_0] text-[#85877c] text-xs text-center`}>Free shipping on orders UGX 60+</p>

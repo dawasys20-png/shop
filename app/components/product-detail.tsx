@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { formatPrice } from "../lib/currency";
 import { apiRequest } from "../lib/api";
@@ -10,6 +11,8 @@ import {
   getProductVariants,
   getVariantImages,
   getStartingVariant,
+  findProductVariant,
+  getProductVariantSlug,
   type Product,
   type ProductVariant,
 } from "../lib/products";
@@ -86,16 +89,26 @@ function formatReviewDate(value: string) {
 }
 
 function getServingInfo(variant: ProductVariant) {
+  const defaultServingInfo = {
+    portionSize: "See package",
+    totalServings: "See package",
+  };
   const quantity = variant.packageQuantity.match(
     /^\s*(\d+)\s+(servings?|capsules?|softgels?|tablets?|gummies?)\s*$/i,
   );
   if (!quantity) {
-    return { portionSize: "See package", totalServings: "See package" };
+    return {
+      portionSize: variant.portionSize || defaultServingInfo.portionSize,
+      totalServings: variant.totalServings || defaultServingInfo.totalServings,
+    };
   }
 
   const unit = quantity[2].toLowerCase().replace(/s$/, "");
-  const portionSize = unit === "softgel" ? "1 softgel" : `1 ${unit}`;
-  return { portionSize, totalServings: quantity[1] };
+  const defaultPortionSize = unit === "softgel" ? "1 softgel" : `1 ${unit}`;
+  return {
+    portionSize: variant.portionSize || defaultPortionSize,
+    totalServings: variant.totalServings || quantity[1],
+  };
 }
 
 function formatBestBefore(value: string) {
@@ -164,9 +177,6 @@ export function ProductDetail({
   initialVariantId?: string;
 }) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
-    initialVariantId ?? null,
-  );
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -174,14 +184,30 @@ export function ProductDetail({
   );
   const relatedProductsRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useCart();
-  const { products, ready } = useCatalog();
-  const currentProduct = ready
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const requestedVariant = searchParams.get("variant");
+  const { products, ready, loadError } = useCatalog();
+  const currentProduct = ready && !loadError
     ? products.find(({ id }) => id === productId)
     : product;
 
+  const selectedVariantId = currentProduct
+    ? (
+        findProductVariant(
+          getProductVariants(currentProduct),
+          requestedVariant ?? undefined,
+        ) ??
+        getProductVariants(currentProduct).find(
+          ({ id }) => id === initialVariantId,
+        ) ??
+        getStartingVariant(currentProduct)
+      ).id
+    : initialVariantId ?? null;
+
   const reviewVariantId = currentProduct
-    ? getProductVariants(currentProduct).find(({ id }) => id === selectedVariantId)?.id ??
-      getStartingVariant(currentProduct).id
+    ? selectedVariantId
     : null;
   const [reviewData, setReviewData] = useState<{
     variantId: string;
@@ -191,6 +217,8 @@ export function ProductDetail({
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewSent, setReviewSent] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewAuthChecking, setReviewAuthChecking] = useState(false);
+  const [reviewAuthError, setReviewAuthError] = useState("");
   const [reviewSubmitError, setReviewSubmitError] = useState("");
   const [draftRating, setDraftRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -286,40 +314,55 @@ export function ProductDetail({
         Number(a.category === productDetails.category),
     );
 
-  function getBestVariant(field: "form" | "potency" | "packageQuantity", value: string) {
-    const matches = variants.filter((variant) => variant[field] === value);
-    const bestMatch =
-      matches.find(
+  function chooseVariant(variant: ProductVariant) {
+    if (variant.id !== selectedVariant.id) {
+      setSelectedImageUrl(null);
+      setReviewOpen(false);
+      setReviewSent(false);
+      setReviewSubmitError("");
+      setDraftRating(0);
+      setDraftText("");
+      setReviewErrors({});
+    }
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.set("variant", getProductVariantSlug(variant, variants));
+    router.replace(`${pathname}?${nextParams.toString()}`, { scroll: false });
+  }
+
+  function chooseProductForm(form: string) {
+    const formVariants = variants.filter((variant) => variant.form === form);
+    const matchingCombination =
+      formVariants.find(
         (variant) =>
-          variant.form === selectedVariant.form &&
           variant.potency === selectedVariant.potency &&
           variant.packageQuantity === selectedVariant.packageQuantity,
       ) ??
-      matches.find(
-        (variant) =>
-          (field === "form" || variant.form === selectedVariant.form) &&
-          (field === "potency" || variant.potency === selectedVariant.potency) &&
-          (field === "packageQuantity" ||
-            variant.packageQuantity === selectedVariant.packageQuantity),
+      formVariants.find(
+        (variant) => variant.potency === selectedVariant.potency,
       ) ??
-      matches[0];
-    return bestMatch;
+      formVariants[0];
+    if (matchingCombination) chooseVariant(matchingCombination);
   }
 
-  function chooseVariantValue(field: "form" | "potency" | "packageQuantity", value: string) {
-    const bestMatch = getBestVariant(field, value);
-    if (bestMatch) {
-      if (bestMatch.id !== selectedVariant.id) {
-        setSelectedImageUrl(null);
-        setReviewOpen(false);
-        setReviewSent(false);
-        setReviewSubmitError("");
-        setDraftRating(0);
-        setDraftText("");
-        setReviewErrors({});
-      }
-      setSelectedVariantId(bestMatch.id);
-    }
+  function chooseVariantAttribute(
+    field: "potency" | "packageQuantity",
+    value: string,
+  ) {
+    const candidates = variants.filter(
+      (variant) =>
+        variant.form === selectedVariant.form && variant[field] === value,
+    );
+    const matchingCombination = candidates.find(
+      (variant) =>
+        variant[
+          field === "potency" ? "packageQuantity" : "potency"
+        ] ===
+        selectedVariant[
+          field === "potency" ? "packageQuantity" : "potency"
+        ],
+    );
+    const nextVariant = matchingCombination ?? candidates[0];
+    if (nextVariant) chooseVariant(nextVariant);
   }
 
   function moveRelatedProducts(direction: -1 | 1) {
@@ -336,11 +379,10 @@ export function ProductDetail({
     addedTimer.current = setTimeout(() => setAdded(false), 1800);
   }
 
-  const optionFields = [
-    { field: "form", label: "Product form:" },
-    { field: "potency", label: "Potency:" },
-    { field: "packageQuantity", label: "Package quantity:" },
-  ] as const;
+  function handleCheckout() {
+    addToCart(productDetails, quantity, selectedVariant.id);
+    router.push("/checkout");
+  }
 
   const reviewCount = reviews.length;
   const averageRating = reviewCount
@@ -351,9 +393,25 @@ export function ProductDetail({
     count: reviews.filter((review) => review.rating === stars).length,
   }));
 
-  function openReviewForm() {
-    setReviewSent(false);
-    setReviewOpen(true);
+  async function openReviewForm() {
+    setReviewAuthError("");
+    setReviewAuthChecking(true);
+    try {
+      const { user } = await apiRequest<{ user: object | null }>("/auth/me");
+      if (!user) {
+        const returnTo = `${window.location.pathname}${window.location.search}#customer-reviews`;
+        router.push(`/login?${new URLSearchParams({ returnTo }).toString()}`);
+        return;
+      }
+      setReviewSent(false);
+      setReviewOpen(true);
+    } catch (error) {
+      setReviewAuthError(
+        error instanceof Error ? error.message : "Could not verify your sign-in.",
+      );
+    } finally {
+      setReviewAuthChecking(false);
+    }
   }
 
   function closeReviewForm() {
@@ -364,17 +422,24 @@ export function ProductDetail({
   async function submitReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const errors: { rating?: string; name?: string; text?: string } = {};
-    if (draftRating === 0) errors.rating = "Choose a star rating.";
-    if (!draftName.trim()) errors.name = "Enter your name.";
-    if (draftText.trim().length < 10)
-      errors.text = "Write at least 10 characters.";
-    setReviewErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-
     setReviewSubmitting(true);
     setReviewSubmitError("");
     try {
+      const { user } = await apiRequest<{ user: object | null }>("/auth/me");
+      if (!user) {
+        const returnTo = `${window.location.pathname}${window.location.search}#customer-reviews`;
+        router.push(`/login?${new URLSearchParams({ returnTo }).toString()}`);
+        return;
+      }
+
+      const errors: { rating?: string; name?: string; text?: string } = {};
+      if (draftRating === 0) errors.rating = "Choose a star rating.";
+      if (!draftName.trim()) errors.name = "Enter your name.";
+      if (draftText.trim().length < 10)
+        errors.text = "Write at least 10 characters.";
+      setReviewErrors(errors);
+      if (Object.keys(errors).length > 0) return;
+
       const { review } = await apiRequest<{ review: Review }>(
         `/products/${encodeURIComponent(productId)}/variants/${encodeURIComponent(selectedVariant.id)}/reviews`,
         {
@@ -432,7 +497,7 @@ export function ProductDetail({
       </nav>
 
       {/* Product */}
-      <section className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-14 max-[1100px]:gap-10 max-[900px]:grid-cols-1 max-[900px]:gap-8">
+      <section className="grid min-w-0 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-14 max-[1100px]:gap-10 max-[900px]:grid-cols-1 max-[900px]:gap-8">
         {/* Image */}
         <div className={`min-[901px]:sticky min-[901px]:top-28 ${selectedVariant.tone ?? ""}`}>
           <div className="relative aspect-[0.93] overflow-hidden rounded-3xl bg-[#f2f3ee]">
@@ -487,8 +552,8 @@ export function ProductDetail({
         </div>
 
         {/* Details and purchase */}
-        <div className="min-w-0">
-          <h1 className="m-0 text-[clamp(30px,3.6vw,44px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#1f2a24]">
+        <div className="min-w-0 max-w-full">
+          <h1 className="m-0 break-words text-[clamp(30px,3.6vw,44px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#1f2a24] [overflow-wrap:anywhere]">
             {productDetails.name}
           </h1>
           <p className="mb-0 mt-3 text-[15px] text-[#6f7a70]">
@@ -530,113 +595,140 @@ export function ProductDetail({
 
           {/* Options */}
           <div className="mt-8 grid gap-6 border-t border-[#e3e7dd] pt-8">
-            {optionFields.map(({ field, label }) => {
-              const options = [
-                ...new Set(
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-3 p-0 text-sm text-[#233b30]">
+                Product form:{" "}
+                <span className="font-semibold">{selectedVariant.form}</span>
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {[...new Set(variants.map(({ form }) => form))]
+                  .filter(Boolean)
+                  .map((form) => {
+                    const formVariant =
+                      variants.find((variant) => variant.form === form) ??
+                      selectedVariant;
+                    const formImage =
+                      getVariantImages(productDetails, formVariant)[0]?.url ?? "";
+                    const on = selectedVariant.form === form;
+                    return (
+                      <button
+                        key={form}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => chooseProductForm(form)}
+                        className={`inline-flex min-w-24 items-center gap-2 rounded-2xl border p-3 text-center transition-colors ${focusRing} ${
+                          on
+                            ? "border-[#355342] shadow-[inset_0_0_0_1px_#355342]"
+                            : "border-[#dfe4d8] bg-white hover:border-[#9db0a0]"
+                        }`}
+                      >
+                        {formImage && (
+                          <Image
+                            src={formImage}
+                            alt=""
+                            width={52}
+                            height={52}
+                            className="h-[52px] w-[52px] rounded object-cover"
+                            unoptimized
+                          />
+                        )}
+                        <span className="text-[13px] font-normal text-[#233b30]">
+                          {form}
+                        </span>
+                      </button>
+                    );
+                  })}
+              </div>
+            </fieldset>
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-3 p-0 text-sm text-[#233b30]">
+                Potency:{" "}
+                <span className="font-semibold">{selectedVariant.potency}</span>
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {[...new Set(
                   variants
-                    .map((variant) => variant[field]?.trim())
+                    .filter((variant) => variant.form === selectedVariant.form)
+                    .map((variant) => variant.potency),
+                )]
+                  .filter(Boolean)
+                  .map((potency) => (
+                    <button
+                      key={potency}
+                      type="button"
+                      aria-pressed={selectedVariant.potency === potency}
+                      onClick={() => chooseVariantAttribute("potency", potency)}
+                      className={`inline-flex min-w-24 items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-semibold transition-colors ${focusRing} ${
+                        selectedVariant.potency === potency
+                          ? "border-[#355342] text-[#233b30] shadow-[inset_0_0_0_1px_#355342]"
+                          : "border-[#dfe4d8] bg-white text-[#5f6b61] hover:border-[#9db0a0]"
+                      }`}
+                    >
+                      {potency}
+                    </button>
+                  ))}
+              </div>
+            </fieldset>
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-3 p-0 text-sm text-[#233b30]">
+                Package quantity:{" "}
+                <span className="font-semibold">
+                  {selectedVariant.packageQuantity}
+                </span>
+              </legend>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-3">
+                {[...new Set(
+                  variants
                     .filter(
-                      (value): value is string =>
-                        Boolean(value) &&
-                        !/^(not specified|not provided|n\/a|none)$/i.test(value),
-                    ),
-                ),
-              ];
-              if (options.length === 0) return null;
-
-              return (
-                <fieldset className="m-0 border-0 p-0" key={field}>
-                  <legend className="mb-3 p-0 text-sm font-semibold text-[#233b30]">
-                    {label}
-                  </legend>
-                  {field === "packageQuantity" ? (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-3">
-                      {options.map((option) => {
-                        const on = selectedVariant[field] === option;
-                        const optionVariant = getBestVariant(field, option);
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            aria-pressed={on}
-                            onClick={() => chooseVariantValue(field, option)}
-                            className={`rounded-2xl border p-4 text-left transition-colors ${focusRing} ${
-                              on
-                                ? "border-[#355342] bg-[#f3f5ef] shadow-[inset_0_0_0_1px_#355342]"
-                                : "border-[#dfe4d8] bg-white hover:border-[#9db0a0]"
-                            }`}
-                          >
-                            <span className="block text-[15px] font-semibold text-[#233b30]">
-                              {option}
-                            </span>
-                            {optionVariant && (
-                              <span
-                                className={`mt-1.5 block text-[13px] ${
-                                  on ? "font-semibold text-[#355342]" : "text-[#6f7a70]"
-                                }`}
-                              >
-                                {formatPrice(optionVariant.price)}
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {options.map((option) => {
-                        const on = selectedVariant[field] === option;
-                        const optionVariant = getBestVariant(field, option);
-                        if (field === "form" && optionVariant) {
-                          const optionImage =
-                            getVariantImages(productDetails, optionVariant)[0]?.url ?? "";
-                          return (
-                            <button
-                              key={option}
-                              type="button"
-                              aria-pressed={on}
-                              onClick={() => chooseVariantValue(field, option)}
-                              className={`inline-flex min-w-24 flex-col items-center gap-2 rounded-2xl border p-3 text-center transition-colors ${focusRing} ${
-                                on
-                                  ? "border-[#355342] bg-[#f3f5ef] shadow-[inset_0_0_0_1px_#355342]"
-                                  : "border-[#dfe4d8] bg-white hover:border-[#9db0a0]"
-                              }`}
-                            >
-                              <Image
-                                src={optionImage}
-                                alt=""
-                                width={72}
-                                height={72}
-                                className="h-[72px] w-[72px] rounded-xl object-cover"
-                                unoptimized
-                              />
-                              <span className="text-[13px] font-semibold text-[#233b30]">
-                                {option}
-                              </span>
-                            </button>
-                          );
+                      (variant) =>
+                        variant.form === selectedVariant.form &&
+                        variant.potency === selectedVariant.potency,
+                    )
+                    .map((variant) => variant.packageQuantity),
+                )]
+                  .filter(Boolean)
+                  .map((packageQuantity) => {
+                    const packageVariant = variants.find(
+                      (variant) =>
+                        variant.form === selectedVariant.form &&
+                        variant.potency === selectedVariant.potency &&
+                        variant.packageQuantity === packageQuantity,
+                    );
+                    const on =
+                      selectedVariant.packageQuantity === packageQuantity;
+                    return (
+                      <button
+                        key={packageQuantity}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() =>
+                          chooseVariantAttribute("packageQuantity", packageQuantity)
                         }
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            aria-pressed={on}
-                            onClick={() => chooseVariantValue(field, option)}
-                            className={`inline-flex min-h-16 min-w-24 flex-col items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-semibold transition-colors ${focusRing} ${
+                        className={`rounded-2xl border p-4 text-left transition-colors ${focusRing} ${
+                          on
+                            ? "border-[#355342] shadow-[inset_0_0_0_1px_#355342]"
+                            : "border-[#dfe4d8] bg-white hover:border-[#9db0a0]"
+                        }`}
+                      >
+                        <span className="block text-[15px] text-[#233b30]">
+                          {packageQuantity}
+                        </span>
+                        {packageVariant && (
+                          <span
+                            className={`mt-1.5 block text-[13px] ${
                               on
-                                ? "border-[#355342] bg-[#f3f5ef] text-[#233b30] shadow-[inset_0_0_0_1px_#355342]"
-                                : "border-[#dfe4d8] bg-white text-[#5f6b61] hover:border-[#9db0a0]"
+                                ? "font-semibold text-[#355342]"
+                                : "text-[#6f7a70]"
                             }`}
                           >
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </fieldset>
-              );
-            })}
+                            {formatPrice(packageVariant.price)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
+            </fieldset>
             <section
               className="rounded-2xl bg-[#f3f5ef] p-5"
               aria-labelledby="key-information-heading"
@@ -727,6 +819,14 @@ export function ProductDetail({
               </button>
             </div>
 
+            <button
+              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#355342] bg-white px-5 text-sm font-semibold text-[#355342] transition-colors hover:bg-[#e8eee9] ${focusRing}`}
+              type="button"
+              onClick={handleCheckout}
+            >
+              Checkout now · {formatPrice(selectedVariant.price * quantity)}
+            </button>
+
             <span className="sr-only" role="status">
               {added ? `${productDetails.name} added to bag` : ""}
             </span>
@@ -750,35 +850,41 @@ export function ProductDetail({
           Product information
         </h2>
 
-        <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-12 border-t border-[#e3e7dd] pt-10 max-[900px]:grid-cols-1 max-[900px]:gap-8 max-[600px]:pt-8">
-          <div>
+        <div className="grid min-w-0 grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-12 border-t border-[#e3e7dd] pt-10 max-[900px]:grid-cols-1 max-[900px]:gap-8 max-[600px]:pt-8">
+          <div className="min-w-0">
             <h3 className="mb-4 mt-0 text-lg font-medium text-[#233b30]">
               Overview
             </h3>
-            <p className="m-0 max-w-[62ch] text-[15px] leading-8 text-[#4d5a50]">
+            <p className="m-0 max-w-[62ch] break-words text-[15px] leading-8 text-[#4d5a50] [overflow-wrap:anywhere]">
               {selectedVariant.description}
             </p>
           </div>
 
-          <div className="rounded-3xl bg-[#f3f5ef] p-6 max-[600px]:p-5">
+          <div className="min-w-0 max-w-full rounded-3xl bg-[#f3f5ef] p-6 max-[600px]:p-5">
             <h3 className="mb-4 mt-0 text-lg font-medium text-[#233b30]">
               Specifications
             </h3>
-            <dl className="m-0 grid text-sm">
+            <dl className="m-0 grid min-w-0 text-sm">
               {[
                 ["Brand", productDetails.brand],
                 ["Category", productDetails.category],
                 ["Product type", selectedVariant.type ?? ""],
                 ["Selected package", selectedVariant.packageQuantity],
-              ].map(([label, value], index, rows) => (
+                ...(selectedVariant.specifications ?? []).map(({ key, value }) => [
+                  key,
+                  value,
+                ]),
+              ]
+                .filter(([, value]) => Boolean(value))
+                .map(([label, value], index, rows) => (
                 <div
-                  className={`flex justify-between gap-4 py-3 ${
+                  className={`grid min-w-0 grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-x-4 gap-y-1 py-3 max-[420px]:grid-cols-1 ${
                     index < rows.length - 1 ? "border-b border-[#dfe4d8]" : ""
                   }`}
-                  key={label}
+                  key={`${label}-${index}`}
                 >
-                  <dt className="text-[#6f7a70]">{label}</dt>
-                  <dd className="m-0 text-right font-medium text-[#233b30]">
+                  <dt className="min-w-0 break-words text-[#6f7a70] [overflow-wrap:anywhere]">{label}</dt>
+                  <dd className="m-0 min-w-0 break-words font-medium text-[#233b30] [overflow-wrap:anywhere]">
                     {value}
                   </dd>
                 </div>
@@ -812,7 +918,7 @@ export function ProductDetail({
             },
           ].map(({ title, icon, text }) => (
             <article
-              className="rounded-2xl border border-[#e3e7dd] bg-white p-6"
+              className="min-w-0 max-w-full rounded-2xl border border-[#e3e7dd] bg-white p-6"
               key={title}
             >
               <span className="mb-4 grid h-10 w-10 place-items-center rounded-full bg-[#edf1eb] text-[#355342]">
@@ -821,26 +927,26 @@ export function ProductDetail({
               <h3 className="mb-2 mt-0 text-[16px] font-medium text-[#233b30]">
                 {title}
               </h3>
-              <p className={bodyText}>{text}</p>
+              <p className={`${bodyText} break-words [overflow-wrap:anywhere] whitespace-pre-wrap`}>{text}</p>
             </article>
           ))}
         </div>
 
         <aside
-          className="mt-6 flex gap-4 rounded-2xl border border-[#ecdcae] bg-[#fbf7ea] p-6 max-[600px]:flex-col max-[600px]:gap-3"
+          className="mt-6 flex min-w-0 max-w-full gap-4 rounded-2xl border border-[#ecdcae] bg-[#fbf7ea] p-6 max-[600px]:flex-col max-[600px]:gap-3"
           aria-labelledby="product-warnings-heading"
         >
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f4e9c4] text-[#8a6a14]">
             <InfoIcon name="warning" />
           </span>
-          <div>
+          <div className="min-w-0">
             <h3
               id="product-warnings-heading"
               className="mb-2 mt-0 text-[16px] font-medium text-[#4a3e12]"
             >
               Warnings
             </h3>
-            <p className="m-0 text-[14px] leading-7 text-[#5c5130]">
+            <p className="m-0 break-words text-[14px] leading-7 text-[#5c5130] [overflow-wrap:anywhere] whitespace-pre-wrap">
               {selectedVariant.warnings ||
                 "No product-specific warnings have been provided. Read the label and consult a qualified healthcare professional if you have questions."}
             </p>
@@ -921,8 +1027,8 @@ export function ProductDetail({
 
             <button
               type="button"
-              onClick={reviewOpen ? closeReviewForm : openReviewForm}
-              disabled={reviewLoading || Boolean(reviewLoadError)}
+              onClick={reviewOpen ? closeReviewForm : () => void openReviewForm()}
+              disabled={reviewLoading || Boolean(reviewLoadError) || reviewAuthChecking || reviewSubmitting}
               aria-expanded={reviewOpen}
               aria-controls="review-form"
               className={`mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full px-6 text-sm font-semibold transition-colors ${focusRing} ${
@@ -931,8 +1037,17 @@ export function ProductDetail({
                   : "bg-[#355342] text-white hover:bg-[#233b30]"
               }`}
             >
-              {reviewOpen ? "Cancel" : "Write a review"}
+              {reviewAuthChecking
+                ? "Checking sign-in…"
+                : reviewOpen
+                  ? "Cancel"
+                  : "Write a review"}
             </button>
+            {reviewAuthError && (
+              <p className="mb-0 mt-3 text-sm text-[#9a443e]" role="alert">
+                {reviewAuthError}
+              </p>
+            )}
           </div>
 
           {/* Form and list */}

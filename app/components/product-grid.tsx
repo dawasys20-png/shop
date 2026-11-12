@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "./cart-context";
 import {
   getProductVariants,
+  getProductVariantSlug,
   getVariantImages,
   type Product,
 } from "../lib/products";
@@ -24,7 +25,11 @@ const addButtonAdded = "bg-[#233b30] md:translate-y-0 md:opacity-100";
 
 export function ProductGrid({ products }: { products: Product[] }) {
   const { addToCart } = useCart();
-  const { products: catalogProducts, ready: catalogReady } = useCatalog();
+  const {
+    products: catalogProducts,
+    ready: catalogReady,
+    loadError,
+  } = useCatalog();
   const [addedId, setAddedId] = useState<string | null>(null);
   const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -32,7 +37,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
 
   useEffect(() => () => clearTimeout(resetTimer.current), []);
 
-  const currentProducts = catalogReady
+  const currentProducts = catalogReady && !loadError
     ? products.flatMap((product) => {
         const currentProduct = catalogProducts.find(
           ({ id }) => id === product.id,
@@ -78,7 +83,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
         const optionKey = `${product.id}:${variant.id}`;
         const added = addedId === optionKey;
         const rating = variant.rating;
-        const detailHref = `/products/${product.id}?variant=${encodeURIComponent(variant.id)}`;
+        const detailHref = `/products/${product.id}?variant=${encodeURIComponent(getProductVariantSlug(variant, getProductVariants(product)))}`;
         const image = getVariantImages(product, variant)[0]?.url ?? "";
 
         return (
@@ -160,7 +165,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 href={detailHref}
                 className="group/name block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#355342]"
               >
-                <h3 className="mb-1 text-[14px] font-medium leading-snug text-[#1f2a24] transition-colors group-hover/name:text-[#355342] sm:text-[16px]">
+                <h3 className="mb-1 text-[15px] font-medium leading-snug text-[#1f2a24] transition-colors group-hover/name:text-[#355342] sm:text-[16px]">
                   {product.name}
                 </h3>
 
@@ -170,24 +175,24 @@ export function ProductGrid({ products }: { products: Product[] }) {
                     role="img"
                     aria-label={`Rated ${rating.toFixed(1)} out of 5`}
                   >
-                    <span aria-hidden="true">
+                    <span aria-hidden="true" className="text-[#fbbf24] text-[18px]">
                       {Array.from({ length: 5 }, (_, index) =>
                         index < Math.round(rating) ? "★" : "☆",
                       ).join("")}
                     </span>
-                    <span className="text-[#6f7a70]" aria-hidden="true">
+                    <span className="text-[#6f7a70] text-[12px]" aria-hidden="true">
                       {rating.toFixed(1)}
                     </span>
                   </span>
                 )}
 
-                <p className="mb-0 line-clamp-2 text-[12px] leading-5 text-[#7a8379] sm:text-[13px]">
+                {/* <p className="mb-0 line-clamp-2 text-[12px] leading-5 text-[#7a8379] sm:text-[13px]">
                   {variant.form} · {variant.potency} · {variant.packageQuantity}
-                </p>
+                </p> */}
               </Link>
 
               <div className="mt-3 flex items-center justify-between gap-2">
-                <p className="mb-0 text-[14px] font-semibold tracking-tight text-[#233b30] sm:text-[16px]">
+                <p className="mb-0 text-[15px] font-semibold tracking-tight text-[#233b30] sm:text-[16px]">
                   {formatPrice(variant.price)}
                 </p>
                 <span className="rounded-full bg-[#f3f5ef] px-2.5 py-1 text-[11px] text-[#6f7a70]">

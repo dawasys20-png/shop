@@ -1,6 +1,7 @@
 import { Suspense } from "react";
+import { CatalogLoading } from "../components/catalog-loading";
 import { CatalogPage } from "../components/catalog-page";
-import { products } from "../lib/products";
+import { getServerProducts } from "../lib/server-products";
 
 export default function ShopPage({
   searchParams,
@@ -8,7 +9,7 @@ export default function ShopPage({
   searchParams: Promise<{ query?: string }>;
 }) {
   return (
-    <Suspense fallback={<CatalogPage title="All supplements" products={products} initialQuery="" />}>
+    <Suspense fallback={<CatalogLoading />}>
       <ShopResults searchParams={searchParams} />
     </Suspense>
   );
@@ -20,6 +21,7 @@ async function ShopResults({
   searchParams: Promise<{ query?: string }>;
 }) {
   const { query = "" } = await searchParams;
+  const products = await getServerProducts();
 
   return (
     <CatalogPage

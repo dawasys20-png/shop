@@ -85,7 +85,7 @@ export function OrderDetailPage({ orderId }: { orderId: string }) {
           ))}
           <div className={`order-detail-totals grid gap-[13px] mt-2.5 pt-[19px] border-t border-[color:#dfe3e8] [&_>div]:flex [&_>div]:justify-between [&_>div]:gap-3 [&_>div]:text-gray-600 [&_>div]:text-[13px] [&_.order-detail-total]:pt-[15px] [&_.order-detail-total]:border-t [&_.order-detail-total]:border-gray-200 [&_.order-detail-total]:text-[var(--ink)] [&_.order-detail-total]:text-base`}>
             <div><span>Subtotal</span><strong>{formatPrice(order.subtotal)}</strong></div>
-            <div><span>Shipping</span><strong>{order.shipping === 0 ? "Free" : formatPrice(order.shipping)}</strong></div>
+            <div><span>Delivery</span><strong>{order.shipping === 0 ? "Free" : formatPrice(order.shipping)}</strong></div>
             <div className="order-detail-total"><span>Total</span><strong>{formatPrice(order.total)}</strong></div>
           </div>
         </section>

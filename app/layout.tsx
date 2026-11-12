@@ -4,8 +4,11 @@ import { CartProvider } from "./components/cart-context";
 import { SiteChrome } from "./components/site-chrome";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
 export const metadata: Metadata = {
-  title: "Form & Function — Feel good. For real.",
+  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
+  title: "Vita Hub Ug — Live healthier. Feel Stronger.",
   description:
     "Thoughtful supplements for the everyday you. Clean ingredients, clear purpose, and nothing you don't need.",
 };

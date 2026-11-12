@@ -59,6 +59,14 @@ export function CartPage() {
                     <span>{quantity}</span>
                     <button type="button" onClick={() => changeQuantity(key, 1)} aria-label={`Increase ${product.name} quantity`}>+</button>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => changeQuantity(key, -quantity)}
+                    className="ml-3 border-0 bg-transparent p-0 text-xs text-[#68756b] underline underline-offset-2 hover:text-[#233b30]"
+                    aria-label={`Remove ${product.name} from your bag`}
+                  >
+                    Remove
+                  </button>
                 </div>
                 <strong className={`cart-page-line-price pt-[5px] text-[15px] font-medium max-[600px]:text-xs max-[650px]:text-xs`}>{formatPrice(variant.price * quantity)}</strong>
               </article>
@@ -79,7 +87,7 @@ export function CartPage() {
             </div>
             <div className={`cart-summary pt-[15px] border-t border-[color:var(--line)] [&_>div]:flex [&_>div]:justify-between [&_>div]:mb-3 [&_>div]:text-[#64665d] [&_>div]:text-sm [&_strong]:text-[var(--ink)] [&_strong]:font-medium [&_.cart-total]:m-[16px_0_18px] [&_.cart-total]:text-[var(--ink)] [&_.cart-total]:text-[17px] [&_.cart-total_strong]:text-lg`}>
               <div><span>Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
-              <div><span>Shipping</span><strong>{shipping === 0 ? "Free" : formatPrice(shipping)}</strong></div>
+              <div><span>Delivery</span><strong>{shipping === 0 ? "Free" : formatPrice(shipping)}</strong></div>
               <div className="cart-total"><span>Total</span><strong>{formatPrice(subtotal + shipping)}</strong></div>
               <Link className={`button button-dark checkout-button min-h-[48px] inline-flex items-center justify-center gap-7 p-[0_20px] border-0 cursor-pointer text-sm font-semibold transition-[background_160ms_ease,_transform_160ms_ease] [&:hover]:-translate-y-px bg-[#355342] text-white [&:hover]:bg-[#233b30] w-full justify-between`} href="/checkout">
                 Continue to checkout <span aria-hidden="true">→</span>

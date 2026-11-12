@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { CategoryNavigation } from "./category-navigation";
 import { useCart } from "./cart-context";
 import { apiRequest } from "../lib/api";
+import Image from "next/image";
 
 const focusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#355342]";
@@ -52,20 +53,32 @@ export function StoreNavigation() {
   const [query, setQuery] = useState("");
   const [user, setUser] = useState<{ name: string } | null>(null);
   const [signOutError, setSignOutError] = useState("");
+  const sessionRequestId = useRef(0);
   const router = useRouter();
   const { itemCount, refreshOrders } = useCart();
 
   useEffect(() => {
     let active = true;
-    apiRequest<{ user: { name: string } | null }>("/auth/me")
-      .then(({ user: currentUser }) => {
-        if (active) setUser(currentUser);
-      })
-      .catch((error: unknown) => {
-        if (active) console.error("Could not check the current account session.", error);
-      });
+    function refreshUser() {
+      const requestId = ++sessionRequestId.current;
+      apiRequest<{ user: { name: string } | null }>("/auth/me")
+        .then(({ user: currentUser }) => {
+          if (active && requestId === sessionRequestId.current) {
+            setUser(currentUser);
+          }
+        })
+        .catch((error: unknown) => {
+          if (active && requestId === sessionRequestId.current) {
+            console.error("Could not check the current account session.", error);
+          }
+        });
+    }
+
+    refreshUser();
+    window.addEventListener("auth-state-changed", refreshUser);
     return () => {
       active = false;
+      window.removeEventListener("auth-state-changed", refreshUser);
     };
   }, []);
 
@@ -121,17 +134,7 @@ export function StoreNavigation() {
             aria-label="Form and Function home"
             className={`group flex w-fit items-center gap-3 ${focusRing}`}
           >
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-[#355342] font-serif text-[23px] italic leading-none text-white transition-transform duration-300 group-hover:-rotate-6 motion-reduce:transition-none motion-reduce:group-hover:rotate-0 max-[600px]:h-9 max-[600px]:w-9 max-[600px]:text-xl">
-              f.
-            </span>
-
-            <span className="whitespace-nowrap text-[18px] font-semibold tracking-[-0.03em] text-[#1f2a24] max-[600px]:text-[16px]">
-              form
-              <span className="px-[2px] font-serif font-normal italic text-[#64806a]">
-                &
-              </span>
-              function
-            </span>
+            <Image src="/logo.png" height={100} width={100} className="" alt="vitahubug_logo" />
           </Link>
 
           {/* Navigation and search */}

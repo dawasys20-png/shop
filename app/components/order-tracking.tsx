@@ -23,11 +23,20 @@ export function OrderTracking({ status }: { status: OrderStatus }) {
     >
       {orderStages.map((stage, index) => (
         <li
-          className={index <= activeStage ? "complete" : ""}
+          className={`${index <= activeStage ? "complete" : ""} ${index === activeStage ? "active" : ""}`}
           aria-current={index === activeStage ? "step" : undefined}
           key={stage}
         >
-          <span className={`order-tracking-dot relative z-10 w-[12px] h-[12px] border border-[color:#c9cec6] rounded-full bg-white`} aria-hidden="true" />
+          <span
+            className={`order-tracking-dot relative z-10 rounded-full ${
+              index === activeStage
+                ? "h-4 w-4 border-[3px] border-white bg-[#355342] ring-2 ring-[#355342]"
+                : index < activeStage
+                  ? "h-3 w-3 border border-[var(--green)] bg-[var(--green)]"
+                  : "h-3 w-3 border border-[color:#c9cec6] bg-white"
+            }`}
+            aria-hidden="true"
+          />
           <span>{orderStatusLabels[stage]}</span>
         </li>
       ))}
