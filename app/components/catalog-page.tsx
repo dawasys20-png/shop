@@ -14,11 +14,17 @@ import { formatPrice } from "../lib/currency";
 import { useCatalog } from "./catalog-context";
 import { ProductGrid } from "./product-grid";
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  neutrals: muted text #6B6680, small labels #77728A, divider #E9E1F5, control border #E0D6F2
+*/
+
 const chipBase =
-  "inline-flex min-h-8 items-center rounded-full border px-3.5 text-[12.5px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342]";
+  "inline-flex min-h-8 items-center rounded-full border px-3.5 text-[12.5px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]";
 const chipOff =
-  "border-[#dfe4d8] bg-white text-[#5f6b61] hover:border-[#9db0a0] hover:text-[#233b30]";
-const chipOn = "border-[#355342] bg-[#355342] text-white";
+  "border-[#E0D6F2] bg-white text-[#5B5675] hover:border-[#A78BFA] hover:text-[#4C1D95]";
+const chipOn = "border-[#6D28D9] bg-[#6D28D9] text-white";
 
 export function CatalogPage({
   title,
@@ -162,10 +168,10 @@ export function CatalogPage({
     <main className="mx-auto min-h-[65vh] w-[min(100%_-_104px,_1440px)] pb-28 pt-8 max-[900px]:w-[calc(100%_-_56px)] max-[600px]:w-[calc(100%_-_32px)] max-[600px]:pt-5">
       {/* Breadcrumb */}
       <nav
-        className="mb-6 flex items-center gap-2 text-xs text-[#858b81]"
+        className="mb-6 flex items-center gap-2 text-xs text-[#77728A]"
         aria-label="Breadcrumb"
       >
-        <Link href="/" className="transition-colors hover:text-[#355342]">
+        <Link href="/" className="transition-colors hover:text-[#6D28D9]">
           Home
         </Link>
         <span aria-hidden="true">/</span>
@@ -174,35 +180,35 @@ export function CatalogPage({
           <>
             <Link
               href="/shop"
-              className="transition-colors hover:text-[#355342]"
+              className="transition-colors hover:text-[#6D28D9]"
             >
               Shop
             </Link>
             <span aria-hidden="true">/</span>
-            <span className="font-medium text-[#355342]" aria-current="page">
+            <span className="font-medium text-[#4C1D95]" aria-current="page">
               {currentCategory.name}
             </span>
           </>
         ) : (
-          <span className="font-medium text-[#355342]" aria-current="page">
+          <span className="font-medium text-[#4C1D95]" aria-current="page">
             {heading}
           </span>
         )}
       </nav>
 
       {/* Page header */}
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-[#e3e7dd] pb-8 max-[600px]:mb-6 max-[600px]:pb-6">
+      <header className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-[#E9E1F5] pb-8 max-[600px]:mb-6 max-[600px]:pb-6">
         <div className="max-w-xl">
-          <h1 className="mb-2 text-[40px] font-medium leading-[1.1] tracking-[-0.02em] text-[#233b30] max-[600px]:text-[30px]">
+          <h1 className="mb-2 text-[40px] font-medium leading-[1.1] tracking-[-0.02em] text-[#4C1D95] max-[600px]:text-[30px]">
             {heading}
           </h1>
-          <p className="mb-0 text-[15px] leading-6 text-[#6f7a70]">
+          <p className="mb-0 text-[15px] leading-6 text-[#6B6680]">
             Find something that fits your routine.
           </p>
         </div>
 
-        <p className="mb-0 text-sm text-[#6f7a70]" aria-live="polite">
-          <span className="text-2xl font-medium tracking-tight text-[#233b30]">
+        <p className="mb-0 text-sm text-[#6B6680]" aria-live="polite">
+          <span className="text-2xl font-medium tracking-tight text-[#4C1D95]">
             {visibleProducts.length}
           </span>{" "}
           {visibleProducts.length === 1 ? "product" : "products"}
@@ -223,12 +229,12 @@ export function CatalogPage({
           onClick={() => setFiltersOpen((open) => !open)}
           aria-expanded={filtersOpen}
           aria-controls="catalog-filters"
-          className="hidden min-h-11 items-center justify-between rounded-full border border-[#dfe4d8] bg-white px-5 text-sm font-medium text-[#233b30] max-[600px]:flex"
+          className="hidden min-h-11 items-center justify-between rounded-full border border-[#E0D6F2] bg-white px-5 text-sm font-medium text-[#4C1D95] max-[600px]:flex"
         >
           <span>
             Filters
             {activeFilterCount > 0 && (
-              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#355342] px-1.5 text-[11px] text-white">
+              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#20A800] px-1.5 text-[11px] font-semibold text-[#0B1F05]">
                 {activeFilterCount}
               </span>
             )}
@@ -257,7 +263,7 @@ export function CatalogPage({
         >
           {/* Categories */}
           <div>
-            <h2 className="mb-3 text-sm font-semibold text-[#233b30]">
+            <h2 className="mb-3 text-sm font-semibold text-[#4C1D95]">
               Categories
             </h2>
 
@@ -276,8 +282,8 @@ export function CatalogPage({
                       aria-current={active ? "page" : undefined}
                       className={`flex min-h-9 items-center gap-3 border-l-2 pl-3 text-[14px] transition-colors ${
                         active
-                          ? "border-[#355342] font-semibold text-[#233b30]"
-                          : "border-transparent text-[#6f7a70] hover:border-[#c9d3c6] hover:text-[#233b30]"
+                          ? "border-[#20A800] font-semibold text-[#4C1D95]"
+                          : "border-transparent text-[#6B6680] hover:border-[#C4B5FD] hover:text-[#4C1D95]"
                       }`}
                     >
                       {category.name}
@@ -289,8 +295,8 @@ export function CatalogPage({
           </div>
 
           {/* Product type */}
-          <div className="border-t border-[#e3e7dd] pt-6">
-            <h2 className="mb-4 text-sm font-semibold text-[#233b30]">
+          {/* <div className="border-t border-[#E9E1F5] pt-6">
+            <h2 className="mb-4 text-sm font-semibold text-[#4C1D95]">
               Product type
             </h2>
 
@@ -300,7 +306,7 @@ export function CatalogPage({
                 className="m-0 mb-5 border-0 p-0 last:mb-0"
               >
                 {initialCategory === "all" ? (
-                  <legend className="mb-2.5 p-0 text-xs text-[#858b81]">
+                  <legend className="mb-2.5 p-0 text-xs text-[#77728A]">
                     {categoryName}
                   </legend>
                 ) : (
@@ -325,11 +331,11 @@ export function CatalogPage({
                 </div>
               </fieldset>
             ))}
-          </div>
+          </div> */}
 
           {/* Brand */}
-          <div className="border-t border-[#e3e7dd] pt-6">
-            <h2 className="mb-4 text-sm font-semibold text-[#233b30]">
+          <div className="border-t border-[#E9E1F5] pt-6">
+            <h2 className="mb-4 text-sm font-semibold text-[#4C1D95]">
               Brand
             </h2>
 
@@ -356,12 +362,12 @@ export function CatalogPage({
           </div>
 
           {/* Price */}
-          <div className="border-t border-[#e3e7dd] pt-6">
+          <div className="border-t border-[#E9E1F5] pt-6">
             <div className="flex items-baseline justify-between gap-2">
-              <h2 className="mb-0 text-sm font-semibold text-[#233b30]">
+              <h2 className="mb-0 text-sm font-semibold text-[#4C1D95]">
                 Maximum price
               </h2>
-              <span className="text-sm font-semibold text-[#355342]">
+              <span className="text-sm font-semibold text-[#6D28D9]">
                 {formatPrice(activeMaxPrice)}
               </span>
             </div>
@@ -375,12 +381,12 @@ export function CatalogPage({
               onChange={(event) => setMaxPrice(Number(event.target.value))}
               aria-label="Maximum product price"
               style={{
-                background: `linear-gradient(to right, #355342 ${sliderPercent}%, #dfe4d8 ${sliderPercent}%)`,
+                background: `linear-gradient(to right, #20A800 ${sliderPercent}%, #E0D6F2 ${sliderPercent}%)`,
               }}
-              className="mt-5 h-1 w-full cursor-pointer appearance-none rounded-full accent-[#355342] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#355342]"
+              className="mt-5 h-1 w-full cursor-pointer appearance-none rounded-full accent-[#20A800] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6D28D9]"
             />
 
-            <div className="mt-2 flex justify-between text-[11px] text-[#92998e]">
+            <div className="mt-2 flex justify-between text-[11px] text-[#77728A]">
               <span>{formatPrice(0)}</span>
               <span>{formatPrice(maxAvailablePrice)}</span>
             </div>
@@ -442,7 +448,7 @@ export function CatalogPage({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="ml-1 text-xs font-medium text-[#64806a] underline underline-offset-4 transition-colors hover:text-[#233b30]"
+                className="ml-1 text-xs font-medium text-[#6D28D9] underline underline-offset-4 transition-colors hover:text-[#4C1D95]"
               >
                 Clear all
               </button>
@@ -452,19 +458,19 @@ export function CatalogPage({
           {visibleProducts.length > 0 ? (
             <ProductGrid products={visibleProducts} />
           ) : (
-            <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl bg-[#f3f5ef] px-6 py-14 text-center">
+            <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl bg-[#F3E8FF] px-6 py-14 text-center">
               <span
-                className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl text-[#7d9a85]"
+                className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl text-[#8B5CF6]"
                 aria-hidden="true"
               >
                 ✳
               </span>
 
-              <h3 className="mb-2 text-xl font-medium text-[#233b30]">
+              <h3 className="mb-2 text-xl font-medium text-[#4C1D95]">
                 No products match these filters
               </h3>
 
-              <p className="mb-7 max-w-sm text-sm leading-6 text-[#6f7a70]">
+              <p className="mb-7 max-w-sm text-sm leading-6 text-[#6B6680]">
                 Try a different search term, or remove a filter to see more
                 supplements.
               </p>
@@ -472,7 +478,7 @@ export function CatalogPage({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#355342] px-7 text-[13px] font-semibold text-white transition-colors hover:bg-[#233b30] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342]"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6D28D9] px-7 text-[13px] font-semibold text-white transition-colors hover:bg-[#4C1D95] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
               >
                 Clear filters
               </button>

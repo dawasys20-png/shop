@@ -29,14 +29,14 @@ const featureBanners = [
     text: "Browse the full product catalog.",
     cta: "Shop all products",
     href: "/shop",
-    tone: "bg-[#e8ece7]",
+    tone: "bg-[var(--color-primary)]",
   },
   {
     title: "Shop by category",
     text: "Vitamins, minerals and more, all in one place.",
     cta: "Browse categories",
     href: "/shop",
-    tone: "bg-[#f4efe4]",
+    tone: "bg-[var(--color-secondary)]",
   },
 ];
 
@@ -48,7 +48,7 @@ const pageWidth =
   "mx-auto w-[min(100%_-_104px,_1440px)] max-[900px]:w-[calc(100%_-_56px)] max-[600px]:w-[calc(100%_-_32px)]";
 
 const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342]";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-secondary)]";
 
 function ArrowIcon() {
   return (
@@ -95,18 +95,18 @@ function ProductSection({
         <div>
           <h2
             id={`${id}-heading`}
-            className="m-0 text-[clamp(26px,3vw,34px)] font-medium leading-tight tracking-[-0.02em] text-[#233b30]"
+            className="m-0 text-[clamp(26px,3vw,34px)] font-medium leading-tight tracking-[-0.02em] text-[var(--color-text)]"
           >
             {title}
           </h2>
           {description && (
-            <p className="mb-0 mt-2 text-[15px] text-[#6f7a70]">
+            <p className="mb-0 mt-2 text-[15px] text-[var(--color-text)]">
               {description}
             </p>
           )}
         </div>
         <Link
-          className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-[#dfe4d8] bg-white px-4 text-[13px] font-medium text-[#355342] transition-colors hover:border-[#9db0a0] hover:bg-[#f3f5ef] ${focusRing}`}
+          className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-[var(--color-secondary)] bg-[var(--color-white)] px-4 text-[13px] font-medium text-[var(--color-secondary)] transition-colors hover:bg-[var(--color-background)] ${focusRing}`}
           href={href}
         >
           {linkLabel} <ArrowIcon />
@@ -164,17 +164,17 @@ async function HomeContent() {
 
       {/* Promo banner */}
       <section className={`${pageWidth} py-6`} aria-label={promoBanner.title}>
-        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-3xl bg-[#355342] px-10 py-12 text-white max-[600px]:px-6 max-[600px]:py-9">
+        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-3xl bg-[var(--color-primary)] px-10 py-12 text-[var(--color-white)] max-[600px]:px-6 max-[600px]:py-9">
           <div className="max-w-xl">
             <h2 className="m-0 text-[clamp(26px,3.4vw,40px)] font-medium leading-[1.12] tracking-[-0.02em]">
               {promoBanner.title}
             </h2>
-            <p className="mb-0 mt-3 text-[15px] leading-7 text-[#d5e0d6]">
+            <p className="mb-0 mt-3 text-[15px] leading-7 text-[var(--color-white)]">
               {promoBanner.text}
             </p>
           </div>
           <Link
-            className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-white px-7 text-sm font-semibold text-[#233b30] transition-colors hover:bg-[#edf1eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[var(--color-white)] px-7 text-sm font-semibold text-[var(--color-secondary)] transition-colors hover:bg-[var(--color-background)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             href={promoBanner.href}
           >
             {promoBanner.cta} <ArrowIcon />
@@ -205,14 +205,14 @@ async function HomeContent() {
                   className={`group flex min-h-[260px] flex-col justify-between rounded-3xl p-8 transition-colors max-[600px]:min-h-[220px] max-[600px]:p-6 ${banner.tone} ${focusRing}`}
                 >
                   <div>
-                    <h2 className="m-0 text-[clamp(24px,2.6vw,32px)] font-medium leading-tight tracking-[-0.02em] text-[#233b30]">
+                    <h2 className="m-0 text-[clamp(24px,2.6vw,32px)] font-medium leading-tight tracking-[-0.02em] text-[var(--color-white)]">
                       {banner.title}
                     </h2>
-                    <p className="mb-0 mt-3 max-w-[300px] text-[15px] leading-7 text-[#536157]">
+                    <p className="mb-0 mt-3 max-w-[300px] text-[15px] leading-7 text-[var(--color-white)]">
                       {banner.text}
                     </p>
                   </div>
-                  <span className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold text-[#233b30] transition-all group-hover:gap-4">
+                  <span className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-[var(--color-white)] px-5 py-2.5 text-[13px] font-semibold text-[var(--color-secondary)] transition-all group-hover:gap-4">
                     {banner.cta} <ArrowIcon />
                   </span>
                 </Link>
@@ -224,12 +224,12 @@ async function HomeContent() {
 
       {/* Closing banner */}
       <section className={`${pageWidth} pb-20 pt-10 max-[600px]:pb-14`}>
-        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-3xl bg-[#e8ece7] px-10 py-12 max-[600px]:px-6 max-[600px]:py-9">
-          <h2 className="m-0 max-w-xl text-[clamp(26px,3.4vw,40px)] font-medium leading-[1.12] tracking-[-0.02em] text-[#233b30]">
+        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-3xl bg-[var(--color-background)] px-10 py-12 max-[600px]:px-6 max-[600px]:py-9">
+          <h2 className="m-0 max-w-xl text-[clamp(26px,3.4vw,40px)] font-medium leading-[1.12] tracking-[-0.02em] text-[var(--color-text)]">
             Find your new daily essential.
           </h2>
           <Link
-            className={`inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[#355342] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#233b30] ${focusRing}`}
+            className={`inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[var(--color-secondary)] px-7 text-sm font-semibold text-[var(--color-white)] transition-colors hover:bg-[var(--color-primary)] ${focusRing}`}
             href="/shop"
           >
             Shop all supplements <ArrowIcon />

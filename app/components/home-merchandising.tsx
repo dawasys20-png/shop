@@ -53,13 +53,13 @@ export function HomeMerchandising({
         </p>
       )}
       {routines.length > 0 && (
-        <section className="bg-[#eef2ec] px-4 py-16 sm:px-7 lg:px-14">
+        <section className="bg-[var(--color-background)] px-4 py-16 sm:px-7 lg:px-14">
           <div className="mb-7 flex items-end justify-between gap-4">
             <div>
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#4f8b62]">
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--color-secondary)]">
                 Find your fit
               </p>
-              <h2 className="text-3xl font-normal tracking-[-0.07em] text-slate-900">
+              <h2 className="text-3xl font-normal tracking-[-0.07em] text-[var(--color-text)]">
                 Shop by category.
               </h2>
             </div>
