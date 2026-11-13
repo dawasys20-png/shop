@@ -8,8 +8,18 @@ import { useCart } from "./cart-context";
 import { apiRequest } from "../lib/api";
 import Image from "next/image";
 
+/*
+  Palette under test
+  primary      #6D28D9
+  dark         #4C1D95
+  light        #F3E8FF  (hover/pressed: #E9D5FF)
+  background   #FAFAFA
+  green        #20A800  (accent; pair with dark text #0B1F05, white text is too low contrast)
+  neutrals     text #4A4658, muted #6B6680, border #E9E1F5
+*/
+
 const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#355342]";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6D28D9]";
 
 function SearchIcon() {
   return (
@@ -113,18 +123,21 @@ export function StoreNavigation() {
   return (
     <>
       {/* Announcement bar */}
-      <div className="overflow-hidden bg-[#edf1eb]">
-        <div className="announcement-marquee flex min-h-[34px] items-center whitespace-nowrap px-4 py-2 text-[10px] tracking-[0.08em] text-[#355342] max-[600px]:text-[9px]">
+      <div className="overflow-hidden bg-[#4C1D95]">
+        <div className="announcement-marquee flex min-h-[34px] items-center whitespace-nowrap px-4 py-2 text-[10px] tracking-[0.08em] text-white max-[600px]:text-[9px]">
           <div className="announcement-track flex w-max items-center gap-3 max-[600px]:gap-2">
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
-            <span className="h-3 w-px bg-[#b9c6b8]" />
-            <span className="font-normal tracking-normal text-[#68776a]">
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white">
               Free shipping on orders UGX 150000+
             </span>
-            <span className="h-3 w-px bg-[#b9c6b8]" />
+            <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
-            <span className="h-3 w-px bg-[#b9c6b8]" aria-hidden="true" />
-            <span className="font-normal tracking-normal text-[#68776a]" aria-hidden="true">
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
               Free shipping on orders UGX 150000+
             </span>
           </div>
@@ -132,7 +145,7 @@ export function StoreNavigation() {
       </div>
 
       {/* Main header */}
-      <header className="sticky top-0 z-30 border-b border-[#e3e7dd] bg-white/85 backdrop-blur-lg">
+      <header className="sticky top-0 z-30 border-b border-[#E9E1F5] bg-[#FAFAFA]/85 backdrop-blur-lg">
         <div className="mx-auto grid h-[76px] w-full max-w-[1600px] grid-cols-[1fr_minmax(300px,1.3fr)_1fr] items-center gap-8 px-[clamp(20px,4vw,60px)] max-[900px]:h-auto max-[900px]:grid-cols-[1fr_auto] max-[900px]:gap-x-4 max-[900px]:gap-y-3 max-[900px]:px-7 max-[900px]:py-3 max-[600px]:px-[18px]">
           {/* Brand */}
           <Link
@@ -147,7 +160,7 @@ export function StoreNavigation() {
           <div className="flex items-center justify-center gap-8 max-[900px]:col-span-2 max-[900px]:row-start-2 max-[900px]:justify-between">
             <Link
               href="/shop"
-              className={`shrink-0 text-[14px] font-medium text-[#44524a] underline decoration-transparent decoration-2 underline-offset-[10px] transition-colors hover:text-[#233b30] hover:decoration-[#64806a] max-[900px]:hidden ${focusRing}`}
+              className={`shrink-0 text-[14px] font-medium text-[#4A4658] underline decoration-transparent decoration-2 underline-offset-[10px] transition-colors hover:text-[#4C1D95] hover:decoration-[#6D28D9] max-[900px]:hidden ${focusRing}`}
             >
               Shop all
             </Link>
@@ -155,7 +168,7 @@ export function StoreNavigation() {
             <form
               onSubmit={search}
               role="search"
-              className="flex h-11 w-full max-w-[400px] items-center gap-2 rounded-full border border-transparent bg-[#f3f5ef] py-1 pl-5 pr-1 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#9db0a0] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(100,128,106,0.14)] max-[900px]:max-w-none"
+              className="flex h-11 w-full max-w-[400px] items-center gap-2 rounded-full border border-[#F3E8FF] py-1 pl-5 pr-1 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#C4A5F5] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(109,40,217,0.14)] max-[900px]:max-w-none"
             >
               <input
                 type="search"
@@ -163,13 +176,13 @@ export function StoreNavigation() {
                 placeholder="Search supplements"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="h-full min-w-0 flex-1 border-0 bg-transparent text-[14px] text-[#233b30] outline-none placeholder:text-[#7d887f]"
+                className="h-full min-w-0 flex-1 border-0 bg-transparent text-[14px] text-[#2E1065] outline-none placeholder:text-[#7C6A9E]"
               />
 
               <button
                 type="submit"
                 aria-label="Submit search"
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#355342] text-white transition-colors hover:bg-[#233b30] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342]"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#6D28D9] text-white transition-colors hover:bg-[#4C1D95] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
               >
                 <SearchIcon />
               </button>
@@ -178,42 +191,19 @@ export function StoreNavigation() {
 
           {/* Account and cart */}
           <div className="flex items-center justify-end gap-6 max-[900px]:col-start-2 max-[900px]:row-start-1 max-[900px]:gap-4">
-            <div className="flex items-center gap-6 text-[14px] text-[#44524a] max-[900px]:hidden">
-              {/* {user ? (
-                <button
-                  type="button"
-                  onClick={signOut}
-                  className={`transition-colors hover:text-[#233b30] ${focusRing}`}
-                >
-                  Sign out
-                </button>
-              ) : (
-                <Link
-                href="/login"
-                className={`transition-colors hover:text-[#233b30] ${focusRing}`}
-              >
-                Log in
-                </Link>
-              )} */}
-
+            <div className="flex items-center gap-6 text-[14px] text-[#4A4658] max-[900px]:hidden">
               <Link
                 href="/orders"
-                className={`transition-colors hover:text-[#233b30] ${focusRing}`}
+                className={`transition-colors hover:text-[#4C1D95] ${focusRing}`}
               >
                 Orders
               </Link>
             </div>
 
-            {/* {!user && <Link
-              href="/login"
-              className="inline-flex h-10 items-center justify-center rounded-full border border-[#355342] px-5 text-[13px] font-semibold text-[#355342] transition-colors hover:bg-[#355342] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342] max-[900px]:hidden"
-            >
-              Log in
-            </Link>} */}
             {!user ? (
               <Link
                 href="/login"
-                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#355342] px-5 text-[13px] font-semibold text-[#355342] transition-colors hover:bg-[#355342] hover:text-white ${focusRing} max-[900px]:hidden`}
+                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#F3E8FF] px-5 text-[13px] font-normal text-[#4C1D95] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing} max-[900px]:hidden`}
               >
                 Sign in
               </Link>
@@ -221,8 +211,9 @@ export function StoreNavigation() {
               <button
                 type="button"
                 onClick={signOut}
-                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#355342] px-5 text-[13px] font-semibold text-[#355342] transition-colors hover:bg-[#355342] hover:text-white ${focusRing} max-[900px]:hidden`}
+                className={`inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[#F3E8FF] px-5 text-[13px] font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing} max-[900px]:hidden`}
               >
+                <span className="h-2 w-2 rounded-full bg-[#20A800]" aria-hidden="true" />
                 Sign out
               </button>
             )}
@@ -230,7 +221,7 @@ export function StoreNavigation() {
             <Link
               href="/cart"
               aria-label={`View shopping bag, ${itemCount} items`}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-[#edf1eb] pl-4 pr-1.5 text-[#233b30] transition-colors hover:bg-[#e1e8de] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342] max-[600px]:pl-3.5"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-[#F3E8FF] pl-4 pr-1.5 text-[#4C1D95] transition-colors hover:bg-[#E9D5FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9] max-[600px]:pl-3.5"
             >
               <BagIcon />
 
@@ -241,8 +232,8 @@ export function StoreNavigation() {
               <span
                 className={`grid h-7 min-w-7 place-items-center rounded-full px-1.5 text-[12px] font-semibold ${
                   itemCount > 0
-                    ? "bg-[#355342] text-white"
-                    : "bg-white text-[#6f7a70]"
+                    ? "bg-[#20A800] text-white"
+                    : "bg-white text-[#6B6680]"
                 }`}
               >
                 {itemCount}
@@ -251,22 +242,22 @@ export function StoreNavigation() {
           </div>
 
           {/* Mobile account links */}
-          <div className="col-span-2 hidden items-center justify-end gap-5 border-t border-[#e3e7dd] pt-3 text-[13px] text-[#536157] max-[900px]:flex">
+          <div className="col-span-2 hidden items-center justify-end gap-5 border-t border-[#E9E1F5] pt-3 text-[13px] text-[#4A4658] max-[900px]:flex">
             {user ? (
-              <button type="button" onClick={signOut} className="hover:text-[#233b30]">
+              <button type="button" onClick={signOut} className="hover:text-[#4C1D95]">
                 Sign out
               </button>
-            ) : <Link href="/login" className="hover:text-[#233b30]">
+            ) : <Link href="/login" className="hover:text-[#4C1D95]">
               Log in
             </Link>}
 
-            <Link href="/orders" className="hover:text-[#233b30]">
+            <Link href="/orders" className="hover:text-[#4C1D95]">
               My orders
             </Link>
 
             {!user && <Link
               href="/signup"
-              className="font-semibold text-[#355342] hover:text-[#233b30]"
+              className="font-semibold text-[#6D28D9] hover:text-[#4C1D95]"
             >
               Create account
             </Link>}

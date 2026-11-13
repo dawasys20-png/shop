@@ -13,15 +13,22 @@ import {
 import { formatPrice } from "../lib/currency";
 import { useCatalog } from "./catalog-context";
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  green buttons use dark text #0B1F05 (white on this green is too low contrast)
+  neutrals: text #1F1B2E, muted #6B6680
+*/
+
 const addButtonBase =
-  "absolute bottom-3 right-3 z-10 flex h-10 w-10 items-center justify-center gap-2 rounded-full text-xs font-semibold text-white shadow-[0_2px_8px_rgba(35,59,48,0.25)] transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:inset-x-4 md:bottom-4 md:h-11 md:w-auto";
+  "absolute bottom-3 right-3 z-10 flex h-10 w-10 items-center justify-center gap-2 rounded-full text-xs font-semibold shadow-[0_2px_8px_rgba(76,29,149,0.28)] transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:inset-x-4 md:bottom-4 md:h-11 md:w-auto";
 
 // Round icon on phones; full-width pill that appears on hover for larger screens
 const addButtonIdle =
-  "bg-[#355342] hover:bg-[#233b30] md:translate-y-2 md:bg-white md:text-[#233b30] md:opacity-0 md:shadow-sm md:hover:bg-[#233b30] md:hover:text-white md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 [@media(hover:none)]:md:translate-y-0 [@media(hover:none)]:md:bg-[#355342] [@media(hover:none)]:md:text-white [@media(hover:none)]:md:opacity-100";
+  "bg-[#20A800] text-[#0B1F05] hover:bg-[#2FC106] md:translate-y-2 md:bg-white md:text-[#4C1D95] md:opacity-0 md:shadow-sm md:hover:bg-[#20A800] md:hover:text-white md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 [@media(hover:none)]:md:translate-y-0 [@media(hover:none)]:md:bg-[#20A800] [@media(hover:none)]:md:text-[#0B1F05] [@media(hover:none)]:md:opacity-100";
 
 // Stays visible briefly after an item is added
-const addButtonAdded = "bg-[#233b30] md:translate-y-0 md:opacity-100";
+const addButtonAdded = "bg-[#4C1D95] text-white md:translate-y-0 md:opacity-100";
 
 export function ProductGrid({ products }: { products: Product[] }) {
   const { addToCart } = useCart();
@@ -60,17 +67,17 @@ export function ProductGrid({ products }: { products: Product[] }) {
 
   if (productOptions.length === 0) {
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center rounded-3xl bg-[#f3f5ef] px-6 py-12 text-center">
+      <div className="flex min-h-[320px] flex-col items-center justify-center rounded-3xl bg-[#F3E8FF] px-6 py-12 text-center">
         <span
-          className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl text-[#7d9a85]"
+          className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl text-[#8B5CF6]"
           aria-hidden="true"
         >
           ✳
         </span>
-        <h3 className="mb-2 text-lg font-medium text-[#233b30]">
+        <h3 className="mb-2 text-lg font-medium text-[#4C1D95]">
           No supplements found
         </h3>
-        <p className="mb-0 max-w-xs text-sm leading-6 text-[#6f7a70]">
+        <p className="mb-0 max-w-xs text-sm leading-6 text-[#6B6680]">
           Try a different search or remove a filter to see more.
         </p>
       </div>
@@ -90,12 +97,12 @@ export function ProductGrid({ products }: { products: Product[] }) {
           <article className="group min-w-0" key={optionKey}>
             {/* Product image */}
             <div
-              className={`relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#f2f3ee] ${variant.tone ?? ""}`}
+              className={`relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#F3E8FF] ${variant.tone ?? ""}`}
             >
               <Link
                 href={detailHref}
                 aria-label={`View ${product.name}, ${variant.form}, ${variant.potency}, ${variant.packageQuantity}`}
-                className="absolute inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#355342]"
+                className="absolute inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#6D28D9]"
               >
                 <Image
                   src={image}
@@ -108,11 +115,11 @@ export function ProductGrid({ products }: { products: Product[] }) {
               </Link>
 
               {/* Product label */}
-              {variant.tag && (
-                <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-white/95 px-3 py-1 text-[11px] font-medium text-[#355342] shadow-[0_1px_2px_rgba(35,59,48,0.08)] sm:left-4 sm:top-4 sm:text-xs">
+              {/* {variant.tag && (
+                <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-white/95 px-3 py-1 text-[11px] font-medium text-[#6D28D9] shadow-[0_1px_2px_rgba(76,29,149,0.1)] sm:left-4 sm:top-4 sm:text-xs">
                   {variant.tag}
                 </span>
-              )}
+              )} */}
 
               {/* Add to bag */}
               <button
@@ -138,9 +145,10 @@ export function ProductGrid({ products }: { products: Product[] }) {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.7"
+                  strokeWidth={added ? 2.2 : 1.7}
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className={added ? "text-[#20A800]" : undefined}
                   aria-hidden="true"
                 >
                   {added ? (
@@ -163,9 +171,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
             <div className="pt-4">
               <Link
                 href={detailHref}
-                className="group/name block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#355342]"
+                className="group/name block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6D28D9]"
               >
-                <h3 className="mb-1 text-[15px] font-medium leading-snug text-[#1f2a24] transition-colors group-hover/name:text-[#355342] sm:text-[16px]">
+                <h3 className="mb-1 text-[15px] font-medium leading-snug text-[#1F1B2E] transition-colors group-hover/name:text-[#6D28D9] sm:text-[16px]">
                   {product.name}
                 </h3>
 
@@ -175,27 +183,27 @@ export function ProductGrid({ products }: { products: Product[] }) {
                     role="img"
                     aria-label={`Rated ${rating.toFixed(1)} out of 5`}
                   >
-                    <span aria-hidden="true" className="text-[#fbbf24] text-[18px]">
+                    <span aria-hidden="true" className="text-[#20A800] text-[18px]">
                       {Array.from({ length: 5 }, (_, index) =>
                         index < Math.round(rating) ? "★" : "☆",
                       ).join("")}
                     </span>
-                    <span className="text-[#6f7a70] text-[12px]" aria-hidden="true">
+                    <span className="text-[#6B6680] text-[12px]" aria-hidden="true">
                       {rating.toFixed(1)}
                     </span>
                   </span>
                 )}
 
-                {/* <p className="mb-0 line-clamp-2 text-[12px] leading-5 text-[#7a8379] sm:text-[13px]">
+                {/* <p className="mb-0 line-clamp-2 text-[12px] leading-5 text-[#6B6680] sm:text-[13px]">
                   {variant.form} · {variant.potency} · {variant.packageQuantity}
                 </p> */}
               </Link>
 
               <div className="mt-3 flex items-center justify-between gap-2">
-                <p className="mb-0 text-[15px] font-semibold tracking-tight text-[#233b30] sm:text-[16px]">
+                <p className="mb-0 text-[15px] font-semibold tracking-tight text-[#4C1D95] sm:text-[16px]">
                   {formatPrice(variant.price)}
                 </p>
-                <span className="rounded-full bg-[#f3f5ef] px-2.5 py-1 text-[11px] text-[#6f7a70]">
+                <span className="rounded-full bg-[#F3E8FF] px-2.5 py-1 text-[11px] text-[#4C1D95]">
                   {variant.form}
                 </span>
               </div>

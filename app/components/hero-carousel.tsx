@@ -4,6 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FocusEvent } from "react";
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  The image overlay uses a deeper purple (#2E1065) so white text stays readable.
+*/
+
 const slides = [
   {
     eyebrow: "Wellness, without the noise",
@@ -106,7 +112,7 @@ export function HeroCarousel({ images }: { images: string[] }) {
 
   return (
     <section
-      className="relative flex min-h-[460px] items-center overflow-hidden rounded-3xl bg-[#233b30] px-8 text-white max-[600px]:min-h-[420px] max-[600px]:px-6 lg:px-16"
+      className="relative flex min-h-[460px] items-center overflow-hidden rounded-3xl bg-[#4C1D95] px-8 text-white max-[600px]:min-h-[420px] max-[600px]:px-6 lg:px-16"
       aria-label="Featured wellness highlights"
       aria-roledescription="carousel"
       onMouseEnter={() => setIsPaused(true)}
@@ -133,8 +139,8 @@ export function HeroCarousel({ images }: { images: string[] }) {
             />
           </div>
         ))}
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,40,32,0.84),rgba(24,40,32,0.5),rgba(24,40,32,0.1))]" />
-        <div className="absolute inset-0 bg-[#182820]/35 sm:hidden" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(46,16,101,0.86),rgba(46,16,101,0.52),rgba(46,16,101,0.1))]" />
+        <div className="absolute inset-0 bg-[#2E1065]/35 sm:hidden" />
       </div>
 
       <div className="relative z-10 w-full overflow-hidden">
@@ -151,17 +157,17 @@ export function HeroCarousel({ images }: { images: string[] }) {
             >
               <div className="max-w-[620px]">
                 <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-[13px] text-white backdrop-blur-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#b9d1bd]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#20A800]" />
                   {slide.eyebrow}
                 </p>
                 <h1 className="mb-5 mt-0 text-[clamp(44px,7vw,76px)] font-medium leading-[1.04] tracking-[-0.03em] text-white">
                   {slide.title}
                 </h1>
-                <p className="mb-8 mt-0 max-w-[420px] text-base leading-7 text-[#e3eae4]">
+                <p className="mb-8 mt-0 max-w-[420px] text-base leading-7 text-[#EDE4FA]">
                   {slide.description}
                 </p>
                 <Link
-                  className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-white px-7 text-sm font-semibold text-[#233b30] transition-colors hover:bg-[#edf1eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[#20A800] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#2FC106] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   href={slide.href}
                   tabIndex={index === activeSlide ? undefined : -1}
                 >

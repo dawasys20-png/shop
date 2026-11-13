@@ -1,14 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --color-paper: #fafaf8;
-  --color-ink: #202124;
-  --color-muted: #6b7280;
-  --color-line: #e4e6df;
-  --color-green-light: #355342;
-  --color-green-dark: #233b30;
+:root {
+  --color-primary: #20A800;
+  --color-secondary: #480088;
+  --color-text: #4B5563;
+  --color-background: #FAFAFA;
+  --color-white: #FFFFFF;
+}
 
+@theme {
   --font-sans: "Geist", sans-serif;
   --font-mono: monospace;
 }
@@ -23,8 +24,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--color-background);
+  color: var(--color-text);
   font-family: "Geist", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
