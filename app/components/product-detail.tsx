@@ -626,7 +626,7 @@ export function ProductDetail({
                         onClick={() => chooseProductForm(form)}
                         className={`inline-flex min-w-24 items-center gap-2 rounded-2xl border p-3 text-center transition-colors ${focusRing} ${
                           on
-                            ? "border-[#6D28D9] shadow-[inset_0_0_0_1px_#6D28D9]"
+                            ? "border-[#F3E8FF] shadow-[inset_0_0_0_1px_#6D28D9]"
                             : "border-[#E0D6F2] bg-white hover:border-[#A78BFA]"
                         }`}
                       >
@@ -668,7 +668,7 @@ export function ProductDetail({
                       onClick={() => chooseVariantAttribute("potency", potency)}
                       className={`inline-flex min-w-24 items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-semibold transition-colors ${focusRing} ${
                         selectedVariant.potency === potency
-                          ? "border-[#6D28D9] text-[#4C1D95] shadow-[inset_0_0_0_1px_#6D28D9]"
+                          ? "border-[#F3E8FF] text-[#4C1D95] shadow-[inset_0_0_0_1px_#6D28D9]"
                           : "border-[#E0D6F2] bg-white text-[#5B5675] hover:border-[#A78BFA]"
                       }`}
                     >
@@ -678,7 +678,7 @@ export function ProductDetail({
               </div>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Package quantity:{" "}
                 <span className="font-semibold">
                   {selectedVariant.packageQuantity}
@@ -714,8 +714,8 @@ export function ProductDetail({
                         }
                         className={`rounded-2xl border p-4 text-left transition-colors ${focusRing} ${
                           on
-                            ? "border-[#6D28D9] shadow-[inset_0_0_0_1px_#6D28D9]"
-                            : "border-[#E0D6F2] bg-white hover:border-[#A78BFA]"
+                            ? "border-[#F3E8FF] shadow-[inset_0_0_0_1px_#6D28D9]"
+                            : "border-[#F3E8FF] bg-white hover:border-[#A78BFA]"
                         }`}
                       >
                         <span className="block text-[15px] text-[#4C1D95]">
@@ -743,7 +743,7 @@ export function ProductDetail({
             >
               <h2
                 id="key-information-heading"
-                className="mb-4 mt-0 text-sm font-semibold text-[#4C1D95]"
+                className="mb-4 mt-0 text-sm font-semibold text-[#1F1B2E]"
               >
                 Key information
               </h2>
@@ -818,7 +818,7 @@ export function ProductDetail({
                 className={`min-h-[52px] rounded-full px-5 text-sm font-semibold transition-colors ${focusRing} ${
                   added
                     ? "bg-[#4C1D95] text-white"
-                    : "bg-[#20A800] text-[#0B1F05] hover:bg-[#2FC106]"
+                    : "bg-[#20A800] text-white hover:bg-[#2FC106]"
                 }`}
                 type="button"
                 onClick={handleAddToBag}
@@ -875,7 +875,7 @@ export function ProductDetail({
           </div>
 
           <div className="min-w-0 max-w-full rounded-3xl bg-[#F3E8FF] p-6 max-[600px]:p-5">
-            <h3 className="mb-4 mt-0 text-lg font-medium text-[#4C1D95]">
+            <h3 className="mb-4 mt-0 text-lg font-medium text-[#1F1B2E]">
               Specifications
             </h3>
             <dl className="m-0 grid min-w-0 text-sm">
@@ -893,7 +893,7 @@ export function ProductDetail({
                 .map(([label, value], index, rows) => (
                 <div
                   className={`grid min-w-0 grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-x-4 gap-y-1 py-3 max-[420px]:grid-cols-1 ${
-                    index < rows.length - 1 ? "border-b border-[#E0D6F2]" : ""
+                    index < rows.length - 1 ? "border-b border-[#F3E8FF]" : ""
                   }`}
                   key={`${label}-${index}`}
                 >
@@ -976,7 +976,7 @@ export function ProductDetail({
       >
         <h2
           id="customer-reviews-heading"
-          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#4C1D95]"
+          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#1F1B2E]"
         >
           Reviews for {selectedVariant.form} · {selectedVariant.potency} ·{" "}
           {selectedVariant.packageQuantity}
