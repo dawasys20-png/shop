@@ -17,7 +17,7 @@ import { useCart } from "./cart-context";
 const focusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]";
 
-const greenButton = `inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#20A800] px-7 text-sm font-semibold text-[#0B1F05] transition-colors hover:bg-[#2FC106] ${focusRing}`;
+const greenButton = `inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#20A800] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#2FC106] ${focusRing}`;
 
 export function CartPage() {
   const { cart, cartReady, subtotal, shipping, changeQuantity } =
@@ -269,7 +269,7 @@ export function CartPage() {
               Continue to checkout <span aria-hidden="true">→</span>
             </Link>
             <p className="mb-0 mt-3 text-center text-xs text-[#6B6680]">
-              Demo checkout · Free shipping over UGX 60
+              Free Delivery over UGX 150000
             </p>
           </aside>
         </div>

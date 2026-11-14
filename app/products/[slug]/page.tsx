@@ -30,26 +30,26 @@ export async function generateMetadata({
     (product ? getStartingVariant(product) : undefined);
   const description =
     startingVariant?.description?.replace(/\s+/g, " ").trim().slice(0, 300) ||
-    `${product?.name ?? "Thoughtful supplements"} from ${product?.brand ?? "Form & Function"}. Explore product details and shop online.`;
+    `${product?.name ?? "Thoughtful supplements"} from ${product?.brand ?? "Vitahub Ug"}. Explore product details and shop online.`;
   const image = startingVariant?.images[0]?.url;
 
   return {
     title: product
-      ? `${product.name} | ${product.brand} | Form & Function`
-      : "Supplement | Form & Function",
+      ? `${product.name} | ${product.brand} | Vitahub Ug`
+      : "Supplement | Vitahub Ug",
     description,
     robots: { index: Boolean(product), follow: true },
     alternates: product ? { canonical: `/products/${encodeURIComponent(slug)}` } : undefined,
     openGraph: {
       type: "website",
-      title: product ? `${product.name} | ${product.brand}` : "Supplements | Form & Function",
+      title: product ? `${product.name} | ${product.brand}` : "Supplements | Vitahub Ug",
       description,
       url: `/products/${encodeURIComponent(slug)}`,
       ...(image ? { images: [{ url: image, alt: startingVariant?.alt || product?.name }] } : {}),
     },
     twitter: {
       card: image ? "summary_large_image" : "summary",
-      title: product ? `${product.name} | ${product.brand}` : "Supplements | Form & Function",
+      title: product ? `${product.name} | ${product.brand}` : "Supplements | Vitahub Ug",
       description,
       ...(image ? { images: [image] } : {}),
     },
