@@ -18,6 +18,7 @@ import {
 } from "../lib/products";
 import { useCart } from "./cart-context";
 import { useCatalog } from "./catalog-context";
+import { BrandLoading } from "./brand-loading";
 
 /*
   Palette under test
@@ -263,16 +264,7 @@ export function ProductDetail({
   useEffect(() => () => clearTimeout(addedTimer.current), []);
 
   if (!ready) {
-    return (
-      <main
-        className={`${pageWidth} min-h-[75vh] pb-24 pt-8`}
-        aria-busy="true"
-      >
-        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
-          Loading product…
-        </p>
-      </main>
-    );
+    return <BrandLoading />;
   }
 
   if (!currentProduct) {

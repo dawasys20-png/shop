@@ -6,94 +6,271 @@ import { formatPrice } from "../lib/currency";
 import { getVariantImages } from "../lib/products";
 import { useCart } from "./cart-context";
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  Green is for the checkout action and free-shipping progress. Dark text (#0B1F05)
+  on green, because white on this green is too low contrast for small text.
+  neutrals: body #4A4658, muted #6B6680, small labels #77728A, divider #E9E1F5, control border #E0D6F2
+*/
+
+const focusRing =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]";
+
+const greenButton = `inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#20A800] px-7 text-sm font-semibold text-[#0B1F05] transition-colors hover:bg-[#2FC106] ${focusRing}`;
+
 export function CartPage() {
   const { cart, cartReady, subtotal, shipping, changeQuantity } =
     useCart();
 
+  const itemCount = cart.reduce((total, { quantity }) => total + quantity, 0);
+
   return (
-    <main className={`cart-page w-[min(100%_-_56px,_1240px)] min-h-[60vh] m-[0_auto] p-[24px_0_88px] max-[600px]:w-[calc(100%_-_36px)] max-[600px]:p-[18px_0_64px] pt-5 max-[650px]:w-[calc(100%_-_36px)] max-[650px]:p-[18px_0_64px]`}>
-      <nav className={`catalog-breadcrumb flex flex-wrap items-center gap-2.5 mb-5 text-[#68756b] text-sm [&_a:hover]:text-[#355342] [&_a:hover]:underline [&_a:hover]:underline-offset-3`} aria-label="Breadcrumb">
-        <Link href="/">Home</Link>
+    <main className="mx-auto min-h-[60vh] w-[min(100%_-_56px,_1240px)] pb-24 pt-6 max-[600px]:w-[calc(100%_-_32px)] max-[600px]:pb-16 max-[600px]:pt-5">
+      {/* Breadcrumb */}
+      <nav
+        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[#77728A]"
+        aria-label="Breadcrumb"
+      >
+        <Link className="transition-colors hover:text-[#6D28D9]" href="/">
+          Home
+        </Link>
         <span aria-hidden="true">/</span>
-        <span aria-current="page">Your bag</span>
+        <span className="font-medium text-[#4C1D95]" aria-current="page">
+          Your bag
+        </span>
       </nav>
-      <header className="mb-7 border-l-4 border-[#355342] bg-[#e8eee9] px-6 py-6 text-[#233b30] sm:px-8 sm:py-7">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#52715d]">
-          A little goodness, gathered
-        </p>
-        <h1 className="mb-0 text-3xl font-medium tracking-tight sm:text-4xl">Your bag</h1>
+
+      {/* Page header */}
+      <header className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-3 border-b border-[#E9E1F5] pb-8 max-[600px]:mb-6 max-[600px]:pb-6">
+        <div>
+          <h1 className="m-0 text-[clamp(32px,4vw,44px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#4C1D95]">
+            Your bag
+          </h1>
+          <p className="mb-0 mt-2 text-[15px] text-[#6B6680]">
+            A little goodness, gathered.
+          </p>
+        </div>
+        {cartReady && cart.length > 0 && (
+          <p className="m-0 text-sm text-[#6B6680]" aria-live="polite">
+            <span className="text-2xl font-medium tracking-tight text-[#4C1D95]">
+              {itemCount}
+            </span>{" "}
+            {itemCount === 1 ? "item" : "items"}
+          </p>
+        )}
       </header>
 
       {!cartReady ? (
-        <p className={`cart-page-loading p-[48px_0] text-gray-500 text-[15px]`} role="status">Loading your bag…</p>
+        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
+          Loading your bag…
+        </p>
       ) : cart.length === 0 ? (
-        <section className={`empty-cart cart-page-empty flex flex-[1] flex-col items-center justify-center pb-20 text-center [&_h3]:mb-[7px] [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-normal [&_p]:mb-[21px] [&_p]:text-[#68756b] [&_p]:text-xs min-h-[400px] p-7 [&_h2]:m-[0_0_7px] [&_h2]:font-serif [&_h2]:text-[29px] [&_h2]:font-normal [&_h2]:text-[#233b30] [&_p]:text-sm border border-[#dce4dc] bg-[#f3f6f2]`}>
-          <span className={`empty-bag grid w-[60px] h-[60px] mb-5 place-items-center rounded-full bg-[#e0e9e1] text-[#355342]`} aria-hidden="true">
-            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <section className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl bg-[#F3E8FF] px-6 py-14 text-center">
+          <span
+            className="mb-6 grid h-16 w-16 place-items-center rounded-full bg-white text-[#6D28D9]"
+            aria-hidden="true"
+          >
+            <svg
+              width="27"
+              height="27"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M5 8h14l1 12H4L5 8Z" />
               <path d="M9 9V6a3 3 0 0 1 6 0v3" />
             </svg>
           </span>
-          <h2>Your bag is taking a breather.</h2>
-          <p>Find something good for your everyday.</p>
-          <Link className={`button button-dark min-h-[48px] inline-flex items-center justify-center gap-7 p-[0_20px] border-0 cursor-pointer text-sm font-semibold transition-[background_160ms_ease,_transform_160ms_ease] [&:hover]:-translate-y-px bg-[#355342] text-white [&:hover]:bg-[#233b30]`} href="/shop">
+          <h2 className="m-0 mb-2 text-[26px] font-medium tracking-[-0.02em] text-[#4C1D95]">
+            Your bag is taking a breather.
+          </h2>
+          <p className="mb-7 mt-0 max-w-sm text-[15px] leading-6 text-[#6B6680]">
+            Find something good for your everyday.
+          </p>
+          <Link className={greenButton} href="/shop">
             Explore essentials <span aria-hidden="true">→</span>
           </Link>
         </section>
       ) : (
-        <div className={`cart-page-layout grid grid-cols-[minmax(0,_1fr)_minmax(300px,_380px)] items-start gap-[clamp(32px,_6vw,_88px)] max-[600px]:grid-cols-1 max-[600px]:gap-6 max-[800px]:grid-cols-[minmax(0,_1fr)_minmax(270px,_320px)] max-[800px]:gap-6 max-[650px]:grid-cols-1 max-[650px]:gap-6`}>
-          <section className={`cart-page-items [&_.cart-item]:grid-cols-[128px_minmax(0,_1fr)_auto] [&_.cart-item]:gap-6 [&_.cart-item]:p-[24px_0] [&_.cart-item>a_img]:block [&_.cart-item>a_img]:w-[128px] [&_.cart-item>a_img]:h-[144px] [&_.cart-item>a_img]:object-cover [&_.cart-item>a_img]:bg-gray-100 [&_.cart-item-copy_h2]:m-[2px_0_7px] [&_.cart-item-copy_h2]:font-serif [&_.cart-item-copy_h2]:text-[23px] [&_.cart-item-copy_h2]:font-normal [&_.cart-item-copy_h2]:text-[#233b30] [&_.cart-item-copy_p]:mb-4.5 [&_.cart-item-copy_p]:text-[13px] max-[600px]:[&_.cart-item]:grid-cols-[76px_minmax(0,_1fr)_auto] max-[600px]:[&_.cart-item]:gap-3 max-[600px]:[&_.cart-item>a_img]:w-[76px] max-[600px]:[&_.cart-item>a_img]:h-[86px] max-[600px]:[&_.cart-item-copy_h2]:text-[17px] min-w-0 border-t border-[#cbd6cc] [&_.cart-item]:items-start [&_.cart-item>a_img]:transition-[opacity_160ms_ease] [&_.cart-item>a:hover_img]:opacity-[0.88] [&_.cart-item-copy_h2]:mt-[3px] [&_.cart-item-copy_p]:text-[#68756b] [&_.quantity-control]:h-[34px] [&_.quantity-control]:border-[#cbd6cc] [&_.quantity-control_button]:w-[34px] [&_.quantity-control_button]:h-[32px] [&_.quantity-control_button]:text-[17px] [&_.quantity-control_button]:text-[#355342] [&_.quantity-control_span]:min-w-[28px] [&_.quantity-control_span]:text-[13px] max-[800px]:[&_.cart-item]:grid-cols-[96px_minmax(0,_1fr)_auto] max-[800px]:[&_.cart-item]:gap-4 max-[800px]:[&_.cart-item>a_img]:w-[96px] max-[800px]:[&_.cart-item>a_img]:h-[112px] max-[650px]:[&_.cart-item]:grid-cols-[76px_minmax(0,_1fr)_auto] max-[650px]:[&_.cart-item]:gap-3 max-[650px]:[&_.cart-item]:p-[18px_0] max-[650px]:[&_.cart-item>a_img]:w-[76px] max-[650px]:[&_.cart-item>a_img]:h-[90px] max-[650px]:[&_.cart-item-copy_h2]:text-[17px] max-[650px]:[&_.cart-item-copy_p]:mb-3 max-[650px]:[&_.cart-item-copy_p]:text-[11px] max-[650px]:[&_.quantity-control]:h-[30px] max-[650px]:[&_.quantity-control_button]:w-[29px] max-[650px]:[&_.quantity-control_button]:h-[28px]`} aria-label="Items in your bag">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(300px,380px)] items-start gap-[clamp(32px,6vw,80px)] max-[800px]:grid-cols-[minmax(0,1fr)_minmax(270px,320px)] max-[800px]:gap-6 max-[650px]:grid-cols-1">
+          {/* Items */}
+          <section
+            className="min-w-0 border-t border-[#E9E1F5]"
+            aria-label="Items in your bag"
+          >
             {cart.map(({ key, product, variant, quantity }) => (
-              <article className={`cart-item grid grid-cols-[76px_1fr_auto] gap-3.5 p-[19px_0] border-b border-[color:var(--line)] [&_>img]:w-[76px] [&_>img]:h-[86px] [&_>img]:object-cover [&_>img]:bg-gray-100 [&_>strong]:pt-[3px] [&_>strong]:text-sm [&_>strong]:font-medium`} key={key}>
-                <Link href={`/products/${product.id}`} aria-label={`View ${product.name}`}>
-                  <Image src={getVariantImages(product, variant)[0]?.url ?? ""} alt={variant.alt ?? ""} width={110} height={124} unoptimized />
+              <article
+                className="grid grid-cols-[112px_minmax(0,1fr)_auto] items-start gap-6 border-b border-[#E9E1F5] py-7 max-[800px]:grid-cols-[88px_minmax(0,1fr)_auto] max-[800px]:gap-4 max-[650px]:grid-cols-[80px_minmax(0,1fr)] max-[650px]:py-5"
+                key={key}
+              >
+                <Link
+                  href={`/products/${product.id}`}
+                  aria-label={`View ${product.name}`}
+                  className={`group block overflow-hidden rounded-2xl bg-[#F3E8FF] ${focusRing}`}
+                >
+                  <Image
+                    className="aspect-[0.88] h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none"
+                    src={getVariantImages(product, variant)[0]?.url ?? ""}
+                    alt={variant.alt ?? ""}
+                    width={110}
+                    height={124}
+                    unoptimized
+                  />
                 </Link>
-                <div className={`cart-item-copy [&_h3]:m-[2px_0_5px] [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-normal [&_p]:m-[0_0_10px] [&_p]:text-[#77796f] [&_p]:text-xs`}>
-                  <h2><Link href={`/products/${product.id}`}>{product.name}</Link></h2>
-                  {variant.detail && <p>{variant.detail}</p>}
-                  <p className="mb-3 text-xs text-[#68756b]">
+
+                <div className="min-w-0">
+                  <h2 className="m-0 text-[17px] font-medium leading-snug text-[#1F1B2E] sm:text-[19px]">
+                    <Link
+                      className={`transition-colors hover:text-[#6D28D9] ${focusRing}`}
+                      href={`/products/${product.id}`}
+                    >
+                      {product.name}
+                    </Link>
+                  </h2>
+                  {variant.detail && (
+                    <p className="mb-0 mt-1 text-[13px] leading-5 text-[#77728A]">
+                      {variant.detail}
+                    </p>
+                  )}
+                  <p className="mb-0 mt-1.5 text-[13px] text-[#6B6680]">
                     {variant.form} · {variant.potency} · {variant.packageQuantity}
                   </p>
-                  <div className={`quantity-control inline-flex h-[27px] items-center border border-[color:var(--line)] [&_button]:grid [&_button]:w-[27px] [&_button]:h-[25px] [&_button]:place-items-center [&_button]:border-0 [&_button]:bg-transparent [&_button]:cursor-pointer [&_span]:min-w-[20px] [&_span]:text-[13px] [&_span]:text-center`} aria-label={`${product.name} quantity`}>
-                    <button type="button" onClick={() => changeQuantity(key, -1)} aria-label={`Decrease ${product.name} quantity`}>−</button>
-                    <span>{quantity}</span>
-                    <button type="button" onClick={() => changeQuantity(key, 1)} aria-label={`Increase ${product.name} quantity`}>+</button>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-4">
+                    <div
+                      className="inline-flex h-10 items-center rounded-full border border-[#E0D6F2] bg-white p-0.5"
+                      role="group"
+                      aria-label={`${product.name} quantity`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => changeQuantity(key, -1)}
+                        aria-label={`Decrease ${product.name} quantity`}
+                        className={`grid h-9 w-9 place-items-center rounded-full text-lg text-[#6D28D9] transition-colors hover:bg-[#F3E8FF] ${focusRing}`}
+                      >
+                        −
+                      </button>
+                      <span className="min-w-7 text-center text-sm font-medium text-[#4C1D95]">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => changeQuantity(key, 1)}
+                        aria-label={`Increase ${product.name} quantity`}
+                        className={`grid h-9 w-9 place-items-center rounded-full text-lg text-[#6D28D9] transition-colors hover:bg-[#F3E8FF] ${focusRing}`}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => changeQuantity(key, -quantity)}
+                      className={`border-0 bg-transparent p-0 text-[13px] text-[#6B6680] underline underline-offset-4 transition-colors hover:text-[#4C1D95] ${focusRing}`}
+                      aria-label={`Remove ${product.name} from your bag`}
+                    >
+                      Remove
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => changeQuantity(key, -quantity)}
-                    className="ml-3 border-0 bg-transparent p-0 text-xs text-[#68756b] underline underline-offset-2 hover:text-[#233b30]"
-                    aria-label={`Remove ${product.name} from your bag`}
-                  >
-                    Remove
-                  </button>
                 </div>
-                <strong className={`cart-page-line-price pt-[5px] text-[15px] font-medium max-[600px]:text-xs max-[650px]:text-xs`}>{formatPrice(variant.price * quantity)}</strong>
+
+                <div className="grid justify-items-end gap-1 pt-0.5 max-[650px]:col-start-2 max-[650px]:justify-items-start">
+                  <strong className="text-base font-semibold text-[#4C1D95]">
+                    {formatPrice(variant.price * quantity)}
+                  </strong>
+                  {quantity > 1 && (
+                    <span className="text-xs text-[#77728A]">
+                      {formatPrice(variant.price)} each
+                    </span>
+                  )}
+                </div>
               </article>
             ))}
           </section>
 
-          <aside className={`cart-page-summary p-7 bg-[#f3f6f2] [&_>h2]:m-[0_0_13px] [&_>h2]:font-serif [&_>h2]:text-[27px] [&_>h2]:font-normal [&_>h2]:text-[#233b30] [&_.shipping-note]:min-h-[67px] [&_.shipping-note]:text-xs [&_.cart-summary]:pt-5 sticky top-[24px] border border-[#dce4dc] [&_>h2]:mb-4.5 [&_.shipping-note]:text-[#536157] [&_.cart-summary>div]:mb-[15px] [&_.cart-summary>div]:text-[13px] [&_.cart-summary_.cart-total]:m-[19px_0_22px] [&_.cart-summary_.cart-total]:pt-[17px] [&_.cart-summary_.cart-total]:border-t [&_.cart-summary_.cart-total]:border-[#cbd6cc] [&_.cart-summary_.cart-total]:text-base [&_.cart-summary_.cart-total_strong]:text-[17px] [&_.checkout-button]:min-h-[52px] [&_.checkout-button]:p-[0_18px] max-[650px]:static max-[650px]:p-5.5`} aria-label="Order summary">
-            <h2>Order summary</h2>
-            <div className={`shipping-note flex min-h-[51px] flex-wrap items-center gap-[7px] text-[#54594f] text-sm`}>
-              {shipping === 0 ? (
-                <>You unlocked free shipping!</>
-              ) : (
-                <>You&apos;re {formatPrice(60 - subtotal)} away from free shipping.</>
-              )}
-              <span className={`shipping-progress w-full h-[3px] bg-[#dce4dc] [&_span]:block [&_span]:h-full [&_span]:bg-[#52715d] [&_span]:transition-[width_180ms_ease]`} aria-hidden="true">
-                <span style={{ width: `${Math.min((subtotal / 60) * 100, 100)}%` }} />
+          {/* Summary */}
+          <aside
+            className="sticky top-6 rounded-3xl bg-[#F3E8FF] p-7 max-[650px]:static max-[650px]:p-5"
+            aria-label="Order summary"
+          >
+            <h2 className="m-0 mb-5 text-[24px] font-medium tracking-[-0.02em] text-[#4C1D95]">
+              Order summary
+            </h2>
+
+            <div className="rounded-2xl bg-white p-4">
+              <p className="m-0 flex items-center gap-2.5 text-[13px] leading-5 text-[#4A4658]">
+                {shipping === 0 && (
+                  <span
+                    className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#20A800] text-[#0B1F05]"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m5 12.5 4.5 4.5L19 7.5" />
+                    </svg>
+                  </span>
+                )}
+                <span>
+                  {shipping === 0 ? (
+                    <>You unlocked free shipping!</>
+                  ) : (
+                    <>You&apos;re {formatPrice(60 - subtotal)} away from free shipping.</>
+                  )}
+                </span>
+              </p>
+              <span
+                className="mt-3 block h-2 w-full overflow-hidden rounded-full bg-[#E0D6F2]"
+                aria-hidden="true"
+              >
+                <span
+                  className="block h-full rounded-full bg-[#20A800] transition-[width] duration-200 motion-reduce:transition-none"
+                  style={{ width: `${Math.min((subtotal / 60) * 100, 100)}%` }}
+                />
               </span>
             </div>
-            <div className={`cart-summary pt-[15px] border-t border-[color:var(--line)] [&_>div]:flex [&_>div]:justify-between [&_>div]:mb-3 [&_>div]:text-[#64665d] [&_>div]:text-sm [&_strong]:text-[var(--ink)] [&_strong]:font-medium [&_.cart-total]:m-[16px_0_18px] [&_.cart-total]:text-[var(--ink)] [&_.cart-total]:text-[17px] [&_.cart-total_strong]:text-lg`}>
-              <div><span>Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
-              <div><span>Delivery</span><strong>{shipping === 0 ? "Free" : formatPrice(shipping)}</strong></div>
-              <div className="cart-total"><span>Total</span><strong>{formatPrice(subtotal + shipping)}</strong></div>
-              <Link className={`button button-dark checkout-button min-h-[48px] inline-flex items-center justify-center gap-7 p-[0_20px] border-0 cursor-pointer text-sm font-semibold transition-[background_160ms_ease,_transform_160ms_ease] [&:hover]:-translate-y-px bg-[#355342] text-white [&:hover]:bg-[#233b30] w-full justify-between`} href="/checkout">
-                Continue to checkout <span aria-hidden="true">→</span>
-              </Link>
-              <p className={`checkout-assurance m-[11px_0_0] text-[#85877c] text-xs text-center`}>Demo checkout · Free shipping over UGX 60</p>
+
+            <div className="mt-6 grid gap-3.5 text-sm text-[#4A4658]">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <strong className="font-medium text-[#1F1B2E]">
+                  {formatPrice(subtotal)}
+                </strong>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery</span>
+                <strong className="font-medium text-[#1F1B2E]">
+                  {shipping === 0 ? "Free" : formatPrice(shipping)}
+                </strong>
+              </div>
+              <div className="mt-1 flex items-baseline justify-between border-t border-[#D8C5F5] pt-4">
+                <span className="text-base font-medium text-[#4C1D95]">Total</span>
+                <strong className="text-xl font-semibold text-[#4C1D95]">
+                  {formatPrice(subtotal + shipping)}
+                </strong>
+              </div>
             </div>
+
+            <Link
+              className={`${greenButton} mt-6 w-full justify-between`}
+              href="/checkout"
+            >
+              Continue to checkout <span aria-hidden="true">→</span>
+            </Link>
+            <p className="mb-0 mt-3 text-center text-xs text-[#6B6680]">
+              Demo checkout · Free shipping over UGX 60
+            </p>
           </aside>
         </div>
       )}

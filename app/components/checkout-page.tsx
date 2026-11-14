@@ -10,6 +10,24 @@ import type { CheckoutContact } from "../lib/orders";
 import { getVariantImages } from "../lib/products";
 import { useCart } from "./cart-context";
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  Green is for the place-order action, with dark text (#0B1F05): white on this
+  green is too low contrast for small text.
+  neutrals: body #4A4658, muted #6B6680, small labels #77728A, divider #E9E1F5, control border #E0D6F2
+*/
+
+const focusRing =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]";
+
+const greenButton = `inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#20A800] px-7 text-sm font-semibold text-[#0B1F05] transition-colors hover:bg-[#2FC106] disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`;
+
+const labelClass = "grid gap-2 text-[13px] font-semibold text-[#4C1D95]";
+
+const inputClass =
+  "h-12 w-full min-w-0 rounded-xl border border-[#E0D6F2] bg-white px-4 text-sm font-normal text-[#1F1B2E] outline-none transition-[border-color,box-shadow] placeholder:text-[#9A94AE] focus:border-[#6D28D9] focus:shadow-[0_0_0_3px_rgba(109,40,217,0.15)]";
+
 export function CheckoutPage() {
   const { cart, cartReady, ordersReady, itemCount, subtotal, shipping, placeOrder } =
     useCart();
@@ -93,97 +111,207 @@ export function CheckoutPage() {
   }
 
   return (
-    <main className={`checkout-page w-[min(100%_-_56px,_1180px)] min-h-[60vh] m-[0_auto] p-[22px_0_84px] max-[600px]:w-[calc(100%_-_36px)] max-[600px]:p-[18px_0_64px]`}>
-      <nav className={`catalog-breadcrumb flex flex-wrap items-center gap-2.5 mb-5 text-[#68756b] text-sm [&_a:hover]:text-[#355342] [&_a:hover]:underline [&_a:hover]:underline-offset-3`} aria-label="Breadcrumb">
-        <Link href="/">Home</Link>
+    <main className="mx-auto min-h-[60vh] w-[min(100%_-_56px,_1180px)] pb-24 pt-6 max-[600px]:w-[calc(100%_-_32px)] max-[600px]:pb-16 max-[600px]:pt-5">
+      {/* Breadcrumb */}
+      <nav
+        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[#77728A]"
+        aria-label="Breadcrumb"
+      >
+        <Link className="transition-colors hover:text-[#6D28D9]" href="/">
+          Home
+        </Link>
         <span aria-hidden="true">/</span>
-        <Link href="/cart">Your bag</Link>
+        <Link className="transition-colors hover:text-[#6D28D9]" href="/cart">
+          Your bag
+        </Link>
         <span aria-hidden="true">/</span>
-        <span aria-current="page">Checkout</span>
+        <span className="font-medium text-[#4C1D95]" aria-current="page">
+          Checkout
+        </span>
       </nav>
 
-      <div className={`checkout-page-heading m-[30px_0_28px] border-l-4 border-[#355342] bg-[#e8eee9] px-6 py-6 text-[#233b30] [&_h1]:m-[9px_0] [&_h1]:font-serif [&_h1]:text-[clamp(40px,_5vw,_58px)] [&_h1]:font-normal [&_h1]:tracking-[-2px] [&_>p:last-child]:text-[#536157] [&_>p:last-child]:text-[15px] sm:px-8 sm:py-7 max-[600px]:m-[24px_0_22px]`}>
-        <p className={`eyebrow m-0 text-[#52715d] text-[11px] font-bold tracking-[1.5px]`}>ALMOST THERE</p>
-        <h1>Checkout</h1>
-        <p>Enter your contact and delivery details to place your order.</p>
-      </div>
+      {/* Page header */}
+      <header className="mb-10 border-b border-[#E9E1F5] pb-8 max-[600px]:mb-6 max-[600px]:pb-6">
+        <h1 className="m-0 text-[clamp(32px,4vw,44px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#4C1D95]">
+          Checkout
+        </h1>
+        <p className="mb-0 mt-2 text-[15px] text-[#6B6680]">
+          Enter your contact and delivery details to place your order.
+        </p>
+      </header>
 
       {!cartReady || !ordersReady || (cart.length > 0 && !sessionChecked) ? (
-        <p className={`cart-page-loading p-[48px_0] text-gray-500 text-[15px]`} role="status">Preparing your checkout…</p>
+        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
+          Preparing your checkout…
+        </p>
       ) : cart.length === 0 ? (
-        <section className={`checkout-empty grid [justify-items:start] gap-3 p-9 border border-[#dce4dc] bg-[#f3f6f2] [&_h2]:m-0 [&_h2]:font-serif [&_h2]:text-3xl [&_h2]:font-normal [&_h2]:text-[#233b30] [&_p]:m-[0_0_8px] [&_p]:text-[#68756b]`}>
-          <h2>Your bag is empty.</h2>
-          <p>Add something to your bag before checking out.</p>
-          <Link className={`button button-dark min-h-[48px] inline-flex items-center justify-center gap-7 p-[0_20px] border-0 cursor-pointer text-sm font-semibold transition-[background_160ms_ease,_transform_160ms_ease] [&:hover]:-translate-y-px bg-[#355342] text-white [&:hover]:bg-[#233b30]`} href="/shop">
+        <section className="grid justify-items-start gap-3 rounded-3xl bg-[#F3E8FF] p-10 max-[600px]:p-6">
+          <h2 className="m-0 text-[26px] font-medium tracking-[-0.02em] text-[#4C1D95]">
+            Your bag is empty.
+          </h2>
+          <p className="m-0 mb-2 text-[15px] text-[#6B6680]">
+            Add something to your bag before checking out.
+          </p>
+          <Link className={greenButton} href="/shop">
             Explore essentials <span aria-hidden="true">→</span>
           </Link>
         </section>
       ) : (
-        <div className={`checkout-page-layout grid grid-cols-[minmax(0,_1fr)_minmax(300px,_390px)] items-start gap-[clamp(32px,_6vw,_82px)] max-[760px]:grid-cols-1 max-[760px]:gap-6.5`}>
-          <section className={`checkout-contact-panel min-w-0 border-t-2 border-[#355342] bg-[#f3f6f2] p-6 pt-[21px] [&_>h2]:m-[0_0_22px] [&_>h2]:font-serif [&_>h2]:text-[27px] [&_>h2]:font-normal [&_>h2]:text-[#233b30] max-[600px]:p-5`}>
-            <h2>Contact and delivery</h2>
-            <form className={`checkout-form checkout-page-form grid gap-[15px] [&_label]:grid [&_label]:gap-[7px] [&_label]:text-[#3f5848] [&_label]:text-xs [&_label]:font-semibold [&_input]:w-full [&_input]:h-[44px] [&_input]:p-[0_12px] [&_input]:border [&_input]:border-[#cbd6cc] [&_input]:rounded-none [&_input]:outline-none [&_input]:bg-white [&_input]:text-[var(--ink)] [&_input]:text-sm [&_input:focus]:border-[#355342] [&_input:focus]:shadow-[0_0_0_2px_rgb(53_83_66_/_12%)] gap-5 [&_label]:gap-2 [&_label]:text-[13px] [&_input]:h-[50px] [&_.checkout-button]:min-h-[54px] [&_.checkout-button]:p-[0_18px]`} onSubmit={submitOrder}>
-              <label>
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(300px,390px)] items-start gap-[clamp(32px,6vw,80px)] max-[760px]:grid-cols-1 max-[760px]:gap-7">
+          {/* Contact and delivery */}
+          <section className="min-w-0 rounded-3xl border border-[#E9E1F5] bg-white p-7 max-[600px]:p-5">
+            <h2 className="m-0 mb-6 text-[24px] font-medium tracking-[-0.02em] text-[#4C1D95]">
+              Contact and delivery
+            </h2>
+            <form className="grid gap-5" onSubmit={submitOrder}>
+              <label className={labelClass}>
                 Full name
-                <input name="name" autoComplete="name" placeholder="Your name" required />
+                <input
+                  className={inputClass}
+                  name="name"
+                  autoComplete="name"
+                  placeholder="Your name"
+                  required
+                />
               </label>
-              <div className={`checkout-field-row grid grid-cols-2 gap-4 max-[600px]:grid-cols-1 max-[600px]:gap-5`}>
-                <label>
+              <div className="grid grid-cols-2 gap-5 max-[600px]:grid-cols-1">
+                <label className={labelClass}>
                   Email address
-                  <input name="email" type="email" autoComplete="email" placeholder="you@example.com" required />
+                  <input
+                    className={inputClass}
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    required
+                  />
                 </label>
-                <label>
+                <label className={labelClass}>
                   Phone number
-                  <input name="phone" type="tel" autoComplete="tel" placeholder="+256 7XX XXX XXX" required />
+                  <input
+                    className={inputClass}
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    placeholder="+256 7XX XXX XXX"
+                    required
+                  />
                 </label>
               </div>
-              <label>
+              <label className={labelClass}>
                 Street address
-                <input name="address" autoComplete="street-address" placeholder="House number and street" required />
+                <input
+                  className={inputClass}
+                  name="address"
+                  autoComplete="street-address"
+                  placeholder="House number and street"
+                  required
+                />
               </label>
-              <label>
+              <label className={labelClass}>
                 City or town
-                <input name="city" autoComplete="address-level2" placeholder="City or town" required />
+                <input
+                  className={inputClass}
+                  name="city"
+                  autoComplete="address-level2"
+                  placeholder="City or town"
+                  required
+                />
               </label>
 
               {errorMessage && (
-                <p className={`checkout-error m-0 p-[12px_14px] bg-red-50 text-red-800 text-[13px]`} role="alert">{errorMessage}</p>
+                <p
+                  className="m-0 rounded-2xl border border-[#F0D3CF] bg-[#FBEFED] px-5 py-3.5 text-[13px] leading-6 text-[#9A443E]"
+                  role="alert"
+                >
+                  {errorMessage}
+                </p>
               )}
 
-              <div className={`checkout-demo-note border border-[#dce4dc] bg-[#e8eee9] p-[14px_16px] text-[#3f5848] text-[13px] leading-[1.65]`}>
+              <div className="rounded-2xl bg-[#F3E8FF] px-5 py-4 text-[13px] leading-[1.65] text-[#4A4658]">
                 Payment is not collected here. Your order details are securely saved with the store.
               </div>
+
               <button
-                className={`button button-dark checkout-button min-h-[48px] inline-flex items-center justify-center gap-7 p-[0_20px] border-0 cursor-pointer text-sm font-semibold transition-[background_160ms_ease,_transform_160ms_ease] [&:hover]:-translate-y-px bg-[#355342] text-white [&:hover]:bg-[#233b30] w-full justify-between`}
+                className={`${greenButton} min-h-[54px] w-full justify-between`}
                 type="submit"
                 disabled={!cartReady || !ordersReady || isSubmitting}
               >
-                {isSubmitting ? "Placing order…" : "Place order"} <span aria-hidden="true">→</span>
+                {isSubmitting ? "Placing order…" : "Place order"}{" "}
+                <span aria-hidden="true">→</span>
               </button>
             </form>
           </section>
 
-          <aside className={`checkout-order-summary [&_>h2]:m-[0_0_22px] [&_>h2]:font-serif [&_>h2]:text-[27px] [&_>h2]:font-normal [&_>h2]:text-[#233b30] sticky top-[24px] p-[27px] border border-[#dce4dc] bg-[#f3f6f2] [&_>h2]:mb-4 [&_.checkout-assurance]:mt-4 [&_.checkout-assurance]:text-xs max-[760px]:static max-[600px]:p-[21px]`} aria-label="Order summary">
-            <h2>Your order</h2>
-            <div className={`checkout-order-items grid border-t border-[#cbd6cc]`}>
+          {/* Order summary */}
+          <aside
+            className="sticky top-6 rounded-3xl bg-[#F3E8FF] p-7 max-[760px]:static max-[600px]:p-5"
+            aria-label="Order summary"
+          >
+            <h2 className="m-0 mb-5 text-[24px] font-medium tracking-[-0.02em] text-[#4C1D95]">
+              Your order
+            </h2>
+
+            <div className="grid border-t border-[#D8C5F5]">
               {cart.map(({ key, product, variant, quantity }) => (
-                <div className={`checkout-order-item grid grid-cols-[58px_minmax(0,_1fr)_auto] items-center gap-[13px] p-[15px_0] border-b border-[#cbd6cc] [&_img]:w-[58px] [&_img]:h-[66px] [&_img]:object-cover [&_img]:bg-[#e8eee9] [&_>div]:grid [&_>div]:gap-[5px] [&_strong]:text-[13px] [&_strong]:font-semibold [&_strong]:text-[#233b30] [&_span]:text-[#68756b] [&_span]:text-xs`} key={key}>
-                  <Image src={getVariantImages(product, variant)[0]?.url ?? ""} alt="" width={58} height={66} unoptimized />
-                  <div>
-                    <strong>{product.name}</strong>
-                    <span>{variant.form} · {variant.potency} · {variant.packageQuantity}</span>
-                    <span>Qty {quantity}</span>
+                <div
+                  className="grid grid-cols-[58px_minmax(0,1fr)_auto] items-center gap-3.5 border-b border-[#D8C5F5] py-4"
+                  key={key}
+                >
+                  <Image
+                    className="h-[66px] w-[58px] rounded-xl bg-white object-cover"
+                    src={getVariantImages(product, variant)[0]?.url ?? ""}
+                    alt=""
+                    width={58}
+                    height={66}
+                    unoptimized
+                  />
+                  <div className="grid min-w-0 gap-1">
+                    <strong className="text-[13px] font-semibold text-[#1F1B2E]">
+                      {product.name}
+                    </strong>
+                    <span className="text-xs text-[#6B6680]">
+                      {variant.form} · {variant.potency} · {variant.packageQuantity}
+                    </span>
+                    <span className="text-xs text-[#6B6680]">Qty {quantity}</span>
                   </div>
-                  <strong>{formatPrice(variant.price * quantity)}</strong>
+                  <strong className="text-[13px] font-semibold text-[#4C1D95]">
+                    {formatPrice(variant.price * quantity)}
+                  </strong>
                 </div>
               ))}
             </div>
-            <div className={`checkout-summary-totals grid gap-3.5 pt-[19px] [&_>div]:flex [&_>div]:justify-between [&_>div]:gap-3.5 [&_>div]:text-[#536157] [&_>div]:text-[13px] [&_strong]:text-[#233b30] [&_strong]:font-semibold [&_.checkout-summary-total]:mt-1 [&_.checkout-summary-total]:pt-[17px] [&_.checkout-summary-total]:border-t [&_.checkout-summary-total]:border-[#cbd6cc] [&_.checkout-summary-total]:text-[#233b30] [&_.checkout-summary-total]:text-base [&_.checkout-summary-total_strong]:text-[17px]`}>
-              <div><span>{itemCount} {itemCount === 1 ? "item" : "items"} · Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
-              <div><span>Delivery</span><strong>{shipping === 0 ? "Free" : formatPrice(shipping)}</strong></div>
-              <div className="checkout-summary-total"><span>Total</span><strong>{formatPrice(subtotal + shipping)}</strong></div>
+
+            <div className="mt-5 grid gap-3.5 text-[13px] text-[#4A4658]">
+              <div className="flex justify-between gap-3.5">
+                <span>
+                  {itemCount} {itemCount === 1 ? "item" : "items"} · Subtotal
+                </span>
+                <strong className="font-semibold text-[#1F1B2E]">
+                  {formatPrice(subtotal)}
+                </strong>
+              </div>
+              <div className="flex justify-between gap-3.5">
+                <span>Delivery</span>
+                <strong className="font-semibold text-[#1F1B2E]">
+                  {shipping === 0 ? "Free" : formatPrice(shipping)}
+                </strong>
+              </div>
+              <div className="mt-1 flex items-baseline justify-between gap-3.5 border-t border-[#D8C5F5] pt-4">
+                <span className="text-base font-medium text-[#4C1D95]">Total</span>
+                <strong className="text-xl font-semibold text-[#4C1D95]">
+                  {formatPrice(subtotal + shipping)}
+                </strong>
+              </div>
             </div>
-            <p className={`checkout-assurance m-[11px_0_0] text-[#85877c] text-xs text-center`}>Free shipping on orders UGX 60+</p>
+
+            <p className="mb-0 mt-5 flex items-center justify-center gap-2 text-xs text-[#6B6680]">
+              <span
+                className="h-2 w-2 shrink-0 rounded-full bg-[#20A800]"
+                aria-hidden="true"
+              />
+              Free shipping on orders UGX 60+
+            </p>
           </aside>
         </div>
       )}
