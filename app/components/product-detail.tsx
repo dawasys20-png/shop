@@ -140,7 +140,7 @@ function Stars({
 }) {
   return (
     <span
-      className={`flex gap-0.5 leading-none text-[#c78b22] ${className}`}
+      className={`flex gap-0.5 leading-none text-[#20A800] ${className}`}
       role="img"
       aria-label={label}
     >
@@ -830,11 +830,11 @@ export function ProductDetail({
             </div>
 
             <button
-              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#6D28D9] bg-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#F3E8FF] ${focusRing}`}
+              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#F3E8FF] bg-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing}`}
               type="button"
               onClick={handleCheckout}
             >
-              Checkout now · {formatPrice(selectedVariant.price * quantity)}
+              Buy now · {formatPrice(selectedVariant.price * quantity)}
             </button>
 
             <span className="sr-only" role="status">

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { CatalogLoading } from "./components/catalog-loading";
+import { BrandLoading } from "./components/brand-loading";
 import { HeroCarousel } from "./components/hero-carousel";
 import { HomeMerchandising } from "./components/home-merchandising";
 import { ProductGrid } from "./components/product-grid";
@@ -119,7 +119,7 @@ function ProductSection({
 
 export default function Home() {
   return (
-    <Suspense fallback={<CatalogLoading />}>
+    <Suspense fallback={<BrandLoading />}>
       <HomeContent />
     </Suspense>
   );

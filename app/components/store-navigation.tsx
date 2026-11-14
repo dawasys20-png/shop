@@ -140,6 +140,51 @@ export function StoreNavigation() {
             >
               Free shipping on orders UGX 150000+
             </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free shipping on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free shipping on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free shipping on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free shipping on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free shipping on orders UGX 150000+
+            </span>
           </div>
         </div>
       </div>

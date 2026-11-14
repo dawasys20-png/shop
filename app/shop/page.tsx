@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CatalogLoading } from "../components/catalog-loading";
+import { BrandLoading } from "../components/brand-loading";
 import { CatalogPage } from "../components/catalog-page";
 import { getServerProducts } from "../lib/server-products";
 
@@ -9,7 +9,7 @@ export default function ShopPage({
   searchParams: Promise<{ query?: string }>;
 }) {
   return (
-    <Suspense fallback={<CatalogLoading />}>
+    <Suspense fallback={<BrandLoading />}>
       <ShopResults searchParams={searchParams} />
     </Suspense>
   );
