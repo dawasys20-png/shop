@@ -670,7 +670,7 @@ export function ProductDetail({
               </div>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
+              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
                 Package quantity:{" "}
                 <span className="font-semibold">
                   {selectedVariant.packageQuantity}
@@ -735,7 +735,7 @@ export function ProductDetail({
             >
               <h2
                 id="key-information-heading"
-                className="mb-4 mt-0 text-sm font-semibold text-[#1F1B2E]"
+                className="mb-4 mt-0 text-sm font-semibold text-[#20A800]"
               >
                 Key information
               </h2>
@@ -838,7 +838,7 @@ export function ProductDetail({
                 className="h-2 w-2 shrink-0 rounded-full bg-[#20A800]"
                 aria-hidden="true"
               />
-              Free shipping on orders {formatPrice(60)}+. Easy, secure checkout.
+              Free shipping on orders {formatPrice(150000)}+. Easy, secure checkout.
             </p>
           </div>
         </div>

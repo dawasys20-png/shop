@@ -25,7 +25,7 @@ const addButtonBase =
 
 // Round icon on phones; full-width pill that appears on hover for larger screens
 const addButtonIdle =
-  "bg-[#20A800] text-white hover:bg-[#2FC106] md:translate-y-2 md:bg-white md:text-white md:opacity-0 md:shadow-sm md:hover:bg-[#20A800] md:hover:text-white md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 [@media(hover:none)]:md:translate-y-0 [@media(hover:none)]:md:bg-[#20A800] [@media(hover:none)]:md:text-[#0B1F05] [@media(hover:none)]:md:opacity-100";
+  "bg-[#20A800] text-white hover:bg-[#2FC106] md:translate-y-2 md:bg-white md:text-[#4C1D95] md:opacity-0 md:shadow-sm md:hover:bg-[#20A800] md:hover:text-white md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 [@media(hover:none)]:md:translate-y-0 [@media(hover:none)]:md:bg-[#20A800] [@media(hover:none)]:md:text-[#0B1F05] [@media(hover:none)]:md:opacity-100";
 
 // Stays visible briefly after an item is added
 const addButtonAdded = "bg-[#4C1D95] text-white md:translate-y-0 md:opacity-100";
