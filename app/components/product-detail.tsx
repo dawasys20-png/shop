@@ -565,13 +565,14 @@ export function ProductDetail({
 
           {reviewCount > 0 && averageRating !== null ? (
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+               <span className="font-semibold text-[#1F1B2E]">
+                {averageRating.toFixed(1)}
+              </span>
               <Stars
                 value={averageRating}
                 label={`Rated ${averageRating.toFixed(1)} out of 5 from ${reviewCount} ${reviewCount === 1 ? "review" : "reviews"}`}
               />
-              <span className="font-semibold text-[#4C1D95]">
-                {averageRating.toFixed(1)}
-              </span>
+             
               <a
                 href="#customer-reviews"
                 className="text-xs text-[#6B6680] underline underline-offset-4 hover:text-[#4C1D95]"
@@ -585,18 +586,18 @@ export function ProductDetail({
             </p>
           )}
 
-          <a
+          {/* <a
             href="#customer-reviews"
             onClick={openReviewForm}
             className={`mt-3 inline-block text-sm font-medium text-[#6D28D9] underline underline-offset-4 hover:text-[#4C1D95] ${focusRing}`}
           >
             Write a review
-          </a>
+          </a> */}
 
           {/* Options */}
-          <div className="mt-8 grid gap-6 border-t border-[#E9E1F5] pt-8">
+          <div className="mt-4 grid gap-6 border-t border-[#E9E1F5] pt-4">
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Product form:{" "}
                 <span className="font-semibold">{selectedVariant.form}</span>
               </legend>
@@ -632,7 +633,7 @@ export function ProductDetail({
                             unoptimized
                           />
                         )}
-                        <span className="text-[13px] font-normal text-[#4C1D95]">
+                        <span className="text-[13px] font-mediun text-[#1F1B2E]">
                           {form}
                         </span>
                       </button>
@@ -641,7 +642,7 @@ export function ProductDetail({
               </div>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Potency:{" "}
                 <span className="font-semibold">{selectedVariant.potency}</span>
               </legend>
@@ -658,9 +659,9 @@ export function ProductDetail({
                       type="button"
                       aria-pressed={selectedVariant.potency === potency}
                       onClick={() => chooseVariantAttribute("potency", potency)}
-                      className={`inline-flex min-w-24 items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-semibold transition-colors ${focusRing} ${
+                      className={`inline-flex min-w-24 items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-medium transition-colors ${focusRing} ${
                         selectedVariant.potency === potency
-                          ? "border-[#F3E8FF] text-[#4C1D95] shadow-[inset_0_0_0_1px_#6D28D9]"
+                          ? "border-[#F3E8FF] text-[#1F1B2E] shadow-[inset_0_0_0_1px_#6D28D9]"
                           : "border-[#E0D6F2] bg-white text-[#5B5675] hover:border-[#A78BFA]"
                       }`}
                     >
@@ -670,7 +671,7 @@ export function ProductDetail({
               </div>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Package quantity:{" "}
                 <span className="font-semibold">
                   {selectedVariant.packageQuantity}
@@ -710,14 +711,14 @@ export function ProductDetail({
                             : "border-[#F3E8FF] bg-white hover:border-[#A78BFA]"
                         }`}
                       >
-                        <span className="block text-[15px] text-[#4C1D95]">
+                        <span className="block text-[15px] text-[#1F1B2E]">
                           {packageQuantity}
                         </span>
                         {packageVariant && (
                           <span
                             className={`mt-1.5 block text-[13px] ${
                               on
-                                ? "font-semibold text-[#6D28D9]"
+                                ? "font-semibold text-[#1F1B2E]"
                                 : "text-[#6B6680]"
                             }`}
                           >
@@ -730,12 +731,12 @@ export function ProductDetail({
               </div>
             </fieldset>
             <section
-              className="rounded-2xl bg-[#F3E8FF] p-5"
+              className=""
               aria-labelledby="key-information-heading"
             >
               <h2
                 id="key-information-heading"
-                className="mb-4 mt-0 text-sm font-semibold text-[#20A800]"
+                className="mb-4 mt-0 text-[20px] font-semibold text-[#1F1B2E]"
               >
                 Key information
               </h2>
@@ -765,9 +766,9 @@ export function ProductDetail({
           </div>
 
           {/* Purchase */}
-          <div className="mt-8 rounded-3xl bg-[#F3E8FF] p-6 max-[600px]:p-5">
+          <div className="mt-8 rounded-3xl border border-[#F3E8FF] p-6 max-[600px]:p-5">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-              <p className="m-0 text-[32px] font-semibold leading-none tracking-tight text-[#4C1D95]">
+              <p className="m-0 text-[25px] font-semibold leading-none tracking-tight text-[#20A800]">
                 {formatPrice(selectedVariant.price)}
               </p>
               <p className="m-0 text-[13px] text-[#6B6680]">

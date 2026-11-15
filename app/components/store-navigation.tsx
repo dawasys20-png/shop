@@ -190,7 +190,7 @@ export function StoreNavigation() {
       </div>
 
       {/* Main header */}
-      <header className="sticky top-0 z-30 border-b border-[#E9E1F5] bg-[#FAFAFA]/85 backdrop-blur-lg">
+      <header className="sticky top-0 z-30 border-b border-[#E9E1F5] bg-[#FAFAFA]">
         <div className="mx-auto grid h-[76px] w-full max-w-[1600px] grid-cols-[1fr_minmax(300px,1.3fr)_1fr] items-center gap-8 px-[clamp(20px,4vw,60px)] max-[900px]:h-auto max-[900px]:grid-cols-[1fr_auto] max-[900px]:gap-x-4 max-[900px]:gap-y-3 max-[900px]:px-7 max-[900px]:py-3 max-[600px]:px-[18px]">
           {/* Brand */}
           <Link
