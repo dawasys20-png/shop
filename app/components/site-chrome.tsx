@@ -57,7 +57,7 @@ function StoreFooter() {
           <Link
             className={`inline-flex items-center gap-3 text-[19px] font-semibold tracking-[-0.03em] ${footerFocusRing}`}
             href="/"
-            aria-label="Form and Function home"
+            aria-label="Vitahub Ug home"
           >
             <span>Vitahub Ug</span>
           </Link>
@@ -114,7 +114,7 @@ function StoreFooter() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex w-[min(100%-2.5rem,80rem)] flex-col gap-2 py-6 text-[13px] text-[#BBA6E3] sm:flex-row sm:items-center sm:justify-between">
           <p className="m-0">
-            © {new Date().getFullYear()} Form &amp; Function. Feel good, for
+            © {new Date().getFullYear()} Vitahub Ug. Feel good, for
             real.
           </p>
           <p className="m-0">Thoughtful essentials for your everyday.</p>

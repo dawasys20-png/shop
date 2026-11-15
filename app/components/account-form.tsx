@@ -6,6 +6,24 @@ import { useRouter } from "next/navigation";
 import { apiRequest } from "../lib/api";
 import { useCart } from "./cart-context";
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  Green is used for the submit button, with dark text (#0B1F05): white on this
+  green is too low contrast for small text.
+  neutrals: body #4A4658, muted #6B6680, control border #E0D6F2
+*/
+
+const focusRing =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]";
+
+const labelClass = "grid gap-2 text-[13px] font-semibold text-[#4C1D95]";
+
+const inputClass =
+  "h-12 w-full min-w-0 rounded-xl border border-[#E0D6F2] bg-white px-4 text-sm font-normal text-[#1F1B2E] outline-none transition-[border-color,box-shadow] placeholder:text-[#9A94AE] focus:border-[#6D28D9] focus:shadow-[0_0_0_3px_rgba(109,40,217,0.15)]";
+
+const linkClass = `font-semibold text-[#6D28D9] underline underline-offset-4 transition-colors hover:text-[#4C1D95] ${focusRing}`;
+
 function subscribeToLocation(callback: () => void) {
   window.addEventListener("popstate", callback);
   return () => window.removeEventListener("popstate", callback);
@@ -96,11 +114,12 @@ export function AccountForm({
   }
 
   return (
-    <main className={`account-page grid min-h-[70vh] place-items-center bg-[#e8eee9] p-[54px_20px]`}>
-      <section className={`account-card w-[min(100%,_480px)] border border-[#d1ddd2] bg-[#fafaf8] p-[clamp(26px,_6vw,_52px)] shadow-sm [&_h1]:m-[14px_0_10px] [&_h1]:font-serif [&_h1]:text-[clamp(38px,_6vw,_54px)] [&_h1]:font-normal [&_h1]:tracking-[-2px] [&_h1]:leading-none [&_h1]:text-[#233b30]`}>
-        <p className={`eyebrow m-0 text-[#52715d] text-[11px] font-bold tracking-[1.5px]`}>FORM & FUNCTION</p>
-        <h1>{adminOnly ? "Administrator sign in." : deliveryOnly ? "Delivery team sign in." : isSignup ? "Create your account." : "Welcome back."}</h1>
-        <p className={`account-intro mb-[27px] text-[15px] leading-[1.6] text-[#536157]`}>
+    <main className="grid min-h-[70vh] place-items-center bg-[#F3E8FF] px-5 py-14 max-[600px]:px-4 max-[600px]:py-10">
+      <section className="w-[min(100%,480px)] rounded-3xl border border-[#E9E1F5] bg-white p-[clamp(26px,6vw,48px)] shadow-[0_12px_40px_-16px_rgba(76,29,149,0.25)]">
+        <h1 className="m-0 mb-3 text-[clamp(32px,5vw,42px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#4C1D95]">
+          {adminOnly ? "Administrator sign in." : deliveryOnly ? "Delivery team sign in." : isSignup ? "Create your account." : "Welcome back."}
+        </h1>
+        <p className="mb-7 mt-0 text-[15px] leading-6 text-[#6B6680]">
           {adminOnly
             ? "Sign in with your administrator account to continue."
             : deliveryOnly
@@ -109,20 +128,35 @@ export function AccountForm({
             ? "Save your favorites and make your routine yours."
             : "Log in to revisit your everyday essentials."}
         </p>
-        <form className={`checkout-form grid gap-[15px] [&_label]:grid [&_label]:gap-[7px] [&_label]:text-[#3f5848] [&_label]:text-xs [&_label]:font-semibold [&_input]:w-full [&_input]:h-[44px] [&_input]:p-[0_12px] [&_input]:border [&_input]:border-[#cbd6cc] [&_input]:rounded-none [&_input]:outline-none [&_input]:bg-white [&_input]:text-[var(--ink)] [&_input]:text-sm [&_input:focus]:border-[#355342] [&_input:focus]:shadow-[0_0_0_2px_rgb(53_83_66_/_12%)]`} onSubmit={submit}>
+
+        <form className="grid gap-5" onSubmit={submit}>
           {isSignup && (
-            <label>
+            <label className={labelClass}>
               Full name
-              <input name="name" autoComplete="name" placeholder="Your name" required />
+              <input
+                className={inputClass}
+                name="name"
+                autoComplete="name"
+                placeholder="Your name"
+                required
+              />
             </label>
           )}
-          <label>
+          <label className={labelClass}>
             Email address
-            <input name="email" type="email" autoComplete="email" placeholder="you@example.com" required />
+            <input
+              className={inputClass}
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              required
+            />
           </label>
-          <label>
+          <label className={labelClass}>
             Password
             <input
+              className={inputClass}
               name="password"
               type="password"
               autoComplete={isSignup ? "new-password" : "current-password"}
@@ -131,35 +165,53 @@ export function AccountForm({
               required
             />
           </label>
-          <button className={`button button-dark account-submit mt-[5px] min-h-[48px] inline-flex w-full items-center justify-center gap-7 border-0 bg-[#355342] p-[0_20px] text-sm font-semibold text-white transition-[background_160ms_ease,_transform_160ms_ease] [&:hover]:-translate-y-px [&:hover]:bg-[#233b30] disabled:cursor-not-allowed disabled:opacity-60`} type="submit" disabled={isSubmitting}>
+          <button
+            className={`mt-1 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#20A800] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#2FC106] disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Please wait…" : isSignup ? "Create account" : "Log in"}
           </button>
         </form>
+
         {errorMessage && (
-          <p className={`account-notice m-[18px_0_0] bg-red-50 p-3 text-[15px] leading-[1.6] text-red-800`} role="alert">
+          <p
+            className="mb-0 mt-5 rounded-2xl border border-[#F0D3CF] bg-[#FBEFED] px-4 py-3 text-sm leading-6 text-[#9A443E]"
+            role="alert"
+          >
             {errorMessage}
           </p>
         )}
         {sessionExpired && (
-          <p className="account-notice mt-4 bg-[#edf1eb] p-3 text-[15px] leading-[1.6] text-[#355342]" role="status">
+          <p
+            className="mb-0 mt-4 rounded-2xl bg-[#F3E8FF] px-4 py-3 text-sm leading-6 text-[#4C1D95]"
+            role="status"
+          >
             Your session expired. Sign in again to continue.
           </p>
         )}
-        <p className={`account-switch m-[22px_0_0] text-center text-[15px] leading-[1.6] text-[#536157] [&_a]:font-bold [&_a]:text-[#355342] [&_a]:underline [&_a]:underline-offset-3`}>
+
+        <p className="mb-0 mt-7 border-t border-[#E9E1F5] pt-6 text-center text-sm leading-7 text-[#6B6680]">
           {adminOnly || deliveryOnly ? (
-            <Link href="/login">Customer sign in</Link>
+            <Link className={linkClass} href="/login">
+              Customer sign in
+            </Link>
           ) : (
             <>
-              {isSignup ? "Already have an account?" : "New to Form & Function?"}{" "}
-              <Link href={isSignup ? "/login" : "/signup"}>
+              {isSignup ? "Already have an account?" : "New to Vitahub Ug?"}{" "}
+              <Link className={linkClass} href={isSignup ? "/login" : "/signup"}>
                 {isSignup ? "Log in" : "Sign up"}
               </Link>
               {!isSignup && (
                 <>
                   {" · "}
-                  <Link href="/admin/login">Administrator sign in</Link>
+                  <Link className={linkClass} href="/admin/login">
+                    Administrator sign in
+                  </Link>
                   {" · "}
-                  <Link href="/delivery/login">Delivery team sign in</Link>
+                  <Link className={linkClass} href="/delivery/login">
+                    Delivery team sign in
+                  </Link>
                 </>
               )}
             </>
