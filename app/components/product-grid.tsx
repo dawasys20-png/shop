@@ -25,7 +25,7 @@ const addButtonBase =
 
 // Round icon on phones; full-width pill that appears on hover for larger screens
 const addButtonIdle =
-  "bg-[#20A800] text-white hover:bg-[#2FC106] md:translate-y-2 md:bg-white md:text-[#4C1D95] md:opacity-0 md:shadow-sm md:hover:bg-[#20A800] md:hover:text-white md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 [@media(hover:none)]:md:translate-y-0 [@media(hover:none)]:md:bg-[#20A800] [@media(hover:none)]:md:text-[#0B1F05] [@media(hover:none)]:md:opacity-100";
+  "bg-[#20A800] text-white hover:bg-[#2FC106] md:translate-y-2 md:bg-[#20A800] md:text-white md:opacity-0 md:shadow-sm md:hover:bg-[#2FC106] md:hover:text-white md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 [@media(hover:none)]:md:translate-y-0 [@media(hover:none)]:md:bg-[#20A800] [@media(hover:none)]:md:text-[#0B1F05] [@media(hover:none)]:md:opacity-100";
 
 // Stays visible briefly after an item is added
 const addButtonAdded = "bg-[#4C1D95] text-white md:translate-y-0 md:opacity-100";
@@ -173,7 +173,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 href={detailHref}
                 className="group/name block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6D28D9]"
               >
-                <h3 className="mb-1 text-[15px] font-medium leading-snug text-[#1F1B2E] transition-colors group-hover/name:text-[#6D28D9] sm:text-[16px]">
+                <h3 className="mb-1 text-[15px] font-medium leading-snug text-[#1F1B2E] transition-colors group-hover:text-[#6D28D9] sm:text-[16px]">
                   {product.name}
                 </h3>
 
@@ -194,18 +194,18 @@ export function ProductGrid({ products }: { products: Product[] }) {
                   </span>
                 )}
 
-                {/* <p className="mb-0 line-clamp-2 text-[12px] leading-5 text-[#6B6680] sm:text-[13px]">
+                <p className="mb-0 line-clamp-2 text-[12px] leading-5 text-[#6B6680] sm:text-[13px]">
                   {variant.form} · {variant.potency} · {variant.packageQuantity}
-                </p> */}
+                </p>
               </Link>
 
               <div className="mt-3 flex items-center justify-between gap-2">
-                <p className="mb-0 text-[15px] font-semibold tracking-tight text-[#4C1D95] sm:text-[16px]">
+                <p className="mb-0 text-[25px] font-semibold tracking-tight sm:text-[17px]">
                   {formatPrice(variant.price)}
                 </p>
-                <span className="rounded-full bg-[#F3E8FF] px-2.5 py-1 text-[11px] text-[#4C1D95]">
+                {/* <span className="rounded-full bg-[#F3E8FF] px-2.5 py-1 text-[11px] text-[#4C1D95]">
                   {variant.form}
-                </span>
+                </span> */}
               </div>
             </div>
           </article>

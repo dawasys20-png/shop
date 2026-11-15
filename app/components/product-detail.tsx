@@ -823,7 +823,7 @@ export function ProductDetail({
             </div>
 
             <button
-              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#F3E8FF] bg-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing}`}
+              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#F3E8FF] bg-[#6D28D9] text-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing}`}
               type="button"
               onClick={handleCheckout}
             >
