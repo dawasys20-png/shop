@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, type ReactNode } from "react";
 import { StoreNavigation } from "./store-navigation";
+import { WhatsAppWidget } from "./whatsapp-widget";
 
 /*
   Palette under test
@@ -139,6 +140,7 @@ function RouteChrome({ children }: { children: ReactNode }) {
       <StoreNavigation />
       {children}
       <StoreFooter />
+      <WhatsAppWidget />
     </>
   );
 }
