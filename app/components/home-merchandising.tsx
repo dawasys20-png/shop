@@ -8,6 +8,7 @@ import {
   getPrimaryProductImage,
   type Product,
 } from "../lib/products";
+import { CategoryIcon } from "./category-icon";
 import { useCatalog } from "./catalog-context";
 
 function ArrowIcon() {
@@ -66,9 +67,9 @@ export function HomeMerchandising({
           </div>
 
           <nav className="grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="Shop supplements by category">
-            {routines.map(({ name, slug, product }) => (
+            {routines.map(({ name, slug, icon, product }) => (
               <Link
-                className="group relative isolate flex h-40 aspect-square items-end overflow-hidden rounded-full bg-stone-200 text-white"
+                className="group relative isolate flex aspect-square h-40 items-end overflow-hidden rounded-full bg-stone-200 text-white"
                 href={`/category/${slug}`}
                 key={slug}
               >
@@ -81,6 +82,9 @@ export function HomeMerchandising({
                   unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/75 via-slate-900/10 to-slate-900/5" />
+                <span className="absolute right-4 top-4 z-10 inline-flex size-10 items-center justify-center rounded-full bg-white/90 text-[#4C1D95] shadow-sm">
+                  <CategoryIcon icon={icon} className="size-5" />
+                </span>
                 <span className="relative z-10 mr-auto pb-5 pl-5 font-serif text-xl sm:text-[23px]">
                   {name}
                 </span>

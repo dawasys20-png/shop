@@ -13,6 +13,7 @@ import {
   type OrderStatus,
 } from "../lib/orders";
 import {
+  productCategories,
   getProductVariants,
   getVariantImages,
   getStartingPrice,
@@ -496,14 +497,27 @@ function ProductEditor({
           />
         </Field>
         <Field label="Category">
-          <input
+          <select
             className={inputClass}
             value={draft.category}
             onChange={(event) => update("category", event.target.value)}
             required
-            maxLength={100}
-            placeholder="Enter a category"
-          />
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {draft.category &&
+              !productCategories.some(({ name }) => name === draft.category) && (
+                <option value={draft.category}>
+                  Existing category: {draft.category}
+                </option>
+              )}
+            {productCategories.map(({ name }) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label="Brand">
           <input
