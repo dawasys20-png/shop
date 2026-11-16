@@ -196,32 +196,39 @@ export function ShoppingAssistant() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-[600px]:bottom-4 max-[600px]:right-4">
+    <div className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-6 z-[100] max-[600px]:bottom-0 max-[600px]:right-0">
+
       {isOpen ? (
         <section
           aria-label="VitaHub shopping assistant"
-          aria-modal="false"
+          aria-modal="true"
+          role="dialog"
           className="
-            flex h-[min(42rem,calc(100dvh-5rem))]
-            w-[min(25rem,calc(100vw-2rem))]
+            flex h-[min(43rem,calc(100dvh-3rem))]
+            w-[min(25rem,calc(100vw-3rem))]
             flex-col overflow-hidden rounded-[1.5rem]
             border border-[#E9E1F5] bg-white
             shadow-[0_24px_80px_rgba(46,16,101,0.20)]
             animate-in fade-in slide-in-from-bottom-3 duration-200
-            max-[600px]:h-[calc(100dvh-2rem)]
-            max-[600px]:w-[calc(100vw-2rem)]
+
+            max-[600px]:h-[100dvh]
+            max-[600px]:h-[100svh]
+            max-[600px]:w-screen
+            max-[600px]:max-w-none
+            max-[600px]:rounded-none
+            max-[600px]:border-0
+            max-[600px]:shadow-none
           "
-          role="dialog"
         >
           {/* Header */}
-          <header className="relative flex items-center justify-between gap-3 overflow-hidden bg-[#2E1065] px-5 py-4 text-white">
+          <header className="relative flex shrink-0 items-center justify-between gap-3 overflow-hidden bg-[#2E1065] px-5 py-4 pt-[max(1rem,env(safe-area-inset-top))] text-white max-[600px]:px-4">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute -right-10 -top-16 h-40 w-40 rounded-full bg-white/5"
             />
 
             <div className="relative flex min-w-0 items-center gap-3">
-              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white">
+              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white max-[600px]:h-10 max-[600px]:w-10">
                 <Image
                   src="/logo.png"
                   height={44}
@@ -233,7 +240,7 @@ export function ShoppingAssistant() {
 
               <div className="min-w-0">
                 <h2 className="m-0 truncate text-[15px] font-semibold tracking-tight">
-                  VitaHub UG Assistant
+                  VitaHub Assistant
                 </h2>
 
                 <p className="m-0 mt-1 flex items-center gap-1.5 text-[11px] text-white/75">
@@ -247,7 +254,7 @@ export function ShoppingAssistant() {
               type="button"
               onClick={() => setIsOpen(false)}
               aria-label="Close shopping assistant"
-              className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-white/80 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl text-white/80 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               ×
             </button>
@@ -256,7 +263,11 @@ export function ShoppingAssistant() {
           {/* Conversation */}
           <div
             ref={messageListRef}
-            className="min-h-0 flex-1 space-y-5 overflow-y-auto bg-[#FAF9FC] p-4"
+            className="
+              min-h-0 flex-1 space-y-5 overflow-y-auto
+              overscroll-contain bg-[#FAF9FC] p-4
+              max-[600px]:p-3
+            "
             aria-live="polite"
             aria-relevant="additions text"
             role="log"
@@ -264,26 +275,26 @@ export function ShoppingAssistant() {
           >
             <div className="flex items-center justify-center">
               <span className="rounded-full bg-[#F0EAF9] px-3 py-1 text-[10px] font-medium text-[#75658E]">
-                Your VitaHub UG shopping assistant
+                Your VitaHub shopping assistant
               </span>
             </div>
 
             {messages.map((message) => (
               <div
                 data-message-id={message.id}
-                className={`flex flex-col ${
+                className={`flex min-w-0 flex-col ${
                   message.role === "user" ? "items-end" : "items-start"
                 }`}
                 key={message.id}
               >
                 {message.role === "assistant" && (
                   <span className="mb-1.5 ml-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#88799D]">
-                    VitaHub UG Assistant
+                    VitaHub Assistant
                   </span>
                 )}
 
                 <p
-                  className={`m-0 max-w-[90%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-[13px] leading-[1.65] ${
+                  className={`m-0 max-w-[90%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-[13px] leading-[1.65] max-[600px]:max-w-[94%] ${
                     message.role === "user"
                       ? "rounded-br-md bg-[#6D28D9] text-white shadow-sm"
                       : "rounded-bl-md border border-[#EAE4F1] bg-white text-[#342B40] shadow-[0_2px_8px_rgba(46,16,101,0.035)]"
@@ -297,7 +308,7 @@ export function ShoppingAssistant() {
                     type="button"
                     disabled={isSending}
                     onClick={() => void sendMessage(message.content, message.id)}
-                    className="mt-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#6D28D9] transition-colors hover:bg-[#F0EAF9] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
+                    className="mt-2 rounded-full px-3 py-2 text-xs font-semibold text-[#6D28D9] hover:bg-[#F0EAF9] disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
                   >
                     {isSending ? "Retrying…" : "↻ Try again"}
                   </button>
@@ -305,7 +316,7 @@ export function ShoppingAssistant() {
 
                 {/* Product recommendations */}
                 {message.recommendations && (
-                  <div className="mt-3 grid w-full gap-3">
+                  <div className="mt-3 grid w-full min-w-0 gap-3">
                     {message.recommendations.map((recommendation) => {
                       const product = products.find(
                         ({ id }) => id === recommendation.productId,
@@ -332,21 +343,21 @@ export function ShoppingAssistant() {
 
                       return (
                         <article
-                          className="overflow-hidden rounded-2xl border border-[#E9E1F5] bg-white shadow-[0_3px_12px_rgba(46,16,101,0.04)] transition-shadow hover:shadow-[0_6px_20px_rgba(46,16,101,0.09)]"
+                          className="w-full min-w-0 overflow-hidden rounded-2xl border border-[#E9E1F5] bg-white shadow-[0_3px_12px_rgba(46,16,101,0.04)]"
                           key={optionKey}
                         >
                           <Link
                             href={detailHref}
-                            className="flex gap-3 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#6D28D9]"
+                            className="flex min-w-0 gap-3 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#6D28D9]"
                           >
-                            <span className="relative h-[84px] w-[76px] shrink-0 overflow-hidden rounded-xl bg-[#F3E8FF]">
+                            <span className="relative h-[84px] w-[76px] shrink-0 overflow-hidden rounded-xl bg-[#F3E8FF] max-[380px]:h-[72px] max-[380px]:w-[64px]">
                               {image ? (
                                 <Image
                                   src={image}
                                   alt={variant.alt ?? product.name}
                                   fill
                                   sizes="76px"
-                                  className="object-cover transition-transform duration-300 hover:scale-105"
+                                  className="object-cover"
                                   unoptimized
                                 />
                               ) : (
@@ -390,7 +401,7 @@ export function ShoppingAssistant() {
                               onClick={() =>
                                 addRecommendedProduct(product.id, variant)
                               }
-                              className="flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-[#20A800] px-4 text-xs font-semibold text-white transition-all hover:bg-[#188C00] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#20A800]"
+                              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#20A800] px-4 text-xs font-semibold text-white transition-all hover:bg-[#188C00] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#20A800]"
                             >
                               {addedVariant === optionKey ? (
                                 <>
@@ -423,7 +434,7 @@ export function ShoppingAssistant() {
                 <div className="flex flex-wrap gap-2">
                   {starterPrompts.map((prompt) => (
                     <button
-                      className="rounded-xl border border-[#E5D9F2] bg-white px-3 py-2.5 text-left text-[11px] font-medium leading-4 text-[#59368A] transition-all hover:border-[#C4A8E5] hover:bg-[#F3E8FF] hover:text-[#4C1D95] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
+                      className="max-w-full rounded-xl border border-[#E5D9F2] bg-white px-3 py-2.5 text-left text-[11px] font-medium leading-4 text-[#59368A] transition-all hover:border-[#C4A8E5] hover:bg-[#F3E8FF] hover:text-[#4C1D95] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
                       key={prompt}
                       onClick={() => void sendMessage(prompt)}
                       type="button"
@@ -440,6 +451,7 @@ export function ShoppingAssistant() {
                 <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F0EAF9] text-xs text-[#6D28D9]">
                   ✳
                 </span>
+
                 <p
                   className="m-0 rounded-2xl rounded-bl-md border border-[#EAE4F1] bg-white px-4 py-3 text-xs text-[#756B82]"
                   role="status"
@@ -453,7 +465,7 @@ export function ShoppingAssistant() {
           {/* Error and loading notice */}
           {(error || !catalogReady) && (
             <p
-              className="m-0 border-t border-[#F0D8D5] bg-[#FFF7F5] px-4 py-2.5 text-xs leading-5 text-[#8F3E35]"
+              className="m-0 shrink-0 border-t border-[#F0D8D5] bg-[#FFF7F5] px-4 py-2.5 text-xs leading-5 text-[#8F3E35]"
               role="alert"
             >
               {error || "Loading the store catalogue…"}
@@ -462,17 +474,22 @@ export function ShoppingAssistant() {
 
           {/* Message input */}
           <form
-            className="border-t border-[#EAE4F1] bg-white p-3"
+            className="
+              shrink-0 border-t border-[#EAE4F1] bg-white
+              p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]
+              max-[600px]:p-3
+              max-[600px]:pb-[max(0.75rem,env(safe-area-inset-bottom))]
+            "
             onSubmit={submitMessage}
           >
             <div className="flex items-end gap-2 rounded-2xl border border-[#E9E1F5] bg-[#FAF9FC] p-1.5 transition-colors focus-within:border-[#A78BCE] focus-within:ring-2 focus-within:ring-[#F0EAF9]">
               <label className="sr-only" htmlFor="shopping-assistant-message">
-                Ask VitaHub UG Assistant
+                Ask VitaHub Assistant
               </label>
 
               <textarea
                 id="shopping-assistant-message"
-                className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-2.5 py-2.5 text-sm text-[#342B40] outline-none placeholder:text-[#A39AAF]"
+                className="max-h-28 min-h-11 min-w-0 flex-1 resize-none bg-transparent px-2.5 py-2.5 text-base text-[#342B40] outline-none placeholder:text-[#A39AAF] md:text-sm"
                 maxLength={600}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={(event) => {
@@ -489,7 +506,7 @@ export function ShoppingAssistant() {
                 type="submit"
                 disabled={isSending || !input.trim()}
                 aria-label="Send message"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#6D28D9] text-white transition-all hover:bg-[#4C1D95] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#6D28D9] text-white transition-all hover:bg-[#4C1D95] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
               >
                 <svg
                   width="18"
@@ -516,26 +533,33 @@ export function ShoppingAssistant() {
         </section>
       ) : (
         <button
-          type="button"
-          aria-label="Open VitaHub shopping assistant"
-          aria-expanded={isOpen}
-          onClick={() => setIsOpen(true)}
-          className="
-            group flex min-h-14 items-center gap-3
-            rounded-full bg-[#20A800] px-5
-            text-sm font-semibold text-white
-            shadow-[0_8px_28px_rgba(32,168,0,0.28)]
-            transition-all duration-200
-            hover:-translate-y-1 hover:bg-[#188C00]
-            hover:shadow-[0_12px_32px_rgba(32,168,0,0.35)]
-            active:scale-[0.97]
-            focus-visible:outline focus-visible:outline-2
-            focus-visible:outline-offset-4 focus-visible:outline-[#20A800]
-            max-[600px]:min-h-12 max-[600px]:px-4
-          "
-        >
-          <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
-            <svg
+  type="button"
+  aria-label="Open VitaHub shopping assistant"
+  aria-expanded={isOpen}
+  onClick={() => setIsOpen(true)}
+  className="
+    group flex min-h-14 items-center gap-3
+    rounded-full bg-[#20A800] px-5
+    text-sm font-semibold text-white
+    shadow-[0_8px_28px_rgba(32,168,0,0.28)]
+    transition-all duration-200
+    hover:-translate-y-1 hover:bg-[#188C00]
+    hover:shadow-[0_12px_32px_rgba(32,168,0,0.35)]
+    active:scale-[0.97]
+    focus-visible:outline focus-visible:outline-2
+    focus-visible:outline-offset-4 focus-visible:outline-[#20A800]
+    max-[600px]:h-12
+    max-[600px]:min-h-12
+    max-[600px]:w-12
+    max-[600px]:justify-center
+    max-[600px]:rounded-full
+    max-[600px]:p-0
+    max-[600px]:mb-3
+    max-[600px]:mr-3
+  "
+>
+  <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+    <svg
               width="21"
               height="21"
               viewBox="0 0 24 24"
@@ -550,17 +574,17 @@ export function ShoppingAssistant() {
               <path d="M8.5 12h.01M12 12h.01M15.5 12h.01" />
             </svg>
             <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-[#20A800] bg-white" />
-          </span>
+  </span>
 
-          <span className="text-left">
-            <span className="block text-[13px] leading-4">
-              Ask VitaHub UG
-            </span>
-            <span className="mt-0.5 block text-[10px] font-medium text-white/80">
-              Your shopping assistant
-            </span>
-          </span>
-        </button>
+  <span className="hidden text-left md:block">
+    <span className="block text-[13px] leading-4">
+      Ask VitaHub
+    </span>
+    <span className="mt-0.5 block text-[10px] font-medium text-white/80">
+      Your shopping assistant
+    </span>
+  </span>
+</button>
       )}
     </div>
   );

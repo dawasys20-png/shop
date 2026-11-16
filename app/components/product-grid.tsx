@@ -173,7 +173,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 href={detailHref}
                 className="group/name block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6D28D9]"
               >
-                <h3 className="mb-1 text-[20px] font-medium leading-snug text-[#333333] transition-colors group/name-hover:text-[#6D28D9] sm:text-[16px]">
+                <h3 className="mb-1 text-[16px] font-medium leading-snug text-[#333333] transition-colors group/name-hover:text-[#6D28D9] sm:text-[16px]">
                   {product.name}
                 </h3>
 
@@ -200,7 +200,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
               </Link>
 
               <div className="mt-3 flex items-center justify-between gap-2">
-                <p className="mb-0 text-[25px] text-[#0B1F05] font-semibold tracking-tight sm:text-[17px]">
+                <p className="mb-0 text-[17px] text-[#0B1F05] font-semibold tracking-tight sm:text-[17px]">
                   {formatPrice(variant.price)}
                 </p>
                 {/* <span className="rounded-full bg-[#F3E8FF] px-2.5 py-1 text-[11px] text-[#4C1D95]">
