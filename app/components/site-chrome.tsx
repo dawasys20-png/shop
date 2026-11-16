@@ -49,9 +49,10 @@ const footerColumns = [
 const footerFocusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
+
 function StoreFooter() {
   return (
-    <footer className="mt-auto rounded-t-[2.5rem] bg-[#4C1D95] text-white max-[600px]:rounded-t-3xl">
+    <footer className="mt-auto rounded-t-[2.5rem] bg-[#2E1065] text-white max-[600px]:rounded-t-3xl">
       <div className="mx-auto grid w-[min(100%-2.5rem,80rem)] gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-14 lg:py-20">
         {/* Brand */}
         <div className="max-w-sm sm:col-span-2 lg:col-span-1">
@@ -63,7 +64,7 @@ function StoreFooter() {
             <span>Vitahub Ug</span>
           </Link>
 
-          <p className="mb-0 mt-6 max-w-xs text-[15px] leading-7 text-[#D9C8F5]">
+          <p className="mb-0 mt-6 max-w-xs text-[15px] leading-7 text-[#DDD6FE]">
             Everyday wellness, made a little simpler. Thoughtful essentials for
             feeling good in your own rhythm.
           </p>
@@ -99,7 +100,7 @@ function StoreFooter() {
               {column.links.map((link) => (
                 <li key={link.href}>
                   <Link
-                    className={`text-[#D9C8F5] underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:text-white hover:decoration-[#20A800] ${footerFocusRing}`}
+                    className={`text-[#DDD6FE] underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:text-white hover:decoration-[#20A800] ${footerFocusRing}`}
                     href={link.href}
                   >
                     {link.text}
@@ -112,11 +113,10 @@ function StoreFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex w-[min(100%-2.5rem,80rem)] flex-col gap-2 py-6 text-[13px] text-[#BBA6E3] sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex w-[min(100%-2.5rem,80rem)] flex-col gap-2 py-6 text-[13px] text-[#C4B5FD] sm:flex-row sm:items-center sm:justify-between">
           <p className="m-0">
-            © {new Date().getFullYear()} Vitahub Ug. Feel good, for
-            real.
+            © {new Date().getFullYear()} Vitahub Ug. Feel good, for real.
           </p>
           <p className="m-0">Thoughtful essentials for your everyday.</p>
         </div>
@@ -124,6 +124,7 @@ function StoreFooter() {
     </footer>
   );
 }
+
 
 function RouteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();

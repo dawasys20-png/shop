@@ -36,7 +36,7 @@ const featureBanners = [
     text: "Vitamins, minerals and more, all in one place.",
     cta: "Browse categories",
     href: "/shop",
-    tone: "bg-[var(--color-secondary)]",
+    tone: "bg-[#4C1D95]",
   },
 ];
 
@@ -174,7 +174,7 @@ async function HomeContent() {
             </p>
           </div>
           <Link
-            className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[var(--color-white)] px-7 text-sm font-semibold text-[var(--color-secondary)] transition-colors hover:bg-[var(--color-background)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[#FAFAFA] px-7 text-sm font-medium text-[#1F1B2E] transition-colors hover:bg-[var(--color-background)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             href={promoBanner.href}
           >
             {promoBanner.cta} <ArrowIcon />
@@ -212,7 +212,7 @@ async function HomeContent() {
                       {banner.text}
                     </p>
                   </div>
-                  <span className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-[var(--color-white)] px-5 py-2.5 text-[13px] font-semibold text-[var(--color-secondary)] transition-all group-hover:gap-4">
+                  <span className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-[var(--color-white)] px-5 py-2.5 text-[13px] font-medium text-[#1F1B2E] transition-all group-hover:gap-4">
                     {banner.cta} <ArrowIcon />
                   </span>
                 </Link>
@@ -224,12 +224,12 @@ async function HomeContent() {
 
       {/* Closing banner */}
       <section className={`${pageWidth} pb-20 pt-10 max-[600px]:pb-14`}>
-        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-3xl bg-[var(--color-background)] px-10 py-12 max-[600px]:px-6 max-[600px]:py-9">
+        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-3xl bg-[#F3E8FF] px-10 py-12 max-[600px]:px-6 max-[600px]:py-9">
           <h2 className="m-0 max-w-xl text-[clamp(26px,3.4vw,40px)] font-medium leading-[1.12] tracking-[-0.02em] text-[var(--color-text)]">
             Find your new daily essential.
           </h2>
           <Link
-            className={`inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[var(--color-secondary)] px-7 text-sm font-semibold text-[var(--color-white)] transition-colors hover:bg-[var(--color-primary)] ${focusRing}`}
+            className={`inline-flex min-h-12 items-center justify-center gap-4 rounded-full bg-[var(--color-secondary)] px-7 text-sm font-medium text-[var(--color-white)] transition-colors hover:bg-[var(--color-primary)] ${focusRing}`}
             href="/shop"
           >
             Shop all supplements <ArrowIcon />
