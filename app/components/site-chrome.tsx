@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, type ReactNode } from "react";
+import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { StoreNavigation } from "./store-navigation";
 import { ShoppingAssistant } from "./shopping-assistant";
 import { WhatsAppWidget } from "./whatsapp-widget";
@@ -49,6 +50,12 @@ const footerColumns = [
 const footerFocusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
+const footerSocialLinks = [
+  { label: "WhatsApp", Icon: FaWhatsapp, href: "https://wa.me/256781849440?text=Hello%20VitaHub%20UG%2C%20I%20have%20a%20question." },
+  { label: "Instagram", Icon: FaInstagram, href: "https://instagram.com/vitahubug" },
+  { label: "TikTok", Icon: FaTiktok, href: "https://tiktok.com/@vitahubug" },
+  { label: "Facebook", Icon: FaFacebookF, href: "https://facebook.com/vitahubug" },
+];
 
 function StoreFooter() {
   return (
@@ -88,6 +95,24 @@ function StoreFooter() {
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>
+
+          <nav aria-label="Social media" className="mt-8">
+            <p className="mb-3 text-sm font-medium text-white">Follow us</p>
+            <ul className="m-0 flex list-none gap-3 p-0">
+              {footerSocialLinks.map(({ label, Icon, href }) => (
+                <li key={label}>
+                  <a
+                    aria-label={`Follow Vitahub Ug on ${label} (coming soon)`}
+                    className={`inline-flex size-11 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:border-[#20A800] hover:bg-[#20A800] ${footerFocusRing}`}
+                    href={href}
+                    onClick={(event) => event.preventDefault()}
+                  >
+                    <Icon className="size-5" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         {/* Link columns */}
@@ -143,7 +168,7 @@ function RouteChrome({ children }: { children: ReactNode }) {
       {children}
       <StoreFooter />
       <ShoppingAssistant />
-      <WhatsAppWidget />
+      {/* <WhatsAppWidget /> */}
     </>
   );
 }

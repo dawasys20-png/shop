@@ -59,7 +59,7 @@ export function CategoryNavigation() {
               className={`flex h-[38px] shrink-0 items-center rounded-full px-5 text-[14px] transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9] max-[600px]:h-[34px] max-[600px]:px-4 ${
                 isActive
                   ? "bg-[#20A800] font-semibold text-white shadow-sm"
-                  : "font-medium text-[#6B6680] hover:bg-[#F0EAF9] hover:text-[#4C1D95]"
+                  : "font-medium text-[#333333] hover:bg-[#F0EAF9] hover:text-[#4C1D95]"
               }`}
             >
               {category.name}

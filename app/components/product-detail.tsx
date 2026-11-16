@@ -711,12 +711,12 @@ export function ProductDetail({
                             : "border-[#F3E8FF] bg-white hover:border-[#A78BFA]"
                         }`}
                       >
-                        <span className="block text-[15px] text-[#1F1B2E]">
+                        <span className="block text-sm text-[#1F1B2E]">
                           {packageQuantity}
                         </span>
                         {packageVariant && (
                           <span
-                            className={`mt-1.5 block text-[13px] ${
+                            className={`mt-1.5 block text-md ${
                               on
                                 ? "font-semibold text-[#1F1B2E]"
                                 : "text-[#6B6680]"
@@ -736,27 +736,27 @@ export function ProductDetail({
             >
               <h2
                 id="key-information-heading"
-                className="mb-4 mt-0 text-[20px] font-semibold text-[#1F1B2E]"
+                className="mb-4 mt-0 text-[17px] font-semibold text-[#1F1B2E]"
               >
                 Key information
               </h2>
               <dl className="m-0 grid grid-cols-2 gap-4">
                 <div>
                   <dt className="text-xs text-[#6B6680]">Portion size</dt>
-                  <dd className="m-0 mt-1 text-sm font-medium text-[#4C1D95]">
+                  <dd className="m-0 mt-1 text-md font-medium text-[#1F1B2E]">
                     {portionSize}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-[#6B6680]">Total servings</dt>
-                  <dd className="m-0 mt-1 text-sm font-medium text-[#4C1D95]">
+                  <dd className="m-0 mt-1 text-md font-medium text-[#1F1B2E]">
                     {totalServings}
                   </dd>
                 </div>
               </dl>
-              <dl className="mt-4 border-t border-[#E0D6F2] pt-3">
+              <dl className="mt-4 pt-1">
                 <dt className="text-xs text-[#6B6680]">Best before / expiry</dt>
-                <dd className="m-0 mt-1 text-sm font-medium text-[#4C1D95]">
+                <dd className="m-0 mt-1 text-md font-medium text-[#1F1B2E]">
                   {selectedVariant.bestBefore
                     ? formatBestBefore(selectedVariant.bestBefore)
                     : "Not provided"}
@@ -766,9 +766,9 @@ export function ProductDetail({
           </div>
 
           {/* Purchase */}
-          <div className="mt-8 rounded-3xl border border-[#F3E8FF] p-6 max-[600px]:p-5">
+          <div className="mt-10 rounded-3xl bg-[#F3E8FF] border border-[#F3E8FF] p-6 max-[600px]:p-5">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-              <p className="m-0 text-[25px] font-semibold leading-none tracking-tight text-[#20A800]">
+              <p className="m-0 text-[25px] font-semibold leading-none tracking-tight text-[#4C1D95]">
                 {formatPrice(selectedVariant.price)}
               </p>
               <p className="m-0 text-[13px] text-[#6B6680]">
@@ -823,7 +823,7 @@ export function ProductDetail({
             </div>
 
             <button
-              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#F3E8FF] bg-[#6D28D9] text-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing}`}
+              className={`mt-5 min-h-[52px] w-full rounded-full border border-[#F3E8FF] bg-[#6D28D9] text-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing}`}
               type="button"
               onClick={handleCheckout}
             >
@@ -852,14 +852,14 @@ export function ProductDetail({
       >
         <h2
           id="product-information-heading"
-          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#4C1D95]"
+          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#1F1B2E]"
         >
           Product information
         </h2>
 
         <div className="grid min-w-0 grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-12 border-t border-[#E9E1F5] pt-10 max-[900px]:grid-cols-1 max-[900px]:gap-8 max-[600px]:pt-8">
           <div className="min-w-0">
-            <h3 className="mb-4 mt-0 text-lg font-medium text-[#4C1D95]">
+            <h3 className="mb-4 mt-0 text-lg font-medium text-[#6B6680]">
               Overview
             </h3>
             <p className="m-0 max-w-[62ch] break-words text-[15px] leading-8 text-[#4A4658] [overflow-wrap:anywhere]">

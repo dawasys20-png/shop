@@ -236,7 +236,7 @@ export function StoreNavigation() {
 
           {/* Account and cart */}
           <div className="flex items-center justify-end gap-6 max-[900px]:col-start-2 max-[900px]:row-start-1 max-[900px]:gap-4">
-            <div className="flex items-center gap-6 text-[14px] text-[#4A4658] max-[900px]:hidden">
+            <div className="flex items-center font-medium gap-6 text-[14px] text-[#4A4658] max-[900px]:hidden">
               <Link
                 href="/orders"
                 className={`transition-colors hover:text-[#4C1D95] ${focusRing}`}
@@ -248,7 +248,7 @@ export function StoreNavigation() {
             {!user ? (
               <Link
                 href="/login"
-                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#F3E8FF] px-5 text-[13px] font-normal text-[#4C1D95] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing} max-[900px]:hidden`}
+                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#F3E8FF] px-5 text-[14px] font-medium text-[#4C1D95] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing} max-[900px]:hidden`}
               >
                 Sign in
               </Link>
