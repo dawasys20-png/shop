@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { formatPrice } from "../lib/currency";
+import { formatPrice, FREE_DELIVERY_THRESHOLD } from "../lib/currency";
 import { getVariantImages } from "../lib/products";
 import { useCart } from "./cart-context";
 
@@ -62,9 +62,20 @@ export function CartPage() {
       </header>
 
       {!cartReady ? (
-        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
-          Loading your bag…
-        </p>
+        <div
+          className="flex min-h-[300px] flex-col items-center justify-center"
+          role="status"
+          aria-label="Loading your bag"
+        >
+          <Image
+            src="/logo.png"
+            alt="VitaHub UG"
+            width={160}
+            height={160}
+            className="h-40 w-40 animate-pulse object-contain"
+          />
+          <span className="sr-only">Loading your bag...</span>
+        </div>
       ) : cart.length === 0 ? (
         <section className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl bg-[#F3E8FF] px-6 py-14 text-center">
           <span
@@ -226,7 +237,9 @@ export function CartPage() {
                   {shipping === 0 ? (
                     <>You unlocked free shipping!</>
                   ) : (
-                    <>You&apos;re {formatPrice(60 - subtotal)} away from free shipping.</>
+                    <>
+                      You&apos;re {formatPrice(FREE_DELIVERY_THRESHOLD - subtotal)} away from free shipping.
+                    </>
                   )}
                 </span>
               </p>
@@ -236,7 +249,12 @@ export function CartPage() {
               >
                 <span
                   className="block h-full rounded-full bg-[#20A800] transition-[width] duration-200 motion-reduce:transition-none"
-                  style={{ width: `${Math.min((subtotal / 60) * 100, 100)}%` }}
+                  style={{
+                    width: `${Math.min(
+                      (subtotal / FREE_DELIVERY_THRESHOLD) * 100,
+                      100,
+                    )}%`,
+                  }}
                 />
               </span>
             </div>
@@ -269,7 +287,7 @@ export function CartPage() {
               Continue to checkout <span aria-hidden="true">→</span>
             </Link>
             <p className="mb-0 mt-3 text-center text-xs text-[#6B6680]">
-              Free Delivery over UGX 150000
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </p>
           </aside>
         </div>

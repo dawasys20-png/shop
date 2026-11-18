@@ -458,7 +458,7 @@ export function CatalogPage({
           {visibleProducts.length > 0 ? (
             <ProductGrid products={visibleProducts} />
           ) : (
-            <div className="relative flex min-h-[380px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-[#E9E1F5] bg-gradient-to-br from-[#FAF8FF] via-[#F5EEFF] to-[#F0E7FF] px-6 py-14 text-center">
+            <div className="relative flex min-h-[380px] flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-14 text-center">
 
   {/* Decorative background elements */}
   <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-white/40 blur-2xl" />

@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { formatPrice } from "../lib/currency";
+import { formatPrice, FREE_DELIVERY_THRESHOLD } from "../lib/currency";
 import { apiRequest } from "../lib/api";
-import type { CheckoutContact } from "../lib/orders";
+import type { CheckoutContact, PaymentMethod } from "../lib/orders";
 import { getVariantImages } from "../lib/products";
 import { useCart } from "./cart-context";
 
@@ -76,6 +76,16 @@ export function CheckoutPage() {
       address: String(formData.get("address") ?? "").trim(),
       city: String(formData.get("city") ?? "").trim(),
     };
+    const paymentMethodValue = formData.get("paymentMethod");
+    if (
+      paymentMethodValue !== "pay_on_delivery" &&
+      paymentMethodValue !== "pay_now"
+    ) {
+      setErrorMessage("Please choose a payment method.");
+      return;
+    }
+    const paymentMethod: PaymentMethod = paymentMethodValue;
+
     if (
       !contact.name ||
       !contact.email ||
@@ -96,7 +106,7 @@ export function CheckoutPage() {
         return;
       }
 
-      const order = await placeOrder(contact);
+      const order = await placeOrder(contact, paymentMethod);
       router.push(`/orders/${encodeURIComponent(order.id)}`);
     } catch (error) {
       console.error("Could not place the order.", error);
@@ -141,9 +151,20 @@ export function CheckoutPage() {
       </header>
 
       {!cartReady || !ordersReady || (cart.length > 0 && !sessionChecked) ? (
-        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
-          Preparing your checkout…
-        </p>
+        <div
+          className="flex min-h-[300px] flex-col items-center justify-center"
+          role="status"
+          aria-label="Preparing your checkout"
+        >
+          <Image
+            src="/logo.png"
+            alt="VitaHub UG"
+            width={160}
+            height={160}
+            className="h-40 w-40 animate-pulse object-contain"
+          />
+          <span className="sr-only">Preparing your checkout...</span>
+        </div>
       ) : cart.length === 0 ? (
         <section className="grid justify-items-start gap-3 rounded-3xl bg-[#F3E8FF] p-10 max-[600px]:p-6">
           <h2 className="m-0 text-[26px] font-medium tracking-[-0.02em] text-[#4C1D95]">
@@ -219,6 +240,40 @@ export function CheckoutPage() {
                 />
               </label>
 
+              <fieldset className="grid gap-3 border-0 p-0">
+                <legend className={`${labelClass} mb-3`}>Payment method</legend>
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E0D6F2] bg-white p-4 text-[13px] text-[#4A4658] transition-colors has-[:checked]:border-[#6D28D9] has-[:checked]:bg-[#F8F3FF]">
+                  <input
+                    className="mt-1 accent-[#6D28D9]"
+                    type="radio"
+                    name="paymentMethod"
+                    value="pay_on_delivery"
+                    required
+                  />
+                  <span className="grid gap-1">
+                    <strong className="font-semibold text-[#1F1B2E]">
+                      Pay on delivery
+                    </strong>
+                    <span>Pay when your order arrives.</span>
+                  </span>
+                </label>
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E0D6F2] bg-white p-4 text-[13px] text-[#4A4658] transition-colors has-[:checked]:border-[#6D28D9] has-[:checked]:bg-[#F8F3FF]">
+                  <input
+                    className="mt-1 accent-[#6D28D9]"
+                    type="radio"
+                    name="paymentMethod"
+                    value="pay_now"
+                    required
+                  />
+                  <span className="grid gap-1">
+                    <strong className="font-semibold text-[#1F1B2E]">
+                      Pay now
+                    </strong>
+                    <span>Pay online when you place your order.</span>
+                  </span>
+                </label>
+              </fieldset>
+
               {errorMessage && (
                 <p
                   className="m-0 rounded-2xl border border-[#F0D3CF] bg-[#FBEFED] px-5 py-3.5 text-[13px] leading-6 text-[#9A443E]"
@@ -229,7 +284,7 @@ export function CheckoutPage() {
               )}
 
               <div className="rounded-2xl bg-[#F3E8FF] px-5 py-4 text-[13px] leading-[1.65] text-[#4A4658]">
-                Payment is not collected here. Your order details are securely saved with the store.
+                Your chosen payment method will be included with your order.
               </div>
 
               <button
@@ -310,7 +365,7 @@ export function CheckoutPage() {
                 className="h-2 w-2 shrink-0 rounded-full bg-[#20A800]"
                 aria-hidden="true"
               />
-              Free shipping on orders UGX 60+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </p>
           </aside>
         </div>

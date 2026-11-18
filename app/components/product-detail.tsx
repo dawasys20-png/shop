@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { formatPrice } from "../lib/currency";
+import { formatPrice, FREE_DELIVERY_THRESHOLD } from "../lib/currency";
 import { apiRequest } from "../lib/api";
 import {
   getPrimaryProductImage,
@@ -839,7 +839,7 @@ export function ProductDetail({
                 className="h-2 w-2 shrink-0 rounded-full bg-[#20A800]"
                 aria-hidden="true"
               />
-              Free shipping on orders {formatPrice(150000)}+. Easy, secure checkout.
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+. Easy, secure checkout.
             </p>
           </div>
         </div>

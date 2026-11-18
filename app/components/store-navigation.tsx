@@ -7,6 +7,7 @@ import { FiUser } from "react-icons/fi";
 import { CategoryNavigation } from "./category-navigation";
 import { useCart } from "./cart-context";
 import { apiRequest } from "../lib/api";
+import { formatPrice, FREE_DELIVERY_THRESHOLD } from "../lib/currency";
 import Image from "next/image";
 
 /*
@@ -158,7 +159,7 @@ export function StoreNavigation() {
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white">
-              Free delivery on orders UGX 150000+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
@@ -167,7 +168,7 @@ export function StoreNavigation() {
               className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
               aria-hidden="true"
             >
-              Free delivery on orders UGX 150000+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
@@ -176,7 +177,7 @@ export function StoreNavigation() {
               className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
               aria-hidden="true"
             >
-              Free delivery on orders UGX 150000+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
@@ -185,7 +186,7 @@ export function StoreNavigation() {
               className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
               aria-hidden="true"
             >
-              Free delivery on orders UGX 150000+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
@@ -194,7 +195,7 @@ export function StoreNavigation() {
               className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
               aria-hidden="true"
             >
-              Free delivery on orders UGX 150000+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
@@ -203,7 +204,7 @@ export function StoreNavigation() {
               className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
               aria-hidden="true"
             >
-              Free delivery on orders UGX 150000+
+              Free delivery on orders {formatPrice(FREE_DELIVERY_THRESHOLD)}+
             </span>
           </div>
         </div>
