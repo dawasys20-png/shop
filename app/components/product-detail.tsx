@@ -18,6 +18,7 @@ import {
 } from "../lib/products";
 import { useCart } from "./cart-context";
 import { useCatalog } from "./catalog-context";
+import { BrandLoading } from "./brand-loading";
 
 /*
   Palette under test
@@ -140,7 +141,7 @@ function Stars({
 }) {
   return (
     <span
-      className={`flex gap-0.5 leading-none text-[#c78b22] ${className}`}
+      className={`flex gap-0.5 leading-none text-[#20A800] ${className}`}
       role="img"
       aria-label={label}
     >
@@ -263,16 +264,7 @@ export function ProductDetail({
   useEffect(() => () => clearTimeout(addedTimer.current), []);
 
   if (!ready) {
-    return (
-      <main
-        className={`${pageWidth} min-h-[75vh] pb-24 pt-8`}
-        aria-busy="true"
-      >
-        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
-          Loading product…
-        </p>
-      </main>
-    );
+    return <BrandLoading />;
   }
 
   if (!currentProduct) {
@@ -573,13 +565,14 @@ export function ProductDetail({
 
           {reviewCount > 0 && averageRating !== null ? (
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+               <span className="font-semibold text-[#1F1B2E]">
+                {averageRating.toFixed(1)}
+              </span>
               <Stars
                 value={averageRating}
                 label={`Rated ${averageRating.toFixed(1)} out of 5 from ${reviewCount} ${reviewCount === 1 ? "review" : "reviews"}`}
               />
-              <span className="font-semibold text-[#4C1D95]">
-                {averageRating.toFixed(1)}
-              </span>
+             
               <a
                 href="#customer-reviews"
                 className="text-xs text-[#6B6680] underline underline-offset-4 hover:text-[#4C1D95]"
@@ -593,18 +586,18 @@ export function ProductDetail({
             </p>
           )}
 
-          <a
+          {/* <a
             href="#customer-reviews"
             onClick={openReviewForm}
             className={`mt-3 inline-block text-sm font-medium text-[#6D28D9] underline underline-offset-4 hover:text-[#4C1D95] ${focusRing}`}
           >
             Write a review
-          </a>
+          </a> */}
 
           {/* Options */}
-          <div className="mt-8 grid gap-6 border-t border-[#E9E1F5] pt-8">
+          <div className="mt-4 grid gap-6 border-t border-[#E9E1F5] pt-4">
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Product form:{" "}
                 <span className="font-semibold">{selectedVariant.form}</span>
               </legend>
@@ -626,7 +619,7 @@ export function ProductDetail({
                         onClick={() => chooseProductForm(form)}
                         className={`inline-flex min-w-24 items-center gap-2 rounded-2xl border p-3 text-center transition-colors ${focusRing} ${
                           on
-                            ? "border-[#6D28D9] shadow-[inset_0_0_0_1px_#6D28D9]"
+                            ? "border-[#F3E8FF] shadow-[inset_0_0_0_1px_#6D28D9]"
                             : "border-[#E0D6F2] bg-white hover:border-[#A78BFA]"
                         }`}
                       >
@@ -640,7 +633,7 @@ export function ProductDetail({
                             unoptimized
                           />
                         )}
-                        <span className="text-[13px] font-normal text-[#4C1D95]">
+                        <span className="text-[13px] font-mediun text-[#1F1B2E]">
                           {form}
                         </span>
                       </button>
@@ -649,7 +642,7 @@ export function ProductDetail({
               </div>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Potency:{" "}
                 <span className="font-semibold">{selectedVariant.potency}</span>
               </legend>
@@ -666,9 +659,9 @@ export function ProductDetail({
                       type="button"
                       aria-pressed={selectedVariant.potency === potency}
                       onClick={() => chooseVariantAttribute("potency", potency)}
-                      className={`inline-flex min-w-24 items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-semibold transition-colors ${focusRing} ${
+                      className={`inline-flex min-w-24 items-center justify-center rounded-2xl border px-4 py-3 text-center text-[13px] font-medium transition-colors ${focusRing} ${
                         selectedVariant.potency === potency
-                          ? "border-[#6D28D9] text-[#4C1D95] shadow-[inset_0_0_0_1px_#6D28D9]"
+                          ? "border-[#F3E8FF] text-[#1F1B2E] shadow-[inset_0_0_0_1px_#6D28D9]"
                           : "border-[#E0D6F2] bg-white text-[#5B5675] hover:border-[#A78BFA]"
                       }`}
                     >
@@ -678,7 +671,7 @@ export function ProductDetail({
               </div>
             </fieldset>
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 p-0 text-sm text-[#4C1D95]">
+              <legend className="mb-3 p-0 text-sm text-[#1F1B2E]">
                 Package quantity:{" "}
                 <span className="font-semibold">
                   {selectedVariant.packageQuantity}
@@ -714,18 +707,18 @@ export function ProductDetail({
                         }
                         className={`rounded-2xl border p-4 text-left transition-colors ${focusRing} ${
                           on
-                            ? "border-[#6D28D9] shadow-[inset_0_0_0_1px_#6D28D9]"
-                            : "border-[#E0D6F2] bg-white hover:border-[#A78BFA]"
+                            ? "border-[#F3E8FF] shadow-[inset_0_0_0_1px_#6D28D9]"
+                            : "border-[#F3E8FF] bg-white hover:border-[#A78BFA]"
                         }`}
                       >
-                        <span className="block text-[15px] text-[#4C1D95]">
+                        <span className="block text-sm text-[#1F1B2E]">
                           {packageQuantity}
                         </span>
                         {packageVariant && (
                           <span
-                            className={`mt-1.5 block text-[13px] ${
+                            className={`mt-1.5 block text-md ${
                               on
-                                ? "font-semibold text-[#6D28D9]"
+                                ? "font-semibold text-[#1F1B2E]"
                                 : "text-[#6B6680]"
                             }`}
                           >
@@ -738,32 +731,32 @@ export function ProductDetail({
               </div>
             </fieldset>
             <section
-              className="rounded-2xl bg-[#F3E8FF] p-5"
+              className=""
               aria-labelledby="key-information-heading"
             >
               <h2
                 id="key-information-heading"
-                className="mb-4 mt-0 text-sm font-semibold text-[#4C1D95]"
+                className="mb-4 mt-0 text-[17px] font-semibold text-[#1F1B2E]"
               >
                 Key information
               </h2>
               <dl className="m-0 grid grid-cols-2 gap-4">
                 <div>
                   <dt className="text-xs text-[#6B6680]">Portion size</dt>
-                  <dd className="m-0 mt-1 text-sm font-medium text-[#4C1D95]">
+                  <dd className="m-0 mt-1 text-md font-medium text-[#1F1B2E]">
                     {portionSize}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-[#6B6680]">Total servings</dt>
-                  <dd className="m-0 mt-1 text-sm font-medium text-[#4C1D95]">
+                  <dd className="m-0 mt-1 text-md font-medium text-[#1F1B2E]">
                     {totalServings}
                   </dd>
                 </div>
               </dl>
-              <dl className="mt-4 border-t border-[#E0D6F2] pt-3">
+              <dl className="mt-4 pt-1">
                 <dt className="text-xs text-[#6B6680]">Best before / expiry</dt>
-                <dd className="m-0 mt-1 text-sm font-medium text-[#4C1D95]">
+                <dd className="m-0 mt-1 text-md font-medium text-[#1F1B2E]">
                   {selectedVariant.bestBefore
                     ? formatBestBefore(selectedVariant.bestBefore)
                     : "Not provided"}
@@ -773,9 +766,9 @@ export function ProductDetail({
           </div>
 
           {/* Purchase */}
-          <div className="mt-8 rounded-3xl bg-[#F3E8FF] p-6 max-[600px]:p-5">
+          <div className="mt-10 rounded-3xl bg-[#F3E8FF] border border-[#F3E8FF] p-6 max-[600px]:p-5">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-              <p className="m-0 text-[32px] font-semibold leading-none tracking-tight text-[#4C1D95]">
+              <p className="m-0 text-[25px] font-semibold leading-none tracking-tight text-[#4C1D95]">
                 {formatPrice(selectedVariant.price)}
               </p>
               <p className="m-0 text-[13px] text-[#6B6680]">
@@ -818,7 +811,7 @@ export function ProductDetail({
                 className={`min-h-[52px] rounded-full px-5 text-sm font-semibold transition-colors ${focusRing} ${
                   added
                     ? "bg-[#4C1D95] text-white"
-                    : "bg-[#20A800] text-[#0B1F05] hover:bg-[#2FC106]"
+                    : "bg-[#20A800] text-white hover:bg-[#2FC106]"
                 }`}
                 type="button"
                 onClick={handleAddToBag}
@@ -830,11 +823,11 @@ export function ProductDetail({
             </div>
 
             <button
-              className={`mt-3 min-h-[52px] w-full rounded-full border border-[#6D28D9] bg-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#F3E8FF] ${focusRing}`}
+              className={`mt-5 min-h-[52px] w-full rounded-full border border-[#F3E8FF] bg-[#6D28D9] text-white px-5 text-sm font-semibold text-[#6D28D9] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing}`}
               type="button"
               onClick={handleCheckout}
             >
-              Checkout now · {formatPrice(selectedVariant.price * quantity)}
+              Buy now · {formatPrice(selectedVariant.price * quantity)}
             </button>
 
             <span className="sr-only" role="status">
@@ -846,7 +839,7 @@ export function ProductDetail({
                 className="h-2 w-2 shrink-0 rounded-full bg-[#20A800]"
                 aria-hidden="true"
               />
-              Free shipping on orders {formatPrice(60)}+. Easy, secure checkout.
+              Free shipping on orders {formatPrice(150000)}+. Easy, secure checkout.
             </p>
           </div>
         </div>
@@ -859,14 +852,14 @@ export function ProductDetail({
       >
         <h2
           id="product-information-heading"
-          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#4C1D95]"
+          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#1F1B2E]"
         >
           Product information
         </h2>
 
         <div className="grid min-w-0 grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-12 border-t border-[#E9E1F5] pt-10 max-[900px]:grid-cols-1 max-[900px]:gap-8 max-[600px]:pt-8">
           <div className="min-w-0">
-            <h3 className="mb-4 mt-0 text-lg font-medium text-[#4C1D95]">
+            <h3 className="mb-4 mt-0 text-lg font-medium text-[#6B6680]">
               Overview
             </h3>
             <p className="m-0 max-w-[62ch] break-words text-[15px] leading-8 text-[#4A4658] [overflow-wrap:anywhere]">
@@ -875,7 +868,7 @@ export function ProductDetail({
           </div>
 
           <div className="min-w-0 max-w-full rounded-3xl bg-[#F3E8FF] p-6 max-[600px]:p-5">
-            <h3 className="mb-4 mt-0 text-lg font-medium text-[#4C1D95]">
+            <h3 className="mb-4 mt-0 text-lg font-medium text-[#1F1B2E]">
               Specifications
             </h3>
             <dl className="m-0 grid min-w-0 text-sm">
@@ -893,7 +886,7 @@ export function ProductDetail({
                 .map(([label, value], index, rows) => (
                 <div
                   className={`grid min-w-0 grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-x-4 gap-y-1 py-3 max-[420px]:grid-cols-1 ${
-                    index < rows.length - 1 ? "border-b border-[#E0D6F2]" : ""
+                    index < rows.length - 1 ? "border-b border-[#F3E8FF]" : ""
                   }`}
                   key={`${label}-${index}`}
                 >
@@ -976,7 +969,7 @@ export function ProductDetail({
       >
         <h2
           id="customer-reviews-heading"
-          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#4C1D95]"
+          className="mb-8 mt-0 text-[28px] font-medium tracking-[-0.02em] text-[#1F1B2E]"
         >
           Reviews for {selectedVariant.form} · {selectedVariant.potency} ·{" "}
           {selectedVariant.packageQuantity}

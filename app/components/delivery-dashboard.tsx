@@ -12,6 +12,7 @@ import {
   type OrderStatus,
 } from "../lib/orders";
 import { useCart } from "./cart-context";
+import { PrintOrderReceipt } from "./order-receipt";
 
 export function DeliveryDashboard() {
   const { orders, ordersReady, ordersError, refreshOrders, updateOrderStatus } =
@@ -232,6 +233,12 @@ export function DeliveryDashboard() {
                     ))}
                   </ul>
                 </section>
+              </div>
+              <div className="flex justify-end border-t border-[#e3e7dd] pt-4">
+                <PrintOrderReceipt
+                  order={order}
+                  className="inline-flex min-h-10 items-center rounded-full border border-[#cbd6cc] bg-white px-5 text-[13px] font-medium text-[#355342] hover:bg-[#f3f5ef]"
+                />
               </div>
             </article>
           ))}

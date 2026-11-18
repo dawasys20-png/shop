@@ -458,31 +458,72 @@ export function CatalogPage({
           {visibleProducts.length > 0 ? (
             <ProductGrid products={visibleProducts} />
           ) : (
-            <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl bg-[#F3E8FF] px-6 py-14 text-center">
-              <span
-                className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl text-[#8B5CF6]"
-                aria-hidden="true"
-              >
-                ✳
-              </span>
+            <div className="relative flex min-h-[380px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-[#E9E1F5] bg-gradient-to-br from-[#FAF8FF] via-[#F5EEFF] to-[#F0E7FF] px-6 py-14 text-center">
 
-              <h3 className="mb-2 text-xl font-medium text-[#4C1D95]">
-                No products match these filters
-              </h3>
+  {/* Decorative background elements */}
+  <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-white/40 blur-2xl" />
+  <div className="pointer-events-none absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-[#DCC5FF]/30 blur-2xl" />
 
-              <p className="mb-7 max-w-sm text-sm leading-6 text-[#6B6680]">
-                Try a different search term, or remove a filter to see more
-                supplements.
-              </p>
+  {/* Icon */}
+  <div className="relative mb-6 flex h-[76px] w-[76px] items-center justify-center rounded-2xl border border-white bg-white/90 text-[#6D28D9] shadow-[0_8px_30px_rgba(109,40,217,0.10)]">
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-4-4" />
+      <path d="M8.5 11h5" />
+    </svg>
+  </div>
 
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6D28D9] px-7 text-[13px] font-semibold text-white transition-colors hover:bg-[#4C1D95] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
-              >
-                Clear filters
-              </button>
-            </div>
+  {/* Text */}
+  <div className="relative">
+    <span className="mb-3 inline-flex items-center rounded-full border border-[#E5D5FA] bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7952B5]">
+      No results found
+    </span>
+
+    <h3 className="mb-3 text-xl font-semibold tracking-tight text-[#2E1065] sm:text-2xl">
+      Nothing here just yet
+    </h3>
+
+    <p className="mx-auto mb-8 max-w-sm text-[13px] leading-6 text-[#716783] sm:text-sm">
+      We couldn't find supplements matching your current filters.
+      Try adjusting your search or clearing your filters to explore
+      more products.
+    </p>
+  </div>
+
+  {/* Action */}
+  <button
+    type="button"
+    onClick={clearFilters}
+    className="relative inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#20A800] px-8 text-[13px] font-semibold text-white shadow-[0_5px_16px_rgba(32,168,0,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#188C00] hover:shadow-[0_8px_20px_rgba(32,168,0,0.24)] active:translate-y-0 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#20A800]"
+  >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 6h18" />
+      <path d="m8 6 1 14h6l1-14" />
+      <path d="M10 6V4h4v2" />
+    </svg>
+    Clear all filters
+  </button>
+</div>
           )}
         </section>
       </div>

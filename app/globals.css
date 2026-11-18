@@ -10,8 +10,8 @@
 }
 
 @theme {
-  --font-sans: "Geist", sans-serif;
-  --font-mono: monospace;
+  /* --font-sans: "Geist", sans-serif; */
+  /* --font-mono: monospace; */
 }
 
 * {
@@ -26,8 +26,130 @@ body {
   margin: 0;
   background: var(--color-background);
   color: var(--color-text);
-  font-family: "Geist", sans-serif;
+  /* font-family: "Geist", sans-serif; */
   -webkit-font-smoothing: antialiased;
+}
+
+.receipt-print-target {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body.printing-order-receipt {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  body.printing-order-receipt > * {
+    visibility: hidden !important;
+  }
+
+  body.printing-order-receipt > .receipt-print-target {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #111 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 11pt !important;
+    visibility: visible !important;
+  }
+
+  body.printing-order-receipt > .receipt-print-target * {
+    visibility: visible !important;
+  }
+
+  .receipt-header {
+    border-bottom: 1px solid #999;
+    padding-bottom: 12px;
+  }
+
+  .receipt-header h1 {
+    margin: 12px 0 8px;
+    font-size: 22pt;
+  }
+
+  .receipt-header p,
+  .receipt-contact p {
+    margin: 4px 0;
+  }
+
+  .receipt-brand {
+    font-size: 16pt;
+    font-weight: 700;
+  }
+
+  .receipt-contact {
+    margin: 18px 0;
+  }
+
+  .receipt-contact h2 {
+    margin: 0 0 8px;
+    font-size: 12pt;
+  }
+
+  .receipt-items {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .receipt-items th,
+  .receipt-items td {
+    border-bottom: 1px solid #ddd;
+    padding: 8px 6px;
+    vertical-align: top;
+  }
+
+  .receipt-items th:not(:first-child),
+  .receipt-items td:not(:first-child) {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .receipt-item-detail {
+    display: block;
+    margin-top: 3px;
+    color: #555;
+    font-size: 9pt;
+  }
+
+  .receipt-totals {
+    width: min(100%, 300px);
+    margin: 18px 0 0 auto;
+  }
+
+  .receipt-totals div {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 5px 0;
+  }
+
+  .receipt-totals dd {
+    margin: 0;
+  }
+
+  .receipt-total {
+    border-top: 1px solid #999;
+    font-size: 13pt;
+    font-weight: 700;
+  }
+
+  .receipt-footer {
+    margin-top: 28px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    color: #555;
+    font-size: 9pt;
+  }
 }
 
 

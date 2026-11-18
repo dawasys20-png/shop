@@ -4,6 +4,8 @@ const authEndpoints = new Set([
   "/auth/signup",
   "/auth/login",
   "/auth/admin/login",
+  "/auth/forgot-password",
+  "/auth/reset-password",
   "/auth/refresh",
   "/auth/logout",
 ]);

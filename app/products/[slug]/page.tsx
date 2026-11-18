@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { BrandLoading } from "../../components/brand-loading";
 import { ProductDetail } from "../../components/product-detail";
 import {
   findProductVariant,
@@ -29,26 +30,26 @@ export async function generateMetadata({
     (product ? getStartingVariant(product) : undefined);
   const description =
     startingVariant?.description?.replace(/\s+/g, " ").trim().slice(0, 300) ||
-    `${product?.name ?? "Thoughtful supplements"} from ${product?.brand ?? "Form & Function"}. Explore product details and shop online.`;
+    `${product?.name ?? "Thoughtful supplements"} from ${product?.brand ?? "Vitahub Ug"}. Explore product details and shop online.`;
   const image = startingVariant?.images[0]?.url;
 
   return {
     title: product
-      ? `${product.name} | ${product.brand} | Form & Function`
-      : "Supplement | Form & Function",
+      ? `${product.name} | ${product.brand} | Vitahub Ug`
+      : "Supplement | Vitahub Ug",
     description,
     robots: { index: Boolean(product), follow: true },
     alternates: product ? { canonical: `/products/${encodeURIComponent(slug)}` } : undefined,
     openGraph: {
       type: "website",
-      title: product ? `${product.name} | ${product.brand}` : "Supplements | Form & Function",
+      title: product ? `${product.name} | ${product.brand}` : "Supplements | Vitahub Ug",
       description,
       url: `/products/${encodeURIComponent(slug)}`,
       ...(image ? { images: [{ url: image, alt: startingVariant?.alt || product?.name }] } : {}),
     },
     twitter: {
       card: image ? "summary_large_image" : "summary",
-      title: product ? `${product.name} | ${product.brand}` : "Supplements | Form & Function",
+      title: product ? `${product.name} | ${product.brand}` : "Supplements | Vitahub Ug",
       description,
       ...(image ? { images: [image] } : {}),
     },
@@ -63,13 +64,7 @@ export default function ProductPage({
   searchParams: Promise<{ variant?: string | string[] }>;
 }) {
   return (
-    <Suspense
-      fallback={
-        <main className={`detail-page [width:min(100%_-_104px,_1440px)] [min-height:75vh] [margin:0_auto] [padding:34px_0_100px] max-[900px]:[width:calc(100%_-_56px)] max-[600px]:[width:calc(100%_-_36px)] max-[600px]:[padding-top:18px] max-[600px]:[padding-bottom:70px]`}>
-          <p className={`cart-page-loading [padding:48px_0] [color:#6b7280] [font-size:15px]`} role="status">Loading product…</p>
-        </main>
-      }
-    >
+    <Suspense fallback={<BrandLoading />}>
       <ProductResults params={params} searchParams={searchParams} />
     </Suspense>
   );

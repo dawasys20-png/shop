@@ -13,6 +13,7 @@ import {
   type OrderStatus,
 } from "../lib/orders";
 import {
+  productCategories,
   getProductVariants,
   getVariantImages,
   getStartingPrice,
@@ -22,6 +23,7 @@ import {
 } from "../lib/products";
 import { useCart } from "./cart-context";
 import { useCatalog } from "./catalog-context";
+import { PrintOrderReceipt } from "./order-receipt";
 
 type AdminTab = "overview" | "products" | "orders";
 
@@ -36,48 +38,56 @@ type OrderLineDraft = {
   quantity: number;
 };
 
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  Green is for the main save/create actions and the "complete" status, always with
+  dark text (#0B1F05). Purple is for navigation, selection and headings.
+  neutrals: body #4A4658, muted #6B6680, small labels #77728A, divider #E9E1F5, control border #E0D6F2
+*/
+
 /* ------------------------------------------------------------------ */
 /* Shared styles                                                       */
 /* ------------------------------------------------------------------ */
 
 const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#355342]";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]";
 
-const fieldLabel = "grid min-w-0 gap-2 text-[13px] font-semibold text-[#233b30]";
+const fieldLabel = "grid min-w-0 gap-2 text-[13px] font-semibold text-[#4C1D95]";
 
 const inputClass =
-  "min-h-11 w-full min-w-0 rounded-xl border border-[#dfe4d8] bg-white px-3.5 py-2.5 text-sm font-normal text-[#233b30] outline-none transition-[border-color,box-shadow] placeholder:text-[#9aa297] focus:border-[#64806a] focus:shadow-[0_0_0_3px_rgba(100,128,106,0.15)]";
+  "min-h-11 w-full min-w-0 rounded-xl border border-[#E0D6F2] bg-white px-3.5 py-2.5 text-sm font-normal text-[#4C1D95] outline-none transition-[border-color,box-shadow] placeholder:text-[#9A94AE] focus:border-[#6D28D9] focus:shadow-[0_0_0_3px_rgba(109,40,217,0.15)]";
 
 const textareaClass = `${inputClass} min-h-[88px] resize-y py-3 leading-6`;
 
-const primaryButton = `inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#355342] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#233b30] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
+const primaryButton = `inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#20A800] px-7 text-sm font-semibold text-[#0B1F05] transition-colors hover:bg-[#2FC106] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
 
-const secondaryButton = `inline-flex min-h-10 items-center justify-center rounded-full border border-[#dfe4d8] bg-white px-4 text-[13px] font-medium text-[#355342] transition-colors hover:border-[#9db0a0] hover:bg-[#f3f5ef] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
+const secondaryButton = `inline-flex min-h-10 items-center justify-center rounded-full border border-[#E0D6F2] bg-white px-4 text-[13px] font-medium text-[#6D28D9] transition-colors hover:border-[#A78BFA] hover:bg-[#F3E8FF] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
 
 const dangerButton = `inline-flex min-h-10 items-center justify-center rounded-full border border-[#efd5d1] bg-white px-4 text-[13px] font-medium text-[#a13832] transition-colors hover:border-[#dba9a3] hover:bg-[#fff7f6] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
 
-const linkButton = `w-fit border-0 bg-transparent p-0 text-[13px] font-semibold text-[#355342] underline-offset-4 hover:underline ${focusRing}`;
+const linkButton = `w-fit border-0 bg-transparent p-0 text-[13px] font-semibold text-[#6D28D9] underline-offset-4 hover:underline ${focusRing}`;
 
 const editorCard =
-  "mb-8 mt-2 grid gap-6 rounded-3xl border border-[#e3e7dd] bg-[#fafaf8] p-[clamp(20px,4vw,34px)] max-[480px]:p-5";
+  "mb-8 mt-2 grid gap-6 rounded-3xl border border-[#E9E1F5] bg-[#FAFAFA] p-[clamp(20px,4vw,34px)] max-[480px]:p-5";
 
 const tableWrap =
-  "w-full overflow-x-auto rounded-2xl border border-[#e3e7dd] bg-white";
+  "w-full overflow-x-auto rounded-2xl border border-[#E9E1F5] bg-white";
 
-const th = "bg-[#f6f8f3] px-5 py-3.5 text-left text-xs font-medium text-[#6f7a70]";
-const td = "border-t border-[#eef0ea] px-5 py-4 align-middle text-[13px] text-[#4d5a50]";
+const th = "bg-[#F8F4FE] px-5 py-3.5 text-left text-xs font-medium text-[#6B6680]";
+const td = "border-t border-[#EEE9F7] px-5 py-4 align-middle text-[13px] text-[#4A4658]";
 
 const noticeTone = {
   info: "border-[#ecdcae] bg-[#fbf7ea] text-[#5c5130]",
-  success: "border-[#d5e0d6] bg-[#edf1eb] text-[#2e5b3e]",
+  success: "border-[#CDEBC4] bg-[#E6F7E1] text-[#14530A]",
   error: "border-[#f0d3cf] bg-[#fbefed] text-[#9a443e]",
 } as const;
 
 const statusTone: Record<string, string> = {
-  received: "bg-[#edf1eb] text-[#355342]",
+  received: "bg-[#F3E8FF] text-[#6D28D9]",
   processing: "bg-[#fbf3dc] text-[#7a5d12]",
   shipped: "bg-[#e6f1f0] text-[#2f615b]",
-  complete: "bg-[#dff0e3] text-[#2e6a43]",
+  complete: "bg-[#E6F7E1] text-[#14530A]",
   cancelled: "bg-[#fbefed] text-[#9a443e]",
 };
 
@@ -105,7 +115,7 @@ function StatusPill({ status }: { status: OrderStatus | undefined }) {
   return (
     <span
       className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-        statusTone[value] ?? "bg-[#edf1eb] text-[#355342]"
+        statusTone[value] ?? "bg-[#F3E8FF] text-[#6D28D9]"
       }`}
     >
       {orderStatusLabels[value]}
@@ -139,10 +149,10 @@ function EditorHeading({
 }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-3">
-      <h2 className="m-0 text-[clamp(24px,3vw,30px)] font-medium tracking-[-0.02em] text-[#233b30]">
+      <h2 className="m-0 text-[clamp(24px,3vw,30px)] font-medium tracking-[-0.02em] text-[#4C1D95]">
         {title}
       </h2>
-      {meta && <span className="text-xs text-[#858b81]">{meta}</span>}
+      {meta && <span className="text-xs text-[#77728A]">{meta}</span>}
     </div>
   );
 }
@@ -156,7 +166,7 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-      <h2 className="m-0 text-[clamp(24px,3vw,30px)] font-medium tracking-[-0.02em] text-[#233b30]">
+      <h2 className="m-0 text-[clamp(24px,3vw,30px)] font-medium tracking-[-0.02em] text-[#4C1D95]">
         {title}
       </h2>
       {action}
@@ -488,14 +498,27 @@ function ProductEditor({
           />
         </Field>
         <Field label="Category">
-          <input
+          <select
             className={inputClass}
             value={draft.category}
             onChange={(event) => update("category", event.target.value)}
             required
-            maxLength={100}
-            placeholder="Enter a category"
-          />
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {draft.category &&
+              !productCategories.some(({ name }) => name === draft.category) && (
+                <option value={draft.category}>
+                  Existing category: {draft.category}
+                </option>
+              )}
+            {productCategories.map(({ name }) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label="Brand">
           <input
@@ -507,13 +530,13 @@ function ProductEditor({
         </Field>
       </div>
 
-      <section className="border-t border-[#e3e7dd] pt-6">
+      <section className="border-t border-[#E9E1F5] pt-6">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="m-0 text-lg font-medium text-[#233b30]">
+            <h3 className="m-0 text-lg font-medium text-[#4C1D95]">
               Product forms and combinations
             </h3>
-            <p className="mb-0 mt-1 text-[13px] text-[#6f7a70]">
+            <p className="mb-0 mt-1 text-[13px] text-[#6B6680]">
               Group combinations by product form. Each potency and package combination keeps its own price and details.
             </p>
           </div>
@@ -529,7 +552,7 @@ function ProductEditor({
         <div className="grid gap-4">
           {variantGroups.map((group) => (
             <section
-              className="grid gap-4 rounded-2xl border border-[#d6dfd3] bg-[#f7f8f4] p-4"
+              className="grid gap-4 rounded-2xl border border-[#DDD0F2] bg-[#F8F4FE] p-4"
               key={group.key}
             >
               <div className="flex flex-wrap items-end justify-between gap-3">
@@ -565,10 +588,10 @@ function ProductEditor({
               <div className="grid gap-4">
           {group.options.map(({ variant, index }, combinationIndex) => (
             <fieldset
-              className="m-0 grid grid-cols-4 gap-4 rounded-2xl border border-[#e3e7dd] bg-white p-5 max-[900px]:grid-cols-2 max-[480px]:grid-cols-1"
+              className="m-0 grid grid-cols-4 gap-4 rounded-2xl border border-[#E9E1F5] bg-white p-5 max-[900px]:grid-cols-2 max-[480px]:grid-cols-1"
               key={variant.id}
             >
-              <legend className="px-2 text-[13px] font-semibold text-[#355342]">
+              <legend className="px-2 text-[13px] font-semibold text-[#6D28D9]">
                 Combination {combinationIndex + 1}
               </legend>
               <Field label="Potency">
@@ -758,10 +781,10 @@ function ProductEditor({
               <div className="col-span-full grid gap-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h4 className="m-0 text-sm font-semibold text-[#233b30]">
+                    <h4 className="m-0 text-sm font-semibold text-[#4C1D95]">
                       Specifications for this option
                     </h4>
-                    <p className="mb-0 mt-1 text-xs font-normal text-[#858b81]">
+                    <p className="mb-0 mt-1 text-xs font-normal text-[#77728A]">
                       Add custom name/value facts shown on this variant only.
                     </p>
                   </div>
@@ -848,14 +871,14 @@ function ProductEditor({
                     event.currentTarget.value = "";
                   }}
                 />
-                <span className="text-xs font-normal text-[#858b81]">
+                <span className="text-xs font-normal text-[#77728A]">
                   These images are shown when this form, potency, and package are selected.
                 </span>
                 {!!variant.images?.length && (
                   <ul className="m-0 grid list-none grid-cols-3 gap-3 p-0 sm:grid-cols-5">
                     {variant.images.map((image, imageIndex) => (
                       <li
-                        className="relative overflow-hidden rounded-xl border border-[#dfe4d8]"
+                        className="relative overflow-hidden rounded-xl border border-[#E0D6F2]"
                         key={image.publicId ?? image.url}
                       >
                         <Image
@@ -867,7 +890,7 @@ function ProductEditor({
                           unoptimized
                         />
                         {imageIndex === 0 && (
-                          <span className="absolute left-1 top-1 rounded-full bg-white/95 px-2 py-1 text-[10px] font-medium text-[#355342]">
+                          <span className="absolute left-1 top-1 rounded-full bg-white/95 px-2 py-1 text-[10px] font-medium text-[#6D28D9]">
                             Main
                           </span>
                         )}
@@ -891,7 +914,7 @@ function ProductEditor({
                 )}
               </div>
               <div className="col-span-full flex items-center justify-between gap-3 max-[480px]:flex-wrap">
-                <span className="text-xs text-[#858b81]">Option ID: {variant.id}</span>
+                <span className="text-xs text-[#77728A]">Option ID: {variant.id}</span>
                 <button
                   className={dangerButton}
                   type="button"
@@ -1130,9 +1153,9 @@ function OrderEditor({
         </Field>
       </div>
 
-      <section className="border-t border-[#e3e7dd] pt-6">
+      <section className="border-t border-[#E9E1F5] pt-6">
         <div className="mb-5 flex items-center justify-between gap-4">
-          <h3 className="m-0 text-lg font-medium text-[#233b30]">Order items</h3>
+          <h3 className="m-0 text-lg font-medium text-[#4C1D95]">Order items</h3>
           <button
             className={secondaryButton}
             type="button"
@@ -1159,7 +1182,7 @@ function OrderEditor({
               : [];
             return (
               <div
-                className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_auto] items-end gap-4 rounded-2xl border border-[#e3e7dd] bg-white p-4 max-[900px]:grid-cols-2 max-[480px]:grid-cols-1"
+                className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_auto] items-end gap-4 rounded-2xl border border-[#E9E1F5] bg-white p-4 max-[900px]:grid-cols-2 max-[480px]:grid-cols-1"
                 key={line.key}
               >
                 <Field label="Product">
@@ -1221,11 +1244,11 @@ function OrderEditor({
           })}
         </div>
 
-        <p className="mb-1 mt-6 flex justify-between border-t border-[#e3e7dd] pt-4 text-sm text-[#6f7a70]">
+        <p className="mb-1 mt-6 flex justify-between border-t border-[#E9E1F5] pt-4 text-sm text-[#6B6680]">
           Estimated subtotal
-          <strong className="text-base text-[#233b30]">{formatPrice(subtotal)}</strong>
+          <strong className="text-base text-[#4C1D95]">{formatPrice(subtotal)}</strong>
         </p>
-        <p className="mb-0 mt-2 text-xs leading-5 text-[#858b81]">
+        <p className="mb-0 mt-2 text-xs leading-5 text-[#77728A]">
           Line item details use the current catalog price. Delivery is recalculated when saved.
         </p>
       </section>
@@ -1258,14 +1281,14 @@ function MetricCard({
   footer: ReactNode;
 }) {
   return (
-    <article className="grid min-h-[150px] min-w-0 content-between gap-4 rounded-3xl border border-[#e3e7dd] bg-white p-6 max-[600px]:min-h-[130px] max-[600px]:p-5">
+    <article className="grid min-h-[150px] min-w-0 content-between gap-4 rounded-3xl border border-[#E9E1F5] bg-white p-6 max-[600px]:min-h-[130px] max-[600px]:p-5">
       <div>
-        <p className="m-0 text-[13px] text-[#6f7a70]">{label}</p>
-        <p className="mb-0 mt-2 text-[clamp(28px,3vw,38px)] font-semibold leading-none tracking-tight text-[#233b30]">
+        <p className="m-0 text-[13px] text-[#6B6680]">{label}</p>
+        <p className="mb-0 mt-2 text-[clamp(28px,3vw,38px)] font-semibold leading-none tracking-tight text-[#4C1D95]">
           {value}
         </p>
       </div>
-      <div className="text-xs text-[#858b81]">{footer}</div>
+      <div className="text-xs text-[#77728A]">{footer}</div>
     </article>
   );
 }
@@ -1318,9 +1341,9 @@ function AdminOverview({
       </div>
 
       <div className="grid grid-cols-[minmax(0,1.7fr)_minmax(250px,0.8fr)] gap-4 max-[900px]:grid-cols-1">
-        <section className="min-w-0 rounded-3xl border border-[#e3e7dd] bg-white p-6 max-[600px]:p-5">
+        <section className="min-w-0 rounded-3xl border border-[#E9E1F5] bg-white p-6 max-[600px]:p-5">
           <div className="mb-4 flex items-center justify-between gap-4">
-            <h2 className="m-0 text-xl font-medium tracking-[-0.01em] text-[#233b30]">
+            <h2 className="m-0 text-xl font-medium tracking-[-0.01em] text-[#4C1D95]">
               Recent orders
             </h2>
             <button className={linkButton} type="button" onClick={() => onSelect("orders")}>
@@ -1329,26 +1352,26 @@ function AdminOverview({
           </div>
 
           {orders.length === 0 ? (
-            <p className="m-0 rounded-2xl bg-[#f3f5ef] px-5 py-8 text-center text-sm text-[#6f7a70]">
+            <p className="m-0 rounded-2xl bg-[#F3E8FF] px-5 py-8 text-center text-sm text-[#6B6680]">
               New orders will appear here.
             </p>
           ) : (
             <ul className="m-0 list-none p-0">
               {orders.slice(0, 5).map((order) => (
                 <li
-                  className="flex items-center justify-between gap-4 border-t border-[#eef0ea] py-4 first:border-t-0 first:pt-1 max-[600px]:items-start"
+                  className="flex items-center justify-between gap-4 border-t border-[#EEE9F7] py-4 first:border-t-0 first:pt-1 max-[600px]:items-start"
                   key={order.id}
                 >
                   <div className="grid min-w-0 gap-1">
-                    <strong className="text-[13px] font-semibold text-[#233b30]">
+                    <strong className="text-[13px] font-semibold text-[#4C1D95]">
                       {order.contact.name || "Unnamed customer"}
                     </strong>
-                    <span className="truncate text-xs text-[#858b81]">
+                    <span className="truncate text-xs text-[#77728A]">
                       {order.id} · {formatOrderDate(order.createdAt)}
                     </span>
                   </div>
                   <div className="grid shrink-0 justify-items-end gap-1.5">
-                    <strong className="text-[13px] font-semibold text-[#233b30]">
+                    <strong className="text-[13px] font-semibold text-[#4C1D95]">
                       {formatPrice(order.total)}
                     </strong>
                     <StatusPill status={order.status} />
@@ -1359,19 +1382,19 @@ function AdminOverview({
           )}
         </section>
 
-        <aside className="flex min-w-0 flex-col gap-3 rounded-3xl bg-[#f3f5ef] p-6 max-[600px]:p-5">
-          <h2 className="m-0 mb-2 text-xl font-medium tracking-[-0.01em] text-[#233b30]">
+        <aside className="flex min-w-0 flex-col gap-3 rounded-3xl bg-[#F3E8FF] p-6 max-[600px]:p-5">
+          <h2 className="m-0 mb-2 text-xl font-medium tracking-[-0.01em] text-[#4C1D95]">
             What would you like to do?
           </h2>
           <button
-            className={`flex min-h-12 items-center justify-between rounded-full bg-white px-5 text-sm font-medium text-[#233b30] transition-colors hover:bg-[#edf1eb] ${focusRing}`}
+            className={`flex min-h-12 items-center justify-between rounded-full bg-white px-5 text-sm font-medium text-[#4C1D95] transition-colors hover:bg-[#E9D5FF] ${focusRing}`}
             type="button"
             onClick={() => onSelect("products")}
           >
             Manage products <span aria-hidden="true">→</span>
           </button>
           <button
-            className={`flex min-h-12 items-center justify-between rounded-full bg-white px-5 text-sm font-medium text-[#233b30] transition-colors hover:bg-[#edf1eb] ${focusRing}`}
+            className={`flex min-h-12 items-center justify-between rounded-full bg-white px-5 text-sm font-medium text-[#4C1D95] transition-colors hover:bg-[#E9D5FF] ${focusRing}`}
             type="button"
             onClick={() => onSelect("orders")}
           >
@@ -1551,31 +1574,31 @@ export function AdminDashboard() {
   ];
 
   return (
-    <main className="mx-auto min-h-[70vh] w-[min(100%_-_56px,_1320px)] pb-24 pt-6 text-[#1f2a24] max-[700px]:w-[calc(100%_-_32px)] max-[700px]:pb-16">
+    <main className="mx-auto min-h-[70vh] w-[min(100%_-_56px,_1320px)] pb-24 pt-6 text-[#1F1B2E] max-[700px]:w-[calc(100%_-_32px)] max-[700px]:pb-16">
       <nav
-        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[#858b81]"
+        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[#77728A]"
         aria-label="Breadcrumb"
       >
-        <Link className="transition-colors hover:text-[#355342]" href="/">
+        <Link className="transition-colors hover:text-[#6D28D9]" href="/">
           Home
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="font-medium text-[#355342]" aria-current="page">
+        <span className="font-medium text-[#6D28D9]" aria-current="page">
         Admin dashboard
         </span>
       </nav>
 
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-[#e3e7dd] pb-8">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-[#E9E1F5] pb-8">
         <div>
-          <h1 className="m-0 text-[clamp(32px,4vw,44px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#233b30]">
+          <h1 className="m-0 text-[clamp(32px,4vw,44px)] font-medium leading-[1.1] tracking-[-0.025em] text-[#4C1D95]">
             Admin dashboard
           </h1>
-          <p className="mb-0 mt-2 text-[15px] text-[#6f7a70]">
+          <p className="mb-0 mt-2 text-[15px] text-[#6B6680]">
             Manage the store catalog and customer orders.
           </p>
         </div>
         <Link
-          className={`inline-flex min-h-10 items-center gap-2 rounded-full border border-[#dfe4d8] bg-white px-5 text-[13px] font-medium text-[#355342] transition-colors hover:border-[#9db0a0] hover:bg-[#f3f5ef] ${focusRing}`}
+          className={`inline-flex min-h-10 items-center gap-2 rounded-full border border-[#E0D6F2] bg-white px-5 text-[13px] font-medium text-[#6D28D9] transition-colors hover:border-[#A78BFA] hover:bg-[#F3E8FF] ${focusRing}`}
           href="/shop"
         >
           View storefront <span aria-hidden="true">→</span>
@@ -1595,7 +1618,7 @@ export function AdminDashboard() {
       {actionError && <Notice tone="error" role="alert">{actionError}</Notice>}
 
       <div
-        className="mb-8 mt-6 inline-flex max-w-full gap-1 overflow-x-auto rounded-full bg-[#f3f5ef] p-1"
+        className="mb-8 mt-6 inline-flex max-w-full gap-1 overflow-x-auto rounded-full bg-[#F3E8FF] p-1"
         role="tablist"
         aria-label="Admin data"
       >
@@ -1610,15 +1633,15 @@ export function AdminDashboard() {
               onClick={() => selectTab(id)}
               className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-5 text-sm font-medium transition-colors ${focusRing} ${
                 selected
-                  ? "bg-[#355342] text-white"
-                  : "text-[#6f7a70] hover:text-[#233b30]"
+                  ? "bg-[#6D28D9] text-white"
+                  : "text-[#6B6680] hover:text-[#4C1D95]"
               }`}
             >
               {label}
               {count !== undefined && (
                 <span
                   className={`grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[11px] ${
-                    selected ? "bg-white/20 text-white" : "bg-white text-[#355342]"
+                    selected ? "bg-white/20 text-white" : "bg-white text-[#6D28D9]"
                   }`}
                 >
                   {count}
@@ -1630,7 +1653,7 @@ export function AdminDashboard() {
       </div>
 
       {!ready ? (
-        <p className="py-12 text-[15px] text-[#6f7a70]" role="status">
+        <p className="py-12 text-[15px] text-[#6B6680]" role="status">
           Loading store data…
         </p>
       ) : tab === "overview" ? (
@@ -1682,11 +1705,11 @@ export function AdminDashboard() {
                 {products.map((product) => {
                   const variant = getStartingVariant(product);
                   return (
-                  <tr className="transition-colors hover:bg-[#fafaf8]" key={product.id}>
+                  <tr className="transition-colors hover:bg-[#F8F4FE]" key={product.id}>
                     <td className={td}>
                       <div className="flex min-w-[220px] items-center gap-4">
                         <Image
-                          className="h-[60px] w-[52px] flex-none rounded-xl bg-[#f2f3ee] object-cover"
+                          className="h-[60px] w-[52px] flex-none rounded-xl bg-[#F3E8FF] object-cover"
                           src={getVariantImages(product, variant)[0]?.url ?? ""}
                           alt=""
                           width={52}
@@ -1694,21 +1717,21 @@ export function AdminDashboard() {
                           unoptimized
                         />
                         <span className="grid gap-1">
-                          <strong className="text-sm font-semibold text-[#233b30]">
+                          <strong className="text-sm font-semibold text-[#4C1D95]">
                             {product.name}
                           </strong>
-                          <small className="text-xs text-[#858b81]">
+                          <small className="text-xs text-[#77728A]">
                             {variant.detail ?? `${variant.form} · ${variant.packageQuantity}`}
                           </small>
                         </span>
                       </div>
                     </td>
                     <td className={td}>
-                      <span className="inline-flex rounded-full bg-[#f3f5ef] px-3 py-1 text-xs text-[#536157]">
+                      <span className="inline-flex rounded-full bg-[#F3E8FF] px-3 py-1 text-xs text-[#4A4658]">
                         {product.category}
                       </span>
                     </td>
-                    <td className={`${td} font-semibold text-[#233b30]`}>
+                    <td className={`${td} font-semibold text-[#4C1D95]`}>
                       {formatPrice(variant.price)}
                     </td>
                     <td className={td}>
@@ -1739,7 +1762,7 @@ export function AdminDashboard() {
               </tbody>
             </table>
             {products.length === 0 && (
-              <p className="m-0 border-t border-[#eef0ea] px-5 py-10 text-center text-sm text-[#6f7a70]">
+              <p className="m-0 border-t border-[#EEE9F7] px-5 py-10 text-center text-sm text-[#6B6680]">
                 No products yet. Add one to start your catalog.
               </p>
             )}
@@ -1792,20 +1815,20 @@ export function AdminDashboard() {
               <tbody>
                 {orders.map((order) => (
                   <Fragment key={order.id}>
-                    <tr className="transition-colors hover:bg-[#fafaf8]">
+                    <tr className="transition-colors hover:bg-[#F8F4FE]">
                       <td className={td}>
-                        <strong className="block text-sm font-semibold text-[#233b30]">
+                        <strong className="block text-sm font-semibold text-[#4C1D95]">
                           {order.id}
                         </strong>
-                        <small className="mt-1 block text-xs text-[#858b81]">
+                        <small className="mt-1 block text-xs text-[#77728A]">
                           {formatOrderDate(order.createdAt)}
                         </small>
                       </td>
                       <td className={td}>
-                        <strong className="block text-sm font-semibold text-[#233b30]">
+                        <strong className="block text-sm font-semibold text-[#4C1D95]">
                           {order.contact.name}
                         </strong>
-                        <small className="mt-1 block text-xs text-[#858b81]">
+                        <small className="mt-1 block text-xs text-[#77728A]">
                           {order.contact.email}
                         </small>
                       </td>
@@ -1817,7 +1840,7 @@ export function AdminDashboard() {
                           </label>
                           <select
                             id={`order-status-${order.id}`}
-                            className="min-h-10 rounded-xl border border-[#dfe4d8] bg-white px-3 text-xs text-[#355342] outline-none focus:border-[#64806a] focus:ring-2 focus:ring-[#64806a]/20"
+                            className="min-h-10 rounded-xl border border-[#E0D6F2] bg-white px-3 text-xs text-[#6D28D9] outline-none focus:border-[#6D28D9] focus:ring-2 focus:ring-[#6D28D9]/20"
                             value={order.status ?? "received"}
                             disabled={updatingOrderId !== null}
                             onChange={(event) => {
@@ -1834,13 +1857,13 @@ export function AdminDashboard() {
                             ))}
                           </select>
                           {updatingOrderId === order.id && (
-                            <span className="text-xs text-[#6f7a70]" role="status">
+                            <span className="text-xs text-[#6B6680]" role="status">
                               Saving status…
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className={`${td} font-semibold text-[#233b30]`}>
+                      <td className={`${td} font-semibold text-[#4C1D95]`}>
                         {formatPrice(order.total)}
                       </td>
                       <td className={td}>
@@ -1880,13 +1903,13 @@ export function AdminDashboard() {
                     </tr>
                     {expandedOrderId === order.id && (
                       <tr>
-                        <td className={`${td} bg-[#fafaf8]`} colSpan={5}>
+                        <td className={`${td} bg-[#F8F4FE]`} colSpan={5}>
                           <div className="grid gap-6 md:grid-cols-2">
                             <section>
-                              <h3 className="mb-2 mt-0 text-sm font-semibold text-[#233b30]">
+                              <h3 className="mb-2 mt-0 text-sm font-semibold text-[#4C1D95]">
                                 Customer and delivery
                               </h3>
-                              <address className="grid gap-1 text-[13px] not-italic leading-5 text-[#536157]">
+                              <address className="grid gap-1 text-[13px] not-italic leading-5 text-[#4A4658]">
                                 <span>{order.contact.name}</span>
                                 <span>{order.contact.email}</span>
                                 <span>{order.contact.phone}</span>
@@ -1895,10 +1918,10 @@ export function AdminDashboard() {
                               </address>
                             </section>
                             <section>
-                              <h3 className="mb-2 mt-0 text-sm font-semibold text-[#233b30]">
+                              <h3 className="mb-2 mt-0 text-sm font-semibold text-[#4C1D95]">
                                 Items
                               </h3>
-                              <ul className="m-0 grid list-none gap-2 p-0 text-[13px] text-[#536157]">
+                              <ul className="m-0 grid list-none gap-2 p-0 text-[13px] text-[#4A4658]">
                                 {order.items.map((item, index) => (
                                   <li
                                     className="flex flex-wrap justify-between gap-x-4 gap-y-1"
@@ -1915,7 +1938,7 @@ export function AdminDashboard() {
                                   </li>
                                 ))}
                               </ul>
-                              <div className="mt-3 grid gap-1 border-t border-[#e3e7dd] pt-3 text-[13px] text-[#536157]">
+                              <div className="mt-3 grid gap-1 border-t border-[#E9E1F5] pt-3 text-[13px] text-[#4A4658]">
                                 <p className="m-0 flex justify-between gap-4">
                                   <span>Subtotal</span>
                                   <strong>{formatPrice(order.subtotal)}</strong>
@@ -1924,12 +1947,18 @@ export function AdminDashboard() {
                                   <span>Delivery</span>
                                   <strong>{order.shipping === 0 ? "Free" : formatPrice(order.shipping)}</strong>
                                 </p>
-                                <p className="m-0 flex justify-between gap-4 font-semibold text-[#233b30]">
+                                <p className="m-0 flex justify-between gap-4 font-semibold text-[#4C1D95]">
                                   <span>Total</span>
                                   <strong>{formatPrice(order.total)}</strong>
                                 </p>
                               </div>
                             </section>
+                          </div>
+                          <div className="mt-5 flex justify-end border-t border-[#E9E1F5] pt-4">
+                            <PrintOrderReceipt
+                              order={order}
+                              className={secondaryButton}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -1939,7 +1968,7 @@ export function AdminDashboard() {
               </tbody>
             </table>
             {orders.length === 0 && (
-              <p className="m-0 border-t border-[#eef0ea] px-5 py-10 text-center text-sm text-[#6f7a70]">
+              <p className="m-0 border-t border-[#EEE9F7] px-5 py-10 text-center text-sm text-[#6B6680]">
                 No orders yet.
               </p>
             )}

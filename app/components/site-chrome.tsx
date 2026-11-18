@@ -3,7 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, type ReactNode } from "react";
+import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { ComingSoon } from "./coming-soon";
 import { StoreNavigation } from "./store-navigation";
+import { ShoppingAssistant } from "./shopping-assistant";
+import { WhatsAppWidget } from "./whatsapp-widget";
+
+/*
+  Palette under test
+  primary #6D28D9, dark #4C1D95, light #F3E8FF, green #20A800, background #FAFAFA
+  Footer sits on dark purple. Green button text is dark (#0B1F05) for contrast.
+  Footer text tints: body #D9C8F5, muted #BBA6E3
+*/
 
 const footerColumns = [
   {
@@ -40,27 +51,36 @@ const footerColumns = [
 const footerFocusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
+const SHOW_COMING_SOON_PAGE = false;
+
+const footerSocialLinks = [
+  { label: "WhatsApp", Icon: FaWhatsapp, href: "https://wa.me/256781849440?text=Hello%20VitaHub%20UG%2C%20I%20have%20a%20question." },
+  { label: "Instagram", Icon: FaInstagram, href: "https://instagram.com/vitahubug" },
+  { label: "TikTok", Icon: FaTiktok, href: "https://tiktok.com/@vitahubug" },
+  { label: "Facebook", Icon: FaFacebookF, href: "https://facebook.com/vitahubug" },
+];
+
 function StoreFooter() {
   return (
-    <footer className="mt-auto rounded-t-[2.5rem] bg-[#233b30] text-white max-[600px]:rounded-t-3xl">
+    <footer className="mt-auto rounded-t-[2.5rem] bg-[#2E1065] text-white max-[600px]:rounded-t-3xl">
       <div className="mx-auto grid w-[min(100%-2.5rem,80rem)] gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-14 lg:py-20">
         {/* Brand */}
         <div className="max-w-sm sm:col-span-2 lg:col-span-1">
           <Link
             className={`inline-flex items-center gap-3 text-[19px] font-semibold tracking-[-0.03em] ${footerFocusRing}`}
             href="/"
-            aria-label="Form and Function home"
+            aria-label="Vitahub Ug home"
           >
             <span>Vitahub Ug</span>
           </Link>
 
-          <p className="mb-0 mt-6 max-w-xs text-[15px] leading-7 text-[#b9c8bc]">
+          <p className="mb-0 mt-6 max-w-xs text-[15px] leading-7 text-[#DDD6FE]">
             Everyday wellness, made a little simpler. Thoughtful essentials for
             feeling good in your own rhythm.
           </p>
 
           <Link
-            className="mt-7 inline-flex min-h-11 items-center gap-3 rounded-full bg-white px-6 text-sm font-semibold text-[#233b30] transition-colors hover:bg-[#edf1eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="mt-7 inline-flex min-h-11 items-center gap-3 rounded-full bg-[#20A800] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#2FC106] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             href="/shop"
           >
             Find your feel-good
@@ -78,6 +98,24 @@ function StoreFooter() {
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>
+
+          <nav aria-label="Social media" className="mt-8">
+            <p className="mb-3 text-sm font-medium text-white">Follow us</p>
+            <ul className="m-0 flex list-none gap-3 p-0">
+              {footerSocialLinks.map(({ label, Icon, href }) => (
+                <li key={label}>
+                  <a
+                    aria-label={`Follow Vitahub Ug on ${label} (coming soon)`}
+                    className={`inline-flex size-11 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:border-[#20A800] hover:bg-[#20A800] ${footerFocusRing}`}
+                    href={href}
+                    onClick={(event) => event.preventDefault()}
+                  >
+                    <Icon className="size-5" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         {/* Link columns */}
@@ -90,7 +128,7 @@ function StoreFooter() {
               {column.links.map((link) => (
                 <li key={link.href}>
                   <Link
-                    className={`text-[#b9c8bc] underline decoration-transparent underline-offset-4 transition-colors hover:text-white hover:decoration-[#9db8a3] ${footerFocusRing}`}
+                    className={`text-[#DDD6FE] underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:text-white hover:decoration-[#20A800] ${footerFocusRing}`}
                     href={link.href}
                   >
                     {link.text}
@@ -103,11 +141,10 @@ function StoreFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex w-[min(100%-2.5rem,80rem)] flex-col gap-2 py-6 text-[13px] text-[#9fb2a3] sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex w-[min(100%-2.5rem,80rem)] flex-col gap-2 py-6 text-[13px] text-[#C4B5FD] sm:flex-row sm:items-center sm:justify-between">
           <p className="m-0">
-            © {new Date().getFullYear()} Form &amp; Function. Feel good, for
-            real.
+            © {new Date().getFullYear()} Vitahub Ug. Feel good, for real.
           </p>
           <p className="m-0">Thoughtful essentials for your everyday.</p>
         </div>
@@ -115,6 +152,7 @@ function StoreFooter() {
     </footer>
   );
 }
+
 
 function RouteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -126,19 +164,22 @@ function RouteChrome({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   if (!showStoreChrome) return children;
+  if (SHOW_COMING_SOON_PAGE) return <ComingSoon />;
 
   return (
     <>
       <StoreNavigation />
       {children}
       <StoreFooter />
+      <ShoppingAssistant />
+      {/* <WhatsAppWidget /> */}
     </>
   );
 }
 
 export function SiteChrome({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={children}>
+    <Suspense fallback={SHOW_COMING_SOON_PAGE ? <ComingSoon /> : children}>
       <RouteChrome>{children}</RouteChrome>
     </Suspense>
   );

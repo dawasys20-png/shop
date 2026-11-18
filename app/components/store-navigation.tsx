@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
+import { FiUser } from "react-icons/fi";
 import { CategoryNavigation } from "./category-navigation";
 import { useCart } from "./cart-context";
 import { apiRequest } from "../lib/api";
@@ -20,6 +21,9 @@ import Image from "next/image";
 
 const focusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6D28D9]";
+
+const menuItem =
+  "block w-full px-4 py-2.5 text-left text-[14px] text-[#4A4658] hover:bg-[#F3E8FF] hover:text-[#4C1D95]";
 
 function SearchIcon() {
   return (
@@ -63,6 +67,8 @@ export function StoreNavigation() {
   const [query, setQuery] = useState("");
   const [user, setUser] = useState<{ name: string } | null>(null);
   const [signOutError, setSignOutError] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const sessionRequestId = useRef(0);
   const router = useRouter();
   const { itemCount, refreshOrders } = useCart();
@@ -91,6 +97,29 @@ export function StoreNavigation() {
       window.removeEventListener("auth-state-changed", refreshUser);
     };
   }, []);
+
+  // Close the account menu on outside tap or Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function onPointerDown(event: MouseEvent | TouchEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMenuOpen(false);
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
 
   function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -123,13 +152,13 @@ export function StoreNavigation() {
   return (
     <>
       {/* Announcement bar */}
-      <div className="overflow-hidden bg-[#4C1D95]">
+      <div className="overflow-hidden bg-[#2E1065]">
         <div className="announcement-marquee flex min-h-[34px] items-center whitespace-nowrap px-4 py-2 text-[10px] tracking-[0.08em] text-white max-[600px]:text-[9px]">
           <div className="announcement-track flex w-max items-center gap-3 max-[600px]:gap-2">
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white">
-              Free shipping on orders UGX 150000+
+              Free delivery on orders UGX 150000+
             </span>
             <span className="h-3 w-px bg-[#D8C5F5]" />
             <span className="font-semibold uppercase">Good things, grown slowly.</span>
@@ -138,14 +167,50 @@ export function StoreNavigation() {
               className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
               aria-hidden="true"
             >
-              Free shipping on orders UGX 150000+
+              Free delivery on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free delivery on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free delivery on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free delivery on orders UGX 150000+
+            </span>
+            <span className="h-3 w-px bg-[#D8C5F5]" />
+            <span className="font-semibold uppercase">Good things, grown slowly.</span>
+            <span className="h-3 w-px bg-[#D8C5F5]" aria-hidden="true" />
+            <span
+              className="rounded-full bg-[#20A800] px-3 py-0.5 font-semibold tracking-normal text-white"
+              aria-hidden="true"
+            >
+              Free delivery on orders UGX 150000+
             </span>
           </div>
         </div>
       </div>
 
       {/* Main header */}
-      <header className="sticky top-0 z-30 border-b border-[#E9E1F5] bg-[#FAFAFA]/85 backdrop-blur-lg">
+      <header className="sticky top-0 z-30 border-b border-[#E9E1F5] bg-[#FAFAFA]">
         <div className="mx-auto grid h-[76px] w-full max-w-[1600px] grid-cols-[1fr_minmax(300px,1.3fr)_1fr] items-center gap-8 px-[clamp(20px,4vw,60px)] max-[900px]:h-auto max-[900px]:grid-cols-[1fr_auto] max-[900px]:gap-x-4 max-[900px]:gap-y-3 max-[900px]:px-7 max-[900px]:py-3 max-[600px]:px-[18px]">
           {/* Brand */}
           <Link
@@ -190,8 +255,8 @@ export function StoreNavigation() {
           </div>
 
           {/* Account and cart */}
-          <div className="flex items-center justify-end gap-6 max-[900px]:col-start-2 max-[900px]:row-start-1 max-[900px]:gap-4">
-            <div className="flex items-center gap-6 text-[14px] text-[#4A4658] max-[900px]:hidden">
+          <div className="flex items-center justify-end gap-6 max-[900px]:col-start-2 max-[900px]:row-start-1 max-[900px]:gap-3">
+            <div className="flex items-center font-medium gap-6 text-[14px] text-[#4A4658] max-[900px]:hidden">
               <Link
                 href="/orders"
                 className={`transition-colors hover:text-[#4C1D95] ${focusRing}`}
@@ -203,7 +268,7 @@ export function StoreNavigation() {
             {!user ? (
               <Link
                 href="/login"
-                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#F3E8FF] px-5 text-[13px] font-normal text-[#4C1D95] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing} max-[900px]:hidden`}
+                className={`inline-flex h-10 items-center justify-center rounded-full border border-[#F3E8FF] px-5 text-[14px] font-medium text-[#4C1D95] transition-colors hover:bg-[#6D28D9] hover:text-white ${focusRing} max-[900px]:hidden`}
               >
                 Sign in
               </Link>
@@ -239,29 +304,81 @@ export function StoreNavigation() {
                 {itemCount}
               </span>
             </Link>
-          </div>
 
-          {/* Mobile account links */}
-          <div className="col-span-2 hidden items-center justify-end gap-5 border-t border-[#E9E1F5] pt-3 text-[13px] text-[#4A4658] max-[900px]:flex">
-            {user ? (
-              <button type="button" onClick={signOut} className="hover:text-[#4C1D95]">
-                Sign out
+            {/* Mobile account menu */}
+            <div ref={menuRef} className="relative hidden max-[900px]:block">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((open) => !open)}
+                aria-label="Account menu"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                className="relative grid h-10 w-10 place-items-center rounded-full border border-[#F3E8FF] text-[#4C1D95] transition-colors hover:bg-[#E9D5FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6D28D9]"
+              >
+                <FiUser size={19} aria-hidden="true" />
+                {user && (
+                  <span
+                    className="absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#FAFAFA] bg-[#20A800]"
+                    aria-hidden="true"
+                  />
+                )}
               </button>
-            ) : <Link href="/login" className="hover:text-[#4C1D95]">
-              Log in
-            </Link>}
 
-            <Link href="/orders" className="hover:text-[#4C1D95]">
-              My orders
-            </Link>
+              {menuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full z-40 mt-2 w-56 overflow-hidden rounded-xl border border-[#E9E1F5] bg-white py-1 shadow-lg"
+                >
+                  {user && (
+                    <p className="truncate border-b border-[#E9E1F5] px-4 py-3 text-[13px] font-semibold text-[#2E1065]">
+                      Hi, {user.name}
+                    </p>
+                  )}
 
-            {!user && <Link
-              href="/signup"
-              className="font-semibold text-[#6D28D9] hover:text-[#4C1D95]"
-            >
-              Create account
-            </Link>}
-            {signOutError && <span role="alert" className="text-red-700">{signOutError}</span>}
+                  <Link
+                    href="/orders"
+                    role="menuitem"
+                    onClick={() => setMenuOpen(false)}
+                    className={menuItem}
+                  >
+                    My orders
+                  </Link>
+
+                  {user ? (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={async () => {
+                        setMenuOpen(false);
+                        await signOut();
+                      }}
+                      className={menuItem}
+                    >
+                      Sign out
+                    </button>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        role="menuitem"
+                        onClick={() => setMenuOpen(false)}
+                        className={menuItem}
+                      >
+                        Log in
+                      </Link>
+                      <Link
+                        href="/signup"
+                        role="menuitem"
+                        onClick={() => setMenuOpen(false)}
+                        className={`${menuItem} font-semibold text-[#6D28D9]`}
+                      >
+                        Create account
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>

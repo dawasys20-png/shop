@@ -44,7 +44,24 @@ export type ProductVariant = {
 export type ProductCategory = {
   name: string;
   slug: string;
+  icon?: ProductCategoryIcon;
 };
+
+export const productCategories = [
+  { name: "Vitamins & Minerals", icon: "pill" },
+  { name: "Multivitamins", icon: "leaf" },
+  { name: "Protein & Fitness", icon: "dumbbell" },
+  { name: "Herbal Supplements", icon: "sprout" },
+  { name: "Omega & Fish Oil", icon: "fish" },
+  { name: "Digestive Health", icon: "activity" },
+  { name: "Immune Support", icon: "shield-check" },
+  { name: "Bone & Joint Health", icon: "bone" },
+  { name: "Women's & Men's Health", icon: "heart" },
+  { name: "Beauty & Wellness", icon: "sparkles" },
+] as const;
+
+export type ProductCategoryIcon =
+  (typeof productCategories)[number]["icon"];
 
 export function getVariantImages(
   _product: Product,
@@ -125,11 +142,19 @@ export function getCategories(products: Product[]): ProductCategory[] {
       categoriesBySlug.set(slug, { name: product.category, slug });
     }
   }
+  const configuredSlugs = new Set(
+    productCategories.map(({ name }) => getCategorySlug(name)),
+  );
   return [
     { name: "All supplements", slug: "all" },
-    ...[...categoriesBySlug.values()].sort((left, right) =>
-      left.name.localeCompare(right.name),
-    ),
+    ...productCategories.map(({ name, icon }) => ({
+      name,
+      slug: getCategorySlug(name),
+      icon,
+    })),
+    ...[...categoriesBySlug.values()]
+      .filter((category) => !configuredSlugs.has(category.slug))
+      .sort((left, right) => left.name.localeCompare(right.name)),
   ];
 }
 

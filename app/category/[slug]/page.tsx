@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { CatalogLoading } from "../../components/catalog-loading";
+import { BrandLoading } from "../../components/brand-loading";
 import { CatalogPage } from "../../components/catalog-page";
 import { getCategory } from "../../lib/products";
 import { getServerProducts } from "../../lib/server-products";
@@ -11,7 +11,7 @@ export default function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense fallback={<CatalogLoading />}>
+    <Suspense fallback={<BrandLoading />}>
       <CategoryResults params={params} />
     </Suspense>
   );
