@@ -8,6 +8,8 @@ export type CheckoutContact = {
   city: string;
 };
 
+export type PaymentMethod = "pay_on_delivery" | "pay_now";
+
 export type OrderItem = {
   id: string;
   name: string;
@@ -46,6 +48,7 @@ export type Order = {
   createdAt: string;
   status?: OrderStatus;
   contact: CheckoutContact;
+  paymentMethod?: PaymentMethod;
   items: OrderItem[];
   subtotal: number;
   shipping: number;

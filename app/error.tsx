@@ -15,7 +15,7 @@ export default function Error({
         We could not get the latest store data from the backend. Please try again.
       </p>
       <button
-        className="mt-6 min-h-11 rounded-full bg-[#355342] px-6 font-medium text-white hover:bg-[#233b30]"
+        className="mt-6 min-h-11 rounded-full px-6 font-medium text-white bg-[#20A800] hover:bg-[#188C00]"
         onClick={reset}
         type="button"
       >

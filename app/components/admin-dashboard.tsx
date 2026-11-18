@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { apiRequest } from "../lib/api";
-import { formatPrice } from "../lib/currency";
+import { formatPrice, FREE_DELIVERY_THRESHOLD } from "../lib/currency";
 import {
   orderStatusLabels,
   orderStatuses,
@@ -1055,7 +1055,8 @@ function OrderEditor({
       if (items.length === 0) throw new Error("Add at least one product to the order.");
 
       const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
-      const shipping = subtotal === 0 || subtotal >= 60 ? 0 : 5;
+      const shipping =
+        subtotal === 0 || subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : 5;
       await onSave({
         id:
           order?.id ??

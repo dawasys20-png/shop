@@ -18,7 +18,9 @@ import {
   type CheckoutContact,
   type Order,
   type OrderStatus,
+  type PaymentMethod,
 } from "../lib/orders";
+import { FREE_DELIVERY_THRESHOLD } from "../lib/currency";
 import { apiRequest } from "../lib/api";
 import { useCatalog } from "./catalog-context";
 
@@ -42,7 +44,10 @@ type CartContextValue = {
   shipping: number;
   addToCart: (product: Product, quantity?: number, variantId?: string) => void;
   changeQuantity: (lineKey: string, change: number) => void;
-  placeOrder: (contact: CheckoutContact) => Promise<Order>;
+  placeOrder: (
+    contact: CheckoutContact,
+    paymentMethod: PaymentMethod,
+  ) => Promise<Order>;
   saveOrder: (order: Order) => Promise<void>;
   updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
@@ -277,7 +282,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (total, line) => total + line.variant.price * line.quantity,
     0,
   );
-  const shipping = subtotal === 0 || subtotal >= 60 ? 0 : 5;
+  const shipping =
+    subtotal === 0 || subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : 5000;
 
   const addToCart = useCallback(
     (product: Product, quantity = 1, variantId?: string) => {
@@ -336,7 +342,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const placeOrder = useCallback(
-    async (contact: CheckoutContact) => {
+    async (contact: CheckoutContact, paymentMethod: PaymentMethod) => {
       if (!catalogReady || !storedCart.ready || !storedOrders.ready) {
         throw new Error("Your saved shopping bag is still loading.");
       }
@@ -350,6 +356,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         method: "POST",
         body: JSON.stringify({
           contact,
+          paymentMethod,
           items: cart.map(({ product, variant, quantity }) => ({
             productId: product.id,
             variantId: variant.id,
