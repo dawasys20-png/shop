@@ -205,6 +205,10 @@ export function AccountForm({
               {!isSignup && (
                 <>
                   {" · "}
+                  <Link className={linkClass} href="/forgot-password">
+                    Forgot password?
+                  </Link>
+                  {" · "}
                   <Link className={linkClass} href="/admin/login">
                     Administrator sign in
                   </Link>

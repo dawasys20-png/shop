@@ -23,6 +23,7 @@ import {
 } from "../lib/products";
 import { useCart } from "./cart-context";
 import { useCatalog } from "./catalog-context";
+import { PrintOrderReceipt } from "./order-receipt";
 
 type AdminTab = "overview" | "products" | "orders";
 
@@ -1952,6 +1953,12 @@ export function AdminDashboard() {
                                 </p>
                               </div>
                             </section>
+                          </div>
+                          <div className="mt-5 flex justify-end border-t border-[#E9E1F5] pt-4">
+                            <PrintOrderReceipt
+                              order={order}
+                              className={secondaryButton}
+                            />
                           </div>
                         </td>
                       </tr>
