@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, type ReactNode } from "react";
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { ComingSoon } from "./coming-soon";
 import { StoreNavigation } from "./store-navigation";
 import { ShoppingAssistant } from "./shopping-assistant";
 import { WhatsAppWidget } from "./whatsapp-widget";
@@ -49,6 +50,8 @@ const footerColumns = [
 
 const footerFocusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
+
+const SHOW_COMING_SOON_PAGE = true;
 
 const footerSocialLinks = [
   { label: "WhatsApp", Icon: FaWhatsapp, href: "https://wa.me/256781849440?text=Hello%20VitaHub%20UG%2C%20I%20have%20a%20question." },
@@ -161,6 +164,7 @@ function RouteChrome({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   if (!showStoreChrome) return children;
+  if (SHOW_COMING_SOON_PAGE) return <ComingSoon />;
 
   return (
     <>
@@ -175,7 +179,7 @@ function RouteChrome({ children }: { children: ReactNode }) {
 
 export function SiteChrome({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={children}>
+    <Suspense fallback={SHOW_COMING_SOON_PAGE ? <ComingSoon /> : children}>
       <RouteChrome>{children}</RouteChrome>
     </Suspense>
   );
