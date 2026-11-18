@@ -51,7 +51,7 @@ const footerColumns = [
 const footerFocusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
-const SHOW_COMING_SOON_PAGE = true;
+const SHOW_COMING_SOON_PAGE = false;
 
 const footerSocialLinks = [
   { label: "WhatsApp", Icon: FaWhatsapp, href: "https://wa.me/256781849440?text=Hello%20VitaHub%20UG%2C%20I%20have%20a%20question." },
