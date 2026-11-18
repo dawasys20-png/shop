@@ -60,6 +60,9 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  verification: {
+    google: "2-LqgwcdbT-_UT8b-a13eyvWTU-NtiTw-EFxOlcsTT8",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
